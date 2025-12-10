@@ -41,10 +41,10 @@ const services = [
 
 export function ServicesSection() {
   return (
-    <section id="services" className="py-20 bg-background">
+    <section id="services" className="py-12 lg:py-20 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Section header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-16">
           <span className="inline-block px-4 py-1 rounded-full bg-secondary text-sm font-medium text-primary mb-4">
             Nos Services
           </span>
@@ -58,7 +58,7 @@ export function ServicesSection() {
         </div>
 
         {/* Services grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {services.map((service, index) => (
             <div
               key={service.title}
@@ -71,7 +71,7 @@ export function ServicesSection() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-16 text-center">
+        <div className="mt-12 lg:mt-16 text-center">
           <div className="inline-flex items-center gap-4 px-6 py-4 rounded-2xl bg-secondary border border-border">
             <div className="flex -space-x-2">
               {[1, 2, 3, 4].map((i) => (
