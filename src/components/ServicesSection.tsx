@@ -1,39 +1,38 @@
-import { Package, Flame, Shirt, Trash2, Building2 } from "lucide-react";
 import { ServiceCard } from "./ServiceCard";
 
 const services = [
   {
     title: "Expédition de Colis",
     description: "Envoyez vos colis partout au Cameroun en toute sécurité. Tarifs compétitifs et suivi en temps réel.",
-    icon: Package,
+    image: "/service-colis.png",
     href: "/colis",
     color: "green" as const,
   },
   {
     title: "Livraison de Gaz",
     description: "Commandez vos bouteilles de gaz et recevez-les directement chez vous. Toutes marques disponibles.",
-    icon: Flame,
+    image: "/service-gaz.png",
     href: "/gaz",
     color: "red" as const,
   },
   {
     title: "Ramassage Lessive",
     description: "On récupère, on lave, on livre. Vêtements propres et bien repassés sans effort de votre part.",
-    icon: Shirt,
+    image: "/service-lessive.png",
     href: "/lessive",
     color: "yellow" as const,
   },
   {
     title: "Vidage de Poubelles",
     description: "Service de ramassage régulier pour particuliers, entreprises, hôtels et restaurants.",
-    icon: Trash2,
+    image: "/service-poubelles.png",
     href: "/poubelles",
     color: "green" as const,
   },
   {
     title: "Recherche de Logements",
     description: "Trouvez le logement idéal ou publiez votre bien à louer. Mise en relation directe propriétaire-locataire.",
-    icon: Building2,
+    image: "/service-logement.png",
     href: "/logements",
     color: "yellow" as const,
     featured: true,
@@ -53,13 +52,13 @@ export function ServicesSection() {
             Tout ce dont vous avez besoin, à domicile
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            Choisissez parmi nos services adaptés à vos besoins quotidiens. 
+            Choisissez parmi nos services adaptés à vos besoins quotidiens.
             Simple, rapide et fiable — c'est la promesse Le Bon Petit.
           </p>
         </div>
 
         {/* Services grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <div
               key={service.title}

@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
-import { LucideIcon, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 interface ServiceCardProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  image: string;
   href: string;
   color: "green" | "yellow" | "red";
   featured?: boolean;
@@ -13,58 +12,69 @@ interface ServiceCardProps {
 
 const colorClasses = {
   green: {
-    bg: "bg-african-green/10",
-    icon: "text-african-green",
-    border: "hover:border-african-green/30",
-    glow: "group-hover:shadow-[0_8px_30px_-4px_hsl(var(--african-green)/0.15)]",
+    border: "hover:border-african-green/50",
+    glow: "group-hover:shadow-[0_8px_30px_-4px_hsl(var(--african-green)/0.2)]",
+    badge: "bg-african-green text-white",
   },
   yellow: {
-    bg: "bg-african-yellow/10",
-    icon: "text-african-gold",
-    border: "hover:border-african-yellow/30",
-    glow: "group-hover:shadow-[0_8px_30px_-4px_hsl(var(--african-yellow)/0.2)]",
+    border: "hover:border-african-yellow/50",
+    glow: "group-hover:shadow-[0_8px_30px_-4px_hsl(var(--african-yellow)/0.25)]",
+    badge: "bg-african-yellow text-foreground",
   },
   red: {
-    bg: "bg-african-red/10",
-    icon: "text-african-red",
-    border: "hover:border-african-red/30",
-    glow: "group-hover:shadow-[0_8px_30px_-4px_hsl(var(--african-red)/0.15)]",
+    border: "hover:border-african-red/50",
+    glow: "group-hover:shadow-[0_8px_30px_-4px_hsl(var(--african-red)/0.2)]",
+    badge: "bg-african-red text-white",
   },
 };
 
-export function ServiceCard({ title, description, icon: Icon, href, color, featured }: ServiceCardProps) {
+export function ServiceCard({ title, description, image, href, color, featured }: ServiceCardProps) {
   const colors = colorClasses[color];
 
   return (
     <Link
       to={href}
-      className={`group relative block p-6 rounded-2xl bg-card border border-border shadow-soft transition-all duration-300 hover:-translate-y-1 ${colors.border} ${colors.glow} ${featured ? 'ring-2 ring-african-yellow/20' : ''}`}
+      className={`group relative block rounded-2xl bg-card border border-border shadow-soft transition-all duration-300 hover:-translate-y-2 ${colors.border} ${colors.glow} overflow-hidden ${featured ? 'ring-2 ring-african-yellow/30' : ''}`}
     >
       {featured && (
-        <div className="absolute -top-3 right-4 px-3 py-1 rounded-full bg-african-yellow text-accent-foreground text-xs font-semibold shadow-glow">
-          Populaire
+        <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-african-yellow text-foreground text-xs font-semibold shadow-lg">
+          ⭐ Populaire
         </div>
       )}
-      
-      <div className={`w-14 h-14 rounded-xl ${colors.bg} flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}>
-        <Icon className={`h-7 w-7 ${colors.icon}`} />
+
+      {/* Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+        {/* Title overlay on image */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <h3 className="font-heading font-bold text-xl text-white drop-shadow-lg">
+            {title}
+          </h3>
+        </div>
       </div>
 
-      <h3 className="font-heading font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors duration-200">
-        {title}
-      </h3>
+      {/* Content */}
+      <div className="p-5">
+        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+          {description}
+        </p>
 
-      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-        {description}
-      </p>
-
-      <div className="flex items-center text-sm font-medium text-primary">
-        <span>Commander</span>
-        <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+        <div className="flex items-center justify-between">
+          <span className={`text-xs font-medium px-3 py-1 rounded-full ${colors.badge}`}>
+            Service disponible
+          </span>
+          <div className="flex items-center text-sm font-medium text-primary">
+            <span>Commander</span>
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+          </div>
+        </div>
       </div>
-
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none african-pattern" />
     </Link>
   );
 }

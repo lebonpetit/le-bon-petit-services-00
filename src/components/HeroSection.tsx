@@ -31,7 +31,7 @@ export function HeroSection() {
             </h1>
 
             <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
-              Colis, gaz, lessive, poubelles ou logements — Le Bon Petit s'occupe de tout. 
+              Colis, gaz, lessive, poubelles ou logements — Le Bon Petit s'occupe de tout.
               Un service camerounais moderne, fiable et à votre portée.
             </p>
 
@@ -57,37 +57,35 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Visual */}
+          {/* Visual - African Family Image */}
           <div className="relative hidden lg:block animate-slide-up" style={{ animationDelay: "0.2s" }}>
-            <div className="relative aspect-square max-w-lg mx-auto">
+            <div className="relative max-w-lg mx-auto">
               {/* Background decoration */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-african-green/20 to-african-yellow/10 blur-3xl" />
-              
-              {/* Main card */}
-              <div className="relative bg-card rounded-3xl shadow-card border border-border p-8 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-african-green to-african-green/80 flex items-center justify-center">
-                      <span className="text-primary-foreground font-heading font-bold text-2xl">BP</span>
+
+              {/* Main image */}
+              <div className="relative rounded-3xl overflow-hidden shadow-card border-4 border-white/10">
+                <img
+                  src="/hero-family.png"
+                  alt="Famille africaine heureuse chez elle"
+                  className="w-full h-auto object-cover"
+                />
+
+                {/* Overlay with stats */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="font-heading font-bold text-2xl text-white">2,000+</p>
+                      <p className="text-xs text-white/70">Clients satisfaits</p>
                     </div>
                     <div>
-                      <h3 className="font-heading font-bold text-xl text-foreground">Le Bon Petit</h3>
-                      <p className="text-sm text-muted-foreground">Votre partenaire de confiance</p>
+                      <p className="font-heading font-bold text-2xl text-african-yellow">500+</p>
+                      <p className="text-xs text-white/70">Services/mois</p>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { label: "Clients satisfaits", value: "2,000+" },
-                      { label: "Services/mois", value: "500+" },
-                      { label: "Quartiers couverts", value: "50+" },
-                      { label: "Note moyenne", value: "4.9/5" },
-                    ].map((stat) => (
-                      <div key={stat.label} className="p-4 rounded-xl bg-secondary">
-                        <p className="font-heading font-bold text-2xl text-primary">{stat.value}</p>
-                        <p className="text-xs text-muted-foreground">{stat.label}</p>
-                      </div>
-                    ))}
+                    <div>
+                      <p className="font-heading font-bold text-2xl text-african-green">4.9/5</p>
+                      <p className="text-xs text-white/70">Note moyenne</p>
+                    </div>
                   </div>
                 </div>
               </div>
