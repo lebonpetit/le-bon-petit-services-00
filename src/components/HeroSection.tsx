@@ -15,7 +15,7 @@ export function HeroSection() {
       <div className="container mx-auto px-4 lg:px-8 py-10 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content - First on Mobile, First on Desktop */}
-          <div className="space-y-6 lg:space-y-8 animate-fade-in">
+          <div className="space-y-6 lg:space-y-8 animate-fade-in text-center lg:text-left flex flex-col items-center lg:items-start">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border">
               <div className="flex gap-0.5">
                 <div className="w-2 h-2 rounded-full bg-african-green" />
@@ -30,26 +30,26 @@ export function HeroSection() {
               <span className="text-primary">simplifiés</span>
             </h1>
 
-            <p className="text-base lg:text-lg text-muted-foreground leading-relaxed max-w-lg">
+            <p className="text-base lg:text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
               Colis, gaz, lessive, poubelles ou logements — Le Bon Petit s'occupe de tout.
               Un service camerounais moderne, fiable et à votre portée.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 text-left">
               {features.map((feature) => (
-                <div key={feature} className="flex items-center gap-2 text-sm text-foreground">
+                <div key={feature} className="flex items-center gap-2 text-sm text-foreground justify-center lg:justify-start">
                   <CheckCircle2 className="h-4 w-4 text-african-green flex-shrink-0" />
                   <span>{feature}</span>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center lg:justify-start">
               <Button variant="cta" size="lg" className="h-12 px-8 text-base lg:text-lg w-full sm:w-auto" asChild>
-                <Link to="#services">
+                <a href="#services">
                   Découvrir nos services
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+                </a>
               </Button>
               <Button variant="outline" size="lg" className="h-12 px-8 text-base lg:text-lg w-full sm:w-auto" asChild>
                 <Link to="/logements">Rechercher un logement</Link>

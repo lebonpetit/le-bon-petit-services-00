@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Flame, Download, Send, CheckCircle2 } from 'lucide-react';
+import { Flame, Download, CheckCircle2, ArrowLeft, ArrowRight, Send } from 'lucide-react';
+import { StepProgress } from '@/components/StepProgress';
+import gazImage from '@/assets/services/gaz.png';
 
 const marquesBouteilles = [
     "SCTM (Bouteille bleue)",
@@ -18,11 +20,15 @@ const marquesBouteilles = [
     "Autres",
 ];
 
-const nombreParAn = [
-    "1-2 bouteilles",
-    "3-5 bouteilles",
-    "6-10 bouteilles",
-    "Plus de 10 bouteilles",
+const taillesBouteille = [
+    "6 kg (Petite)",
+    "12.5 kg (Grande)",
+];
+
+const creneauxHoraires = [
+    "Matin (8h - 12h)",
+    "Après-midi (12h - 17h)",
+    "Soir (17h - 20h)",
 ];
 
 const quartiersDouala = [
@@ -32,7 +38,14 @@ const quartiersDouala = [
     "Yassa", "Logbessou", "Bonamikano", "Autres",
 ];
 
+const steps = [
+    { title: "Vos informations" },
+    { title: "Adresse de livraison" },
+    { title: "Votre commande" },
+];
+
 export default function Gaz() {
+    const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState({
         nom: '',
         prenom: '',
@@ -40,8 +53,11 @@ export default function Gaz() {
         quartier: '',
         rue: '',
         marqueBouteille: '',
+        tailleBouteille: '',
+        quantite: '1',
         possedeBouteille: 'oui',
-        nombreParAn: '',
+        dateLivraison: '',
+        creneauHoraire: '',
     });
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -51,10 +67,48 @@ export default function Gaz() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+    const validateStep = () => {
+        switch (currentStep) {
+            case 0:
+                if (!formData.prenom || !formData.nom || !formData.whatsapp) {
+                    toast({ variant: "destructive", title: "Champs requis", description: "Veuillez remplir tous les champs." });
+                    return false;
+                }
+                break;
+            case 1:
+                if (!formData.quartier || !formData.rue) {
+                    toast({ variant: "destructive", title: "Champs requis", description: "Veuillez remplir l'adresse complète." });
+                    return false;
+                }
+                break;
+            case 2:
+                if (!formData.tailleBouteille || !formData.creneauHoraire) {
+                    toast({ variant: "destructive", title: "Champs requis", description: "Veuillez compléter votre commande." });
+                    return false;
+                }
+                break;
+        }
+        return true;
+    };
 
+    const nextStep = () => {
+        if (validateStep()) {
+            if (currentStep < steps.length - 1) {
+                setCurrentStep(currentStep + 1);
+            }
+        }
+    };
+
+    const prevStep = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!validateStep()) return;
+
+        setLoading(true);
         try {
             const { error } = await supabase.from('requests').insert({
                 service_type: 'gaz',
@@ -68,7 +122,7 @@ export default function Gaz() {
 
             setSubmitted(true);
             toast({
-                title: "Demande envoyée !",
+                title: "Commande envoyée !",
                 description: "Notre équipe vous contactera sous peu.",
             });
         } catch (error) {
@@ -76,7 +130,7 @@ export default function Gaz() {
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: "Impossible d'envoyer la demande. Réessayez.",
+                description: "Impossible d'envoyer la commande. Réessayez.",
             });
         } finally {
             setLoading(false);
@@ -89,17 +143,23 @@ export default function Gaz() {
                 <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 african-pattern">
                     <Card className="w-full max-w-md shadow-card border-border text-center">
                         <CardHeader>
-                            <div className="mx-auto w-20 h-20 rounded-full bg-african-green/20 flex items-center justify-center mb-4">
-                                <CheckCircle2 className="h-10 w-10 text-african-green" />
+                            <div className="mx-auto w-20 h-20 rounded-full bg-african-red/20 flex items-center justify-center mb-4">
+                                <CheckCircle2 className="h-10 w-10 text-african-red" />
                             </div>
-                            <CardTitle className="font-heading text-2xl">Demande reçue !</CardTitle>
+                            <CardTitle className="font-heading text-2xl">Commande reçue !</CardTitle>
                             <CardDescription>
-                                Merci pour votre commande de gaz. Notre équipe vous contactera via WhatsApp dans les plus brefs délais.
+                                Votre commande de gaz a été enregistrée. Livraison prévue : {formData.dateLivraison || 'Dès que possible'} - {formData.creneauHoraire}
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <Button variant="cta" onClick={() => setSubmitted(false)} className="w-full">
-                                Nouvelle demande
+                        <CardContent className="space-y-4">
+                            <Button variant="outline" className="w-full" asChild>
+                                <a href="/catalogues/prix-gaz.pdf" download>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Télécharger le catalogue des prix
+                                </a>
+                            </Button>
+                            <Button variant="cta" onClick={() => { setSubmitted(false); setCurrentStep(0); setFormData({ nom: '', prenom: '', whatsapp: '', quartier: '', rue: '', marqueBouteille: '', tailleBouteille: '', quantite: '1', possedeBouteille: 'oui', dateLivraison: '', creneauHoraire: '' }); }} className="w-full">
+                                Nouvelle commande
                             </Button>
                         </CardContent>
                     </Card>
@@ -108,156 +168,174 @@ export default function Gaz() {
         );
     }
 
+    const renderStep = () => {
+        switch (currentStep) {
+            case 0:
+                return (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="prenom">Prénom</Label>
+                                <Input id="prenom" placeholder="Jean" value={formData.prenom} onChange={(e) => handleChange('prenom', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="nom">Nom</Label>
+                                <Input id="nom" placeholder="Dupont" value={formData.nom} onChange={(e) => handleChange('nom', e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
+                            <Input id="whatsapp" placeholder="+237 6XX XXX XXX" value={formData.whatsapp} onChange={(e) => handleChange('whatsapp', e.target.value)} />
+                        </div>
+                    </div>
+                );
+            case 1:
+                return (
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label>Quartier</Label>
+                            <Select value={formData.quartier} onValueChange={(v) => handleChange('quartier', v)}>
+                                <SelectTrigger><SelectValue placeholder="Sélectionner votre quartier" /></SelectTrigger>
+                                <SelectContent>
+                                    {quartiersDouala.map((q) => (<SelectItem key={q} value={q}>{q}</SelectItem>))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="rue">Rue / Repère</Label>
+                            <Input id="rue" placeholder="Face pharmacie, à côté de..." value={formData.rue} onChange={(e) => handleChange('rue', e.target.value)} />
+                        </div>
+                    </div>
+                );
+            case 2:
+                return (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Taille de bouteille</Label>
+                                <Select value={formData.tailleBouteille} onValueChange={(v) => handleChange('tailleBouteille', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                                    <SelectContent>
+                                        {taillesBouteille.map((t) => (<SelectItem key={t} value={t}>{t}</SelectItem>))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Quantité</Label>
+                                <Select value={formData.quantite} onValueChange={(v) => handleChange('quantite', v)}>
+                                    <SelectTrigger><SelectValue placeholder="1" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">1 bouteille</SelectItem>
+                                        <SelectItem value="2">2 bouteilles</SelectItem>
+                                        <SelectItem value="3">3 bouteilles</SelectItem>
+                                        <SelectItem value="4+">4+ bouteilles</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Marque préférée (optionnel)</Label>
+                            <Select value={formData.marqueBouteille} onValueChange={(v) => handleChange('marqueBouteille', v)}>
+                                <SelectTrigger><SelectValue placeholder="Peu importe" /></SelectTrigger>
+                                <SelectContent>
+                                    {marquesBouteilles.map((m) => (<SelectItem key={m} value={m}>{m}</SelectItem>))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Avez-vous une bouteille à échanger ?</Label>
+                            <RadioGroup value={formData.possedeBouteille} onValueChange={(v) => handleChange('possedeBouteille', v)} className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="oui" id="oui" />
+                                    <Label htmlFor="oui" className="cursor-pointer">Oui</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="non" id="non" />
+                                    <Label htmlFor="non" className="cursor-pointer">Non (achat neuf)</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="dateLivraison">Date souhaitée</Label>
+                                <Input id="dateLivraison" type="date" value={formData.dateLivraison} onChange={(e) => handleChange('dateLivraison', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Créneau horaire</Label>
+                                <Select value={formData.creneauHoraire} onValueChange={(v) => handleChange('creneauHoraire', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                                    <SelectContent>
+                                        {creneauxHoraires.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <Layout>
-            <div className="py-12 px-4 african-pattern">
-                <div className="container mx-auto max-w-2xl">
-                    <Card className="shadow-card border-border">
-                        <CardHeader className="text-center">
-                            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-african-red to-african-red/80 flex items-center justify-center mb-4 shadow-soft">
-                                <Flame className="h-8 w-8 text-primary-foreground" />
-                            </div>
-                            <CardTitle className="font-heading text-2xl">Achat & Livraison de Gaz</CardTitle>
-                            <CardDescription>
-                                Commandez vos bouteilles de gaz et recevez-les chez vous
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="mb-6">
-                                <Button variant="outline" className="w-full" asChild>
-                                    <a href="/catalogues/services-gaz.pdf" download>
-                                        <Download className="h-4 w-4 mr-2" />
-                                        Télécharger le catalogue des services gaz
-                                    </a>
-                                </Button>
-                            </div>
-
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="prenom">Prénom</Label>
-                                        <Input
-                                            id="prenom"
-                                            placeholder="Jean"
-                                            value={formData.prenom}
-                                            onChange={(e) => handleChange('prenom', e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="nom">Nom</Label>
-                                        <Input
-                                            id="nom"
-                                            placeholder="Dupont"
-                                            value={formData.nom}
-                                            onChange={(e) => handleChange('nom', e.target.value)}
-                                            required
-                                        />
-                                    </div>
+            <div className="py-8 lg:py-12 px-4 african-pattern">
+                <div className="container mx-auto max-w-5xl">
+                    <div className="grid lg:grid-cols-2 gap-8 items-start">
+                        <Card className="shadow-card border-border">
+                            <CardHeader className="text-center pb-4">
+                                <div className="mx-auto w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-gradient-to-br from-african-red to-african-red/80 flex items-center justify-center mb-3 shadow-soft">
+                                    <Flame className="h-7 w-7 lg:h-8 lg:w-8 text-primary-foreground" />
                                 </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="whatsapp">Numéro WhatsApp</Label>
-                                    <Input
-                                        id="whatsapp"
-                                        placeholder="+237 6XX XXX XXX"
-                                        value={formData.whatsapp}
-                                        onChange={(e) => handleChange('whatsapp', e.target.value)}
-                                        required
-                                    />
+                                <CardTitle className="font-heading text-xl lg:text-2xl">Livraison de Gaz</CardTitle>
+                                <CardDescription className="text-sm">
+                                    Bouteilles livrées à domicile
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <StepProgress steps={steps} currentStep={currentStep} />
+                                <div className="min-h-[280px]">
+                                    {renderStep()}
                                 </div>
-
-                                <div className="p-4 rounded-xl bg-secondary space-y-4">
-                                    <h3 className="font-medium text-foreground">Adresse de livraison</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label>Quartier</Label>
-                                            <Select onValueChange={(v) => handleChange('quartier', v)} required>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {quartiersDouala.map((quartier) => (
-                                                        <SelectItem key={quartier} value={quartier}>{quartier}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="rue">Rue / Repère</Label>
-                                            <Input
-                                                id="rue"
-                                                placeholder="Face pharmacie..."
-                                                value={formData.rue}
-                                                onChange={(e) => handleChange('rue', e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Marque de bouteille</Label>
-                                    <Select onValueChange={(v) => handleChange('marqueBouteille', v)} required>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionner la marque" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {marquesBouteilles.map((marque) => (
-                                                <SelectItem key={marque} value={marque}>{marque}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <Label>Possédez-vous déjà une bouteille à échanger ?</Label>
-                                    <RadioGroup
-                                        value={formData.possedeBouteille}
-                                        onValueChange={(v) => handleChange('possedeBouteille', v)}
-                                        className="flex gap-4"
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="oui" id="oui" />
-                                            <Label htmlFor="oui" className="cursor-pointer">Oui</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="non" id="non" />
-                                            <Label htmlFor="non" className="cursor-pointer">Non (achat neuf)</Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Combien de bouteilles achetez-vous par an ?</Label>
-                                    <Select onValueChange={(v) => handleChange('nombreParAn', v)} required>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionner" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {nombreParAn.map((nombre) => (
-                                                <SelectItem key={nombre} value={nombre}>{nombre}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <Button type="submit" variant="cta" className="w-full" disabled={loading}>
-                                    {loading ? (
-                                        <span className="flex items-center gap-2">
-                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                            Envoi en cours...
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center gap-2">
-                                            <Send className="h-4 w-4" />
-                                            Commander
-                                        </span>
+                                <div className="flex gap-3">
+                                    {currentStep > 0 && (
+                                        <Button type="button" variant="outline" onClick={prevStep} className="flex-1">
+                                            <ArrowLeft className="h-4 w-4 mr-2" />
+                                            Précédent
+                                        </Button>
                                     )}
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
+                                    {currentStep < steps.length - 1 ? (
+                                        <Button type="button" variant="cta" onClick={nextStep} className="flex-1">
+                                            Suivant
+                                            <ArrowRight className="h-4 w-4 ml-2" />
+                                        </Button>
+                                    ) : (
+                                        <Button type="button" variant="cta" onClick={handleSubmit} disabled={loading} className="flex-1">
+                                            {loading ? (
+                                                <span className="flex items-center gap-2">
+                                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                                    Envoi...
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-2">
+                                                    <Send className="h-4 w-4" />
+                                                    Commander
+                                                </span>
+                                            )}
+                                        </Button>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                        {/* Service illustration - visible on lg screens */}
+                        <div className="hidden lg:flex items-center justify-center sticky top-24">
+                            <img
+                                src={gazImage}
+                                alt="Service de livraison de gaz"
+                                className="w-full max-w-md rounded-2xl shadow-soft object-contain"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </Layout>

@@ -64,19 +64,14 @@ export function Header() {
       <div className="h-1 ndop-border" />
 
       <nav className="container mx-auto px-4 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-28 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-african-green to-african-green/80 flex items-center justify-center shadow-soft group-hover:shadow-card transition-shadow duration-300">
-                <span className="text-primary-foreground font-heading font-bold text-lg">BP</span>
-              </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-african-yellow shadow-glow" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-heading font-bold text-lg text-primary leading-tight">Le Bon Petit</span>
-              <span className="text-xs text-muted-foreground font-body">Services à domicile</span>
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="Le Bon Petit Logo"
+              className="h-24 w-auto rounded-xl object-cover shadow-soft group-hover:shadow-card transition-shadow duration-300"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -99,9 +94,9 @@ export function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
+                  <Button variant="outline" size="sm" className="flex gap-1 sm:gap-2 px-2 sm:px-3">
                     <User className="h-4 w-4" />
-                    <span className="max-w-[100px] truncate">{user.name?.split(' ')[0] || 'Mon compte'}</span>
+                    <span className="max-w-[60px] sm:max-w-[100px] truncate text-xs sm:text-sm">{user.name?.split(' ')[0] || 'Compte'}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -124,7 +119,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="cta" size="sm" className="hidden sm:flex" asChild>
+              <Button variant="cta" size="sm" className="flex px-3 sm:px-4 text-xs sm:text-sm" asChild>
                 <Link to="/logements">Connexion</Link>
               </Button>
             )}
