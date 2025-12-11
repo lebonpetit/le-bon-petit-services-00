@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Package, Download, CheckCircle2, ArrowLeft, ArrowRight, Send, Globe, MapPin } from 'lucide-react';
 import { StepProgress } from '@/components/StepProgress';
-import colisImage from '@/assets/services/colis.png';
+import colisImage from '@/assets/services/colis.png?format=webp&quality=80';
 
 const naturesColis = [
     "Documents",
@@ -527,7 +527,7 @@ export default function Colis() {
                             </CardContent>
                         </Card>
                         <div className="hidden lg:flex items-center justify-center sticky top-24">
-                            <img src={colisImage} alt="Service d'expédition de colis" className="w-full max-w-md rounded-2xl shadow-soft object-contain" />
+                            <img src={colisImage} alt="Service d'expédition de colis" loading="lazy" className="w-full max-w-md rounded-2xl shadow-soft object-contain" />
                         </div>
                     </div>
                 </div>

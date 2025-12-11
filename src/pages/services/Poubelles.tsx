@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Trash2, Download, CheckCircle2, ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import { StepProgress } from '@/components/StepProgress';
-import poubellesImage from '@/assets/services/poubelles.png';
+import poubellesImage from '@/assets/services/poubelles.png?format=webp&quality=80';
 
 const categories = [
     { id: 'habitation', label: 'Habitation' },

@@ -67,7 +67,9 @@ export function HeroSection() {
               <div className="relative rounded-3xl overflow-hidden shadow-card border-4 border-white/10 aspect-[4/3] lg:aspect-square">
                 <img
                   src="/hero-family.png"
-                  alt="Famille africaine heureuse chez elle"
+                  alt="Famille africaine heureuse utilisant les services Le Bon Petit à Douala"
+                  loading="eager"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
 

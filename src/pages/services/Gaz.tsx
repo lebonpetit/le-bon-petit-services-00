@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Flame, Download, CheckCircle2, ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import { StepProgress } from '@/components/StepProgress';
-import gazImage from '@/assets/services/gaz.png';
+import gazImage from '@/assets/services/gaz.png?format=webp&quality=80';
 
 const marquesBouteilles = [
     "SCTM (Bouteille bleue)",

@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Shirt, Download, CheckCircle2, ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import { StepProgress } from '@/components/StepProgress';
-import lessiveImage from '@/assets/services/lessive.png';
+import lessiveImage from '@/assets/services/lessive.png?format=webp&quality=80';
 
 const typesVetements = [
     { id: 'chemises', label: 'Chemises' },
