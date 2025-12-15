@@ -20,29 +20,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        let mounted = true;
+
+        // Function to handle session updates
+        const handleSession = async (session: Session | null) => {
+            if (!mounted) return;
+
             setSession(session);
+
             if (session?.user) {
-                fetchUserProfile(session.user.id);
+                // If we have a user, ensure we show loading while fetching profile
+                setLoading(true);
+                await fetchUserProfile(session.user.id);
             } else {
+                // No user, clear everything
+                setUser(null);
                 setLoading(false);
             }
+        };
+
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            handleSession(session); // Just delegate to common handler
         });
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            if (session?.user) {
-                setLoading(true); // Set loading while fetching profile
-                fetchUserProfile(session.user.id);
-            } else {
-                setUser(null);
-                setLoading(false);
-            }
+            handleSession(session);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const fetchUserProfile = async (userId: string) => {
@@ -104,6 +114,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(data as User);
         } catch (error) {
             console.error('Error fetching user profile:', error);
+            // Don't fully logout on error, but maybe keep retrying? 
+            // For now, just set user to null to force re-login if critical failure
+            // But if it's network, maybe we should be more lenient?
+            // Safer to clear for now to avoid inconsistent state
             setUser(null);
         } finally {
             setLoading(false);

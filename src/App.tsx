@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Loading component for lazy-loaded routes
 const PageLoader = () => (
@@ -100,105 +101,107 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Index />} />
 
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register/tenant" element={<RegisterTenant />} />
-              <Route path="/register/landlord" element={<RegisterLandlord />} />
-              <Route path="/pending-payment" element={<PendingPayment />} />
-              <Route path="/account-blocked" element={<AccountBlocked />} />
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register/tenant" element={<RegisterTenant />} />
+                <Route path="/register/landlord" element={<RegisterLandlord />} />
+                <Route path="/pending-payment" element={<PendingPayment />} />
+                <Route path="/account-blocked" element={<AccountBlocked />} />
 
-              {/* Service Forms (no auth required) */}
-              <Route path="/colis" element={<Colis />} />
-              <Route path="/gaz" element={<Gaz />} />
-              <Route path="/lessive" element={<Lessive />} />
-              <Route path="/poubelles" element={<Poubelles />} />
+                {/* Service Forms (no auth required) */}
+                <Route path="/colis" element={<Colis />} />
+                <Route path="/gaz" element={<Gaz />} />
+                <Route path="/lessive" element={<Lessive />} />
+                <Route path="/poubelles" element={<Poubelles />} />
 
-              {/* Logements redirect - goes to login for auth */}
-              <Route path="/logements" element={<RoleBasedRedirect />} />
+                {/* Logements redirect - goes to login for auth */}
+                <Route path="/logements" element={<RoleBasedRedirect />} />
 
-              {/* Tenant Routes */}
-              <Route
-                path="/tenant/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['tenant']}>
-                    <TenantDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Tenant Routes */}
+                <Route
+                  path="/tenant/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant']}>
+                      <TenantDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Landlord Routes */}
-              <Route
-                path="/landlord/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <LandlordDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/add-listing"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <AddListing />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/edit-listing/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <EditListing />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/messages"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <LandlordMessages />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Landlord Routes */}
+                <Route
+                  path="/landlord/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/add-listing"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <AddListing />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/edit-listing/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <EditListing />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/messages"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordMessages />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Tenant Messages */}
-              <Route
-                path="/tenant/messages"
-                element={
-                  <ProtectedRoute allowedRoles={['tenant']}>
-                    <TenantMessages />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Tenant Messages */}
+                <Route
+                  path="/tenant/messages"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant']}>
+                      <TenantMessages />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Listing Detail (accessible to authenticated users) */}
-              <Route
-                path="/listings/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['tenant', 'landlord', 'admin']}>
-                    <ListingDetail />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Listing Detail (accessible to authenticated users) */}
+                <Route
+                  path="/listings/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant', 'landlord', 'admin']}>
+                      <ListingDetail />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Admin Routes */}
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Admin Routes */}
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+                {/* Catch-all */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
