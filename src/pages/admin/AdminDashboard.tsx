@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { supabase, User, Listing, ServiceRequest, Subscription } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Users, Building2, Package, Flame, Shirt, Trash2,
     CheckCircle, XCircle, Eye, Search,
@@ -23,6 +24,8 @@ import {
 
 export default function AdminDashboard() {
     const { user } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
     const [tenants, setTenants] = useState<(User & { subscription?: Subscription })[]>([]);
     const [landlords, setLandlords] = useState<(User & { listingsCount?: number })[]>([]);
     const [listings, setListings] = useState<Listing[]>([]);
@@ -180,6 +183,40 @@ export default function AdminDashboard() {
         r.service_type.includes(searchTerm.toLowerCase())
     );
 
+    const pathToTab = (pathname: string) => {
+        if (pathname === '/admin/landlords') return 'landlords';
+        if (pathname === '/admin/listings') return 'listings';
+        if (pathname === '/admin/requests') return 'requests';
+        if (pathname === '/admin/settings') return 'settings';
+        if (pathname === '/admin/tenants') return 'tenants';
+        return 'tenants';
+    };
+
+    const tabToPath = (tab: string) => {
+        switch (tab) {
+            case 'landlords':
+                return '/admin/landlords';
+            case 'listings':
+                return '/admin/listings';
+            case 'requests':
+                return '/admin/requests';
+            case 'settings':
+                return '/admin/settings';
+            case 'tenants':
+            default:
+                return '/admin/tenants';
+        }
+    };
+
+    const activeTab = pathToTab(location.pathname);
+
+    const handleTabChange = (nextTab: string) => {
+        const nextPath = tabToPath(nextTab);
+        if (nextPath !== location.pathname) {
+            navigate(nextPath);
+        }
+    };
+
     return (
         <DashboardLayout
             title="Administration"
@@ -287,8 +324,8 @@ export default function AdminDashboard() {
             )}
 
             {/* Tabs */}
-            <Tabs defaultValue="tenants" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="tenants" className="relative">
                         Locataires
                         {stats.pendingTenants > 0 && (
@@ -307,6 +344,7 @@ export default function AdminDashboard() {
                             </span>
                         )}
                     </TabsTrigger>
+                    <TabsTrigger value="settings">Paramètres</TabsTrigger>
                 </TabsList>
 
                 {/* Tenants Tab */}
@@ -573,6 +611,22 @@ export default function AdminDashboard() {
                                     ))}
                                 </TableBody>
                             </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="settings">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <AlertTriangle className="h-5 w-5" />
+                                Paramètres
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">
+                                Cette section sera disponible bientôt.
+                            </p>
                         </CardContent>
                     </Card>
                 </TabsContent>
