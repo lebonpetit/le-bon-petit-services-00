@@ -143,6 +143,14 @@ const App = () => (
                   }
                 />
                 <Route
+                  path="/landlord/listings"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/landlord/add-listing"
                   element={
                     <ProtectedRoute allowedRoles={['landlord']}>
