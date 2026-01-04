@@ -75,17 +75,19 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-secondary transition-colors duration-200"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+          {!user && (
+            <div className="hidden lg:flex items-center gap-1">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-secondary transition-colors duration-200"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
@@ -140,17 +142,18 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="lg:hidden py-4 border-t border-border animate-slide-up">
             <div className="flex flex-col gap-2">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-secondary transition-colors duration-200"
-                >
-                  <item.icon className="h-5 w-5 text-primary" />
-                  <span className="font-medium">{item.name}</span>
-                </Link>
-              ))}
+              {!user &&
+                navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-secondary transition-colors duration-200"
+                  >
+                    <item.icon className="h-5 w-5 text-primary" />
+                    <span className="font-medium">{item.name}</span>
+                  </Link>
+                ))}
 
               {user ? (
                 <>

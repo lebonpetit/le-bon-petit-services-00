@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, MessageCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Footer() {
+  const { user } = useAuth();
+
   return (
     <footer className="relative bg-card border-t border-border toghu-pattern">
       <div className="container mx-auto px-4 lg:px-8 py-4 lg:py-12">
@@ -32,18 +35,20 @@ export function Footer() {
           </div>
 
           {/* Services */}
-          <div className="text-center lg:text-left">
-            <h3 className="font-heading font-semibold text-foreground text-sm lg:text-base mb-2 lg:mb-4">Nos Services</h3>
-            <ul className="space-y-1 lg:space-y-2">
-              {["Colis", "Gaz", "Lessive", "Poubelles", "Logements"].map((service) => (
-                <li key={service}>
-                  <a href="#" className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
-                    {service}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {!user && (
+            <div className="text-center lg:text-left">
+              <h3 className="font-heading font-semibold text-foreground text-sm lg:text-base mb-2 lg:mb-4">Nos Services</h3>
+              <ul className="space-y-1 lg:space-y-2">
+                {["Colis", "Gaz", "Lessive", "Poubelles", "Logements"].map((service) => (
+                  <li key={service}>
+                    <a href="#" className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+                      {service}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Liens Utiles */}
           <div className="text-center lg:text-left">
