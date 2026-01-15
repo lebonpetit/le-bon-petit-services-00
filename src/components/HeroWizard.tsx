@@ -152,12 +152,12 @@ export function HeroBookingWizard() {
                                     <div className="space-y-6 animate-slide-up">
                                         <div className="text-center lg:text-left space-y-2">
                                             <h1 className="font-heading font-extrabold text-3xl md:text-4xl text-gray-900 dark:text-white leading-tight">
-                                                {new Date().getHours() >= 18 ? "Bonsoir !" : "Bonjour !"} <br />
+                                                {new Date().getHours() >= 18 ? "Bonsoir," : "Bonjour,"} <br />
                                                 <span className="text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-600">
-                                                    On gère tout pour vous.
+                                                    Comment pouvons-nous vous aider ?
                                                 </span>
                                             </h1>
-                                            <p className="text-gray-600 dark:text-gray-300 font-medium">Choisissez un service, on s'occupe du reste.</p>
+                                            {/* <p className="text-gray-600 dark:text-gray-300 font-medium">Choisissez un service, on s'occupe du reste.</p> */}
                                         </div>
 
                                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mt-8">
@@ -287,6 +287,6 @@ export function HeroBookingWizard() {
                     </div>
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
