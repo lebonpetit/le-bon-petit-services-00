@@ -12,12 +12,12 @@ import heroPointing from "@/assets/hero-pointing.png";
 type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement' | null;
 
 const services = [
-    { id: 'gaz', label: 'Gaz', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-100/50', border: 'border-orange-200' },
-    { id: 'colis', label: 'Colis', icon: Package, color: 'text-blue-500', bg: 'bg-blue-100/50', border: 'border-blue-200' },
-    { id: 'lessive', label: 'Pressing', icon: Shirt, color: 'text-violet-500', bg: 'bg-violet-100/50', border: 'border-violet-200' },
-    { id: 'nettoyage', label: 'Ménage', icon: Sparkles, color: 'text-teal-500', bg: 'bg-teal-100/50', border: 'border-teal-200' },
-    { id: 'poubelles', label: 'Poubelles', icon: Trash2, color: 'text-green-500', bg: 'bg-green-100/50', border: 'border-green-200' },
-    { id: 'logement', label: 'Logement', icon: Building2, color: 'text-rose-500', bg: 'bg-rose-100/50', border: 'border-rose-200' },
+    { id: 'gaz', label: 'Livraison de gaz', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-100/50', border: 'border-orange-200' },
+    { id: 'colis', label: 'Expédition de colis', icon: Package, color: 'text-blue-500', bg: 'bg-blue-100/50', border: 'border-blue-200' },
+    { id: 'lessive', label: 'Ramassage et lessive', icon: Shirt, color: 'text-violet-500', bg: 'bg-violet-100/50', border: 'border-violet-200' },
+    { id: 'nettoyage', label: 'Nettoyage et antiparasitaire', icon: Sparkles, color: 'text-teal-500', bg: 'bg-teal-100/50', border: 'border-teal-200' },
+    { id: 'poubelles', label: 'Vidage de poubelle', icon: Trash2, color: 'text-green-500', bg: 'bg-green-100/50', border: 'border-green-200' },
+    { id: 'logement', label: 'Recherche de logement', icon: Building2, color: 'text-rose-500', bg: 'bg-rose-100/50', border: 'border-rose-200' },
 ];
 
 export function HeroBookingWizard() {
@@ -170,7 +170,7 @@ export function HeroBookingWizard() {
                                                     <div className={`w-14 h-14 rounded-full ${service.bg} dark:bg-opacity-20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
                                                         <service.icon className={`w-7 h-7 ${service.color}`} />
                                                     </div>
-                                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{service.label}</span>
+                                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-200 text-center leading-tight px-1">{service.label}</span>
                                                 </button>
                                             ))}
                                         </div>
