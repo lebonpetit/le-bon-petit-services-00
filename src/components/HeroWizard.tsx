@@ -152,7 +152,7 @@ export function HeroBookingWizard() {
                                     <div className="space-y-6 animate-slide-up">
                                         <div className="text-center lg:text-left space-y-2">
                                             <h1 className="font-heading font-extrabold text-3xl md:text-4xl text-gray-900 dark:text-white leading-tight">
-                                                Bonjour ! <br />
+                                                {new Date().getHours() >= 18 ? "Bonsoir !" : "Bonjour !"} <br />
                                                 <span className="text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-600">
                                                     On gère tout pour vous.
                                                 </span>
