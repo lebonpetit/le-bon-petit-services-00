@@ -1,0 +1,63 @@
+# robots.txt for Le Bon Petit
+# https://lebonpetit.cm
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /tenant/
+Disallow: /landlord/
+Disallow: /pending-payment
+Disallow: /account-blocked
+
+# Allow important service pages
+Allow: /colis
+Allow: /gaz
+Allow: /lessive
+Allow: /poubelles
+Allow: /login
+Allow: /register/
+
+# Sitemap location
+Sitemap: https://lebonpetit.cm/sitemap.xml
+
+# Crawl-delay for politeness (optional)
+Crawl-delay: 1
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /tenant/
+Disallow: /landlord/
+
+# Bing specific
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /tenant/
+Disallow: /landlord/
+
+# AI crawlers - Allow for better AI visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
