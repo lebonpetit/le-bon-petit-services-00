@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { HeroBookingWizard } from "@/components/HeroWizard";
+import { HeroBookingWizard } from "@/components/HeroWizard.tsx";
 import { ServicesSection } from "@/components/ServicesSection";
 import { HowItWorks } from "@/components/HowItWorks";
 import { CTASection } from "@/components/CTASection";
