@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Sparkles, CheckCircle2, ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import { StepProgress } from '@/components/StepProgress';
-import nettoyageImage from '@/assets/services/nettoyage.png?format=webp&quality=80';
+import nettoyageImage from '@/assets/services/nettoyage.png';
 
 const servicesNettoyage = [
     { id: "bureaux", label: "Nettoyage de bureaux" },
