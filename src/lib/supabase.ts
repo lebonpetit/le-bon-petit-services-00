@@ -7,11 +7,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase environment variables. Please check your .env file or Vercel settings.');
 }
 
-// Create client with fallback or empty strings to prevent immediate crash, 
-// though calls will fail if keys are invalid.
+// Create client with fallback to provided keys to ensure it works on Vercel
+// even if environment variables are not set in the dashboard.
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder'
+  supabaseUrl || 'https://lwbwkhscqsdbcyqziqdm.supabase.co',
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3YndraHNjcXNkYmN5cXppcWRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzNTg2NTMsImV4cCI6MjA4MDkzNDY1M30.Ko6TLh8b29bZ4nB-5kMLZG_ghH3NUqqHfyEUtDsKgjA'
 );
 
 // Types for database
