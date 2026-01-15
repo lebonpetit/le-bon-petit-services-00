@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.messages (
 -- Create requests table (for services without account)
 CREATE TABLE IF NOT EXISTS public.requests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  service_type TEXT NOT NULL CHECK (service_type IN ('colis', 'gaz', 'lessive', 'poubelles')),
+  service_type TEXT NOT NULL CHECK (service_type IN ('colis', 'gaz', 'lessive', 'poubelles', 'nettoyage')),
   payload JSONB NOT NULL DEFAULT '{}',
   contact_name TEXT NOT NULL,
   contact_phone TEXT NOT NULL,

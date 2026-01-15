@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut } from "lucide-react";
+import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,6 +18,7 @@ const navigation = [
   { name: "Gaz", href: "/gaz", icon: Flame },
   { name: "Lessive", href: "/lessive", icon: Shirt },
   { name: "Poubelles", href: "/poubelles", icon: Trash2 },
+  { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
   { name: "Logements", href: "/logements", icon: Building2 },
 ];
 

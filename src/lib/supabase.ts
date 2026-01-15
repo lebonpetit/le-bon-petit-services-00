@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Types for database
 export type UserRole = 'tenant' | 'landlord' | 'admin';
 export type UserStatus = 'pending' | 'active' | 'blocked';
-export type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles';
+export type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage';
 export type SubscriptionStatus = 'pending' | 'active' | 'expired';
 export type RequestStatus = 'new' | 'processed';
 

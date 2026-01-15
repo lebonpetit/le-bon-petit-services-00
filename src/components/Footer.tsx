@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/contexts/SettingsContext";
 
 export function Footer() {
   const { user } = useAuth();
+  const { platform } = useSettings();
 
   return (
     <footer className="relative bg-card border-t border-border toghu-pattern">
@@ -39,9 +41,9 @@ export function Footer() {
             <div className="text-center lg:text-left">
               <h3 className="font-heading font-semibold text-foreground text-sm lg:text-base mb-2 lg:mb-4">Nos Services</h3>
               <ul className="space-y-1 lg:space-y-2">
-                {["Colis", "Gaz", "Lessive", "Poubelles", "Logements"].map((service) => (
+                {["Colis", "Gaz", "Lessive", "Poubelles", "Nettoyage", "Logements"].map((service) => (
                   <li key={service}>
-                    <a href="#" className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+                    <a href={`/${service.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`} className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
                       {service}
                     </a>
                   </li>
@@ -70,15 +72,15 @@ export function Footer() {
             <ul className="space-y-1 lg:space-y-3">
               <li className="flex items-center justify-center lg:justify-start gap-2 lg:gap-3 text-xs lg:text-sm text-muted-foreground">
                 <Phone className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
-                <span>+237 6XX XXX XXX</span>
+                <span>{platform.contact_phone}</span>
               </li>
               <li className="flex items-center justify-center lg:justify-start gap-2 lg:gap-3 text-xs lg:text-sm text-muted-foreground">
                 <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
-                <span>contact@lebonpetit.cm</span>
+                <span>{platform.contact_email}</span>
               </li>
               <li className="flex items-center justify-center lg:justify-start gap-2 lg:gap-3 text-xs lg:text-sm text-muted-foreground">
                 <MapPin className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
-                <span>Douala, Cameroun</span>
+                <span>{platform.address}</span>
               </li>
             </ul>
           </div>

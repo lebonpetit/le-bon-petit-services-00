@@ -35,6 +35,7 @@ const Colis = lazy(() => import("./pages/services/Colis"));
 const Gaz = lazy(() => import("./pages/services/Gaz"));
 const Lessive = lazy(() => import("./pages/services/Lessive"));
 const Poubelles = lazy(() => import("./pages/services/Poubelles"));
+const Nettoyage = lazy(() => import("./pages/services/Nettoyage"));
 
 // Tenant Pages - lazy loaded
 const TenantDashboard = lazy(() => import("./pages/tenant/TenantDashboard"));
@@ -119,6 +120,7 @@ const App = () => (
                 <Route path="/gaz" element={<Gaz />} />
                 <Route path="/lessive" element={<Lessive />} />
                 <Route path="/poubelles" element={<Poubelles />} />
+                <Route path="/nettoyage" element={<Nettoyage />} />
 
                 {/* Logements redirect - goes to login for auth */}
                 <Route path="/logements" element={<RoleBasedRedirect />} />
