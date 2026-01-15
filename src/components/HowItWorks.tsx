@@ -98,7 +98,7 @@ export function HowItWorks() {
                 <h3 className="font-heading font-semibold text-sm text-foreground mb-1">
                   {step.title}
                 </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {step.description}
                 </p>
               </div>

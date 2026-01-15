@@ -65,13 +65,13 @@ export function Header() {
       <div className="h-1 ndop-border" />
 
       <nav className="container mx-auto px-4 lg:px-8">
-        <div className="flex h-28 items-center justify-between">
+        <div className="flex h-20 lg:h-28 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img
               src="/logo.jpg"
               alt="Le Bon Petit Logo"
-              className="h-24 w-auto rounded-xl object-cover shadow-soft group-hover:shadow-card transition-shadow duration-300"
+              className="h-16 lg:h-24 w-auto rounded-xl object-cover shadow-soft group-hover:shadow-card transition-shadow duration-300"
             />
           </Link>
 
@@ -141,7 +141,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-border animate-slide-up">
+          <div className="lg:hidden absolute top-[calc(100%+1px)] left-0 w-full bg-background/95 backdrop-blur-md border-b border-border shadow-lg animate-slide-up py-4">
             <div className="flex flex-col gap-2">
               {!user &&
                 navigation.map((item) => (

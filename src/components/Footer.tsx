@@ -9,10 +9,10 @@ export function Footer() {
 
   return (
     <footer className="relative bg-card border-t border-border toghu-pattern">
-      <div className="container mx-auto px-4 lg:px-8 py-4 lg:py-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
+      <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
           {/* Brand */}
-          <div className="col-span-2 lg:col-span-1 space-y-3 lg:space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-1 space-y-3 lg:space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start">
             <Link to="/" className="flex items-center gap-2">
               <img
                 src="/logo.jpg"

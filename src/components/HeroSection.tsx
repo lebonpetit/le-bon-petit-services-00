@@ -16,16 +16,16 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content - First on Mobile, First on Desktop */}
           <div className="space-y-6 lg:space-y-8 animate-fade-in text-center lg:text-left flex flex-col items-center lg:items-start">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-secondary border border-border">
               <div className="flex gap-0.5">
-                <div className="w-2 h-2 rounded-full bg-african-green" />
-                <div className="w-2 h-2 rounded-full bg-african-red" />
-                <div className="w-2 h-2 rounded-full bg-african-yellow" />
+                <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-african-green" />
+                <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-african-red" />
+                <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-african-yellow" />
               </div>
-              <span className="text-xs lg:text-sm font-medium text-muted-foreground">Services à domicile à Douala</span>
+              <span className="text-[10px] lg:text-sm font-medium text-muted-foreground">Services à domicile à Douala</span>
             </div>
 
-            <h1 className="font-heading font-bold text-3xl md:text-5xl lg:text-6xl text-foreground leading-tight">
+            <h1 className="font-heading font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight px-2 lg:px-0">
               Vos services à domicile,{" "}
               <span className="text-primary">simplifiés</span>
             </h1>
@@ -44,8 +44,8 @@ export function HeroSection() {
               ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center lg:justify-start">
-              <Button variant="cta" size="lg" className="h-12 px-8 text-base lg:text-lg w-full sm:w-auto" asChild>
+            <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 w-full sm:w-auto px-4 lg:px-0">
+              <Button variant="cta" size="lg" className="h-11 lg:h-12 px-8 text-sm lg:text-base lg:text-lg w-full sm:w-auto" asChild>
                 <a href="#services">
                   Découvrir nos services
                   <ArrowRight className="ml-2 h-5 w-5" />
