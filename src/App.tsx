@@ -50,6 +50,14 @@ const LandlordMessages = lazy(() => import("./pages/landlord/Messages"));
 // Listing Pages - lazy loaded
 const ListingDetail = lazy(() => import("./pages/listings/ListingDetail"));
 
+// Apartment Pages - lazy loaded (public)
+const Logements = lazy(() => import("./pages/Logements"));
+const ApartmentDetail = lazy(() => import("./pages/apartments/ApartmentDetail"));
+
+// Housing Pages - lazy loaded (public, unfurnished)
+const Habitations = lazy(() => import("./pages/Habitations"));
+const HabitationDetail = lazy(() => import("./pages/apartments/HabitationDetail"));
+
 // Admin Pages - lazy loaded
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
@@ -121,8 +129,13 @@ const App = () => (
               <Route path="/poubelles" element={<Poubelles />} />
               <Route path="/nettoyage" element={<Nettoyage />} />
 
-              {/* Logements redirect - goes to login for auth */}
-              <Route path="/logements" element={<RoleBasedRedirect />} />
+              {/* Logements - Public apartment rental section (furnished) */}
+              <Route path="/logements" element={<Logements />} />
+              <Route path="/appartements/:id" element={<ApartmentDetail />} />
+
+              {/* Habitations - Public housing rental section (unfurnished) */}
+              <Route path="/habitations" element={<Habitations />} />
+              <Route path="/habitations/:id" element={<HabitationDetail />} />
 
               {/* Tenant Routes */}
               <Route

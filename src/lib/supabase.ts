@@ -39,10 +39,17 @@ export interface Listing {
   price: number;
   quartier: string;
   rue: string | null;
+  city: string;
   type_logement: string;
   photos: string[];
   views: number;
   available: boolean;
+  furnished: boolean;
+  surface: number | null;
+  rooms: number;
+  has_water: boolean;
+  has_electricity: boolean;
+  has_parking: boolean;
   created_at: string;
   owner?: User;
 }

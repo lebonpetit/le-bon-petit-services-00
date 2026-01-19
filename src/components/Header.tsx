@@ -19,7 +19,8 @@ const navigation = [
   { name: "Lessive", href: "/lessive", icon: Shirt },
   { name: "Poubelles", href: "/poubelles", icon: Trash2 },
   { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
-  { name: "Logements", href: "/logements", icon: Building2 },
+  { name: "Logement", href: "/logements", icon: Building2 },
+  { name: "Habitations", href: "/habitations", icon: Home },
 ];
 
 export function Header() {
