@@ -41,9 +41,15 @@ export function Footer() {
             <div className="text-center lg:text-left">
               <h3 className="font-heading font-semibold text-foreground text-sm lg:text-base mb-2 lg:mb-4">Nos Services</h3>
               <ul className="space-y-1 lg:space-y-2">
-                {["Colis", "Gaz", "Lessive", "Poubelles", "Nettoyage", "Logements"].map((service) => (
+                {["Expédition de colis", "Livraison de gaz", "Lessive", "Vidage de poubelles", "Nettoyage", "Logements meublés"].map((service) => (
                   <li key={service}>
-                    <a href={`/${service.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`} className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+                    <a href={
+                      service === "Expédition de colis" ? "/colis" :
+                        service === "Livraison de gaz" ? "/gaz" :
+                          service === "Vidage de poubelles" ? "/poubelles" :
+                            service === "Logements meublés" ? "/logements" :
+                              `/${service.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
+                    } className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
                       {service}
                     </a>
                   </li>

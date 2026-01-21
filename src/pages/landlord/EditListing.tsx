@@ -12,21 +12,9 @@ import { supabase, Listing } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Home, ArrowLeft, Upload, X, Image as ImageIcon, Loader2, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CITIES, QUARTIERS_BY_CITY, TYPES_LOGEMENT } from '@/lib/constants';
 
-const quartiersDouala = [
-    "Akwa", "Bonanjo", "Bonapriso", "Deïdo", "Bali",
-    "Bonabéri", "Makepe", "Bonamoussadi", "Kotto", "Logpom",
-    "Ndokotti", "Bépanda", "Nyalla", "PK", "Village",
-    "Yassa", "Logbessou", "Bonamikano", "Autres",
-];
-
-const typesLogement = [
-    "Studio",
-    "Appartement",
-    "Chambre",
-    "Maison",
-    "Villa",
-];
+// Shared data moved to @/lib/constants
 
 interface PhotoItem {
     url: string;
@@ -47,10 +35,12 @@ export default function EditListing() {
         title: '',
         description: '',
         price: '',
+        city: 'Douala',
         quartier: '',
         rue: '',
         type_logement: '',
         available: true,
+        furnished: true,
     });
     const [photos, setPhotos] = useState<PhotoItem[]>([]);
     const [photosToDelete, setPhotosToDelete] = useState<string[]>([]);
@@ -85,10 +75,12 @@ export default function EditListing() {
                 title: data.title || '',
                 description: data.description || '',
                 price: data.price?.toString() || '',
+                city: data.city || 'Douala',
                 quartier: data.quartier || '',
                 rue: data.rue || '',
                 type_logement: data.type_logement || '',
                 available: data.available ?? true,
+                furnished: data.furnished ?? true,
             });
 
             // Convert existing photos to PhotoItems
@@ -213,34 +205,46 @@ export default function EditListing() {
 
             const allPhotoUrls = [...existingPhotoUrls, ...newPhotoUrls];
 
+            // Validate data
+            const parsedPrice = parseInt(formData.price);
+            if (isNaN(parsedPrice)) {
+                throw new Error("Le prix doit être un nombre valide");
+            }
+
+            if (!formData.type_logement) {
+                throw new Error("Le type de logement est requis");
+            }
+
             // Update listing
-            const { error } = await supabase
+            const { error: updateError } = await supabase
                 .from('listings')
                 .update({
                     title: formData.title,
                     description: formData.description,
-                    price: parseInt(formData.price),
+                    price: parsedPrice,
+                    city: formData.city,
                     quartier: formData.quartier,
                     rue: formData.rue,
                     type_logement: formData.type_logement,
-                    available: formData.available,
+                    available: Boolean(formData.available),
+                    furnished: Boolean(formData.furnished),
                     photos: allPhotoUrls,
                 })
                 .eq('id', id);
 
-            if (error) throw error;
+            if (updateError) throw updateError;
 
             toast({
                 title: "Logement modifié !",
                 description: "Les modifications ont été enregistrées",
             });
             navigate('/landlord/dashboard');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating listing:', error);
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: "Impossible de modifier le logement",
+                description: error.message || "Impossible de modifier le logement",
             });
         } finally {
             setSaving(false);
@@ -318,12 +322,13 @@ export default function EditListing() {
                                     <Select
                                         value={formData.type_logement}
                                         onValueChange={(v) => handleChange('type_logement', v)}
+                                        required
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {typesLogement.map((type) => (
+                                            {TYPES_LOGEMENT.map((type) => (
                                                 <SelectItem key={type} value={type}>{type}</SelectItem>
                                             ))}
                                         </SelectContent>
@@ -333,18 +338,55 @@ export default function EditListing() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
+                                    <Label>Ville</Label>
+                                    <Select
+                                        value={formData.city}
+                                        onValueChange={(v) => handleChange('city', v)}
+                                        required
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Choisir une ville" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {CITIES.map((city) => (
+                                                <SelectItem key={city} value={city}>{city}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
                                     <Label>Quartier</Label>
                                     <Select
                                         value={formData.quartier}
                                         onValueChange={(v) => handleChange('quartier', v)}
+                                        required
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {quartiersDouala.map((q) => (
+                                            {QUARTIERS_BY_CITY[formData.city]?.map((q) => (
                                                 <SelectItem key={q} value={q}>{q}</SelectItem>
                                             ))}
+                                            <SelectItem value="Autres">Autres</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>État du logement</Label>
+                                    <Select
+                                        value={formData.furnished ? "true" : "false"}
+                                        onValueChange={(v) => handleChange('furnished', v === "true")}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="true">Meublé</SelectItem>
+                                            <SelectItem value="false">Non meublé</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

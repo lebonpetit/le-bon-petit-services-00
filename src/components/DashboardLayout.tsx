@@ -2,6 +2,7 @@ import { useState, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/lib/utils';
 import {
     Home, LogOut, MessageCircle, CreditCard, Building2, Plus,
@@ -40,11 +41,16 @@ export function DashboardLayout({ children, title, subtitle, navItems }: Dashboa
                         <img src="/logo.jpg" alt="Le Bon Petit" className="h-8 w-8 rounded-lg object-cover" />
                         <span className="font-heading font-bold text-lg">Le Bon Petit</span>
                     </Link>
+
                 </div>
-                <Button variant="ghost" size="icon" onClick={signOut}>
-                    <LogOut className="h-5 w-5" />
-                </Button>
+                <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    <Button variant="ghost" size="icon" onClick={signOut}>
+                        <LogOut className="h-5 w-5" />
+                    </Button>
+                </div>
             </div>
+
 
             {/* Mobile Sidebar Overlay */}
             {mobileMenuOpen && (
@@ -157,10 +163,13 @@ export function DashboardLayout({ children, title, subtitle, navItems }: Dashboa
                         <h1 className="font-heading text-xl font-bold">{title}</h1>
                         {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">
-                            Bienvenue, <strong>{user?.name?.split(' ')[0]}</strong>
-                        </span>
+                    <div className="flex items-center gap-4">
+                        <ThemeToggle />
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">
+                                Bienvenue, <strong>{user?.name?.split(' ')[0]}</strong>
+                            </span>
+                        </div>
                     </div>
                 </header>
 
@@ -184,6 +193,7 @@ export const landlordNavItems: NavItem[] = [
     { label: 'Tableau de bord', href: '/landlord/dashboard', icon: Home },
     { label: 'Mes logements', href: '/landlord/listings', icon: Building2 },
     { label: 'Ajouter un logement', href: '/landlord/add-listing', icon: Plus },
+    { label: 'Demandes', href: '/landlord/requests', icon: Package },
     { label: 'Messages', href: '/landlord/messages', icon: MessageCircle },
 ];
 

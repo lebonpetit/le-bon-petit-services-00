@@ -12,21 +12,9 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Home, Plus, ArrowLeft, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CITIES, QUARTIERS_BY_CITY, TYPES_LOGEMENT } from '@/lib/constants';
 
-const quartiersDouala = [
-    "Akwa", "Bonanjo", "Bonapriso", "Deïdo", "Bali",
-    "Bonabéri", "Makepe", "Bonamoussadi", "Kotto", "Logpom",
-    "Ndokotti", "Bépanda", "Nyalla", "PK", "Village",
-    "Yassa", "Logbessou", "Bonamikano", "Autres",
-];
-
-const typesLogement = [
-    "Studio",
-    "Appartement",
-    "Chambre",
-    "Maison",
-    "Villa",
-];
+// Shared data moved to @/lib/constants
 
 interface UploadedPhoto {
     file: File;
@@ -46,13 +34,15 @@ export default function AddListing() {
         title: '',
         description: '',
         price: '',
+        city: 'Douala', // Default to Douala
         quartier: '',
         rue: '',
         type_logement: '',
+        furnished: true,
     });
     const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
 
-    const handleChange = (name: string, value: string) => {
+    const handleChange = (name: string, value: string | boolean) => {
         setFormData({ ...formData, [name]: value });
     };
 
@@ -179,33 +169,45 @@ export default function AddListing() {
 
             setUploadingPhotos(false);
 
+            // Validate data
+            const parsedPrice = parseInt(formData.price);
+            if (isNaN(parsedPrice)) {
+                throw new Error("Le prix doit être un nombre valide");
+            }
+
+            if (!formData.type_logement) {
+                throw new Error("Le type de logement est requis");
+            }
+
             // Create listing
-            const { error } = await supabase.from('listings').insert({
+            const { error: insertError } = await supabase.from('listings').insert({
                 owner_id: user.id,
                 title: formData.title,
                 description: formData.description,
-                price: parseInt(formData.price),
+                price: parsedPrice,
+                city: formData.city,
                 quartier: formData.quartier,
                 rue: formData.rue,
                 type_logement: formData.type_logement,
+                furnished: Boolean(formData.furnished),
                 photos: photoUrls,
                 views: 0,
                 available: true,
             });
 
-            if (error) throw error;
+            if (insertError) throw insertError;
 
             toast({
                 title: "Logement ajouté !",
                 description: "Votre logement est maintenant visible par les locataires",
             });
             navigate('/landlord/dashboard');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding listing:', error);
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: "Impossible d'ajouter le logement",
+                description: error.message || "Impossible d'ajouter le logement",
             });
         } finally {
             setLoading(false);
@@ -274,42 +276,85 @@ export default function AddListing() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Type de logement</Label>
-                                    <Select onValueChange={(v) => handleChange('type_logement', v)} required>
+                                    <Select
+                                        value={formData.type_logement}
+                                        onValueChange={(v) => handleChange('type_logement', v)}
+                                        required
+                                    >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Sélectionner" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {typesLogement.map((type) => (
+                                            {TYPES_LOGEMENT.map((type) => (
                                                 <SelectItem key={type} value={type}>{type}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
+                            <div className="space-y-2">
+                                <Label>État du logement</Label>
+                                <Select
+                                    value={formData.furnished ? 'true' : 'false'}
+                                    onValueChange={(v) => handleChange('furnished', v === 'true')}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Meublé ?" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="true">Meublé</SelectItem>
+                                        <SelectItem value="false">Non meublé</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Quartier</Label>
-                                    <Select onValueChange={(v) => handleChange('quartier', v)} required>
+                                    <Label>Ville</Label>
+                                    <Select
+                                        value={formData.city}
+                                        onValueChange={(v) => handleChange('city', v)}
+                                        required
+                                    >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionner" />
+                                            <SelectValue placeholder="Choisir une ville" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {quartiersDouala.map((q) => (
-                                                <SelectItem key={q} value={q}>{q}</SelectItem>
+                                            {CITIES.map((city) => (
+                                                <SelectItem key={city} value={city}>{city}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="rue">Rue / Repère</Label>
-                                    <Input
-                                        id="rue"
-                                        placeholder="Face pharmacie, après carrefour..."
-                                        value={formData.rue}
-                                        onChange={(e) => handleChange('rue', e.target.value)}
-                                    />
+                                    <Label>Quartier</Label>
+                                    <Select
+                                        value={formData.quartier}
+                                        onValueChange={(v) => handleChange('quartier', v)}
+                                        required
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Sélectionner" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {QUARTIERS_BY_CITY[formData.city]?.map((q) => (
+                                                <SelectItem key={q} value={q}>{q}</SelectItem>
+                                            ))}
+                                            <SelectItem value="Autres">Autres</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="rue">Rue / Repère</Label>
+                                <Input
+                                    id="rue"
+                                    placeholder="Face pharmacie, après carrefour..."
+                                    value={formData.rue}
+                                    onChange={(e) => handleChange('rue', e.target.value)}
+                                />
                             </div>
 
                             {/* Photo Upload Section */}
@@ -393,6 +438,6 @@ export default function AddListing() {
                     </CardContent>
                 </Card>
             </div>
-        </Layout>
+        </Layout >
     );
 }

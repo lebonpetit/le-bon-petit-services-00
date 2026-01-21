@@ -17,9 +17,9 @@ export const supabase = createClient(
 // Types for database
 export type UserRole = 'tenant' | 'landlord' | 'admin';
 export type UserStatus = 'pending' | 'active' | 'blocked';
-export type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage';
+export type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement';
 export type SubscriptionStatus = 'pending' | 'active' | 'expired';
-export type RequestStatus = 'new' | 'processed';
+export type RequestStatus = 'new' | 'processed' | 'cancelled';
 
 export interface User {
   id: string;
@@ -74,6 +74,7 @@ export interface ServiceRequest {
   contact_phone: string;
   status: RequestStatus;
   created_at: string;
+  landlord_id?: string | null;
 }
 
 export interface Subscription {

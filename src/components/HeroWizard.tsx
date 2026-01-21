@@ -22,6 +22,16 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { GAS_BRANDS, GAS_SIZES, PARCEL_TYPES, INT_DESTINATIONS, CITIES, LAUNDRY_TYPES, CLEANING_SERVICES, WASTE_TYPES, WASTE_FREQUENCIES } from "@/lib/constants";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 
 type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement' | null;
 
@@ -30,8 +40,8 @@ const services = [
     { id: 'colis', label: 'Expédition de colis', icon: Package, color: 'text-blue-500', bg: 'bg-gradient-to-br from-blue-500 to-indigo-500', border: 'border-blue-200' },
     { id: 'lessive', label: 'Ramassage lessive', icon: Shirt, color: 'text-violet-500', bg: 'bg-gradient-to-br from-violet-500 to-purple-500', border: 'border-violet-200' },
     { id: 'nettoyage', label: 'Nettoyage pro', icon: Sparkles, color: 'text-teal-500', bg: 'bg-gradient-to-br from-teal-500 to-green-500', border: 'border-teal-200' },
-    { id: 'poubelles', label: 'Vidage poubelles', icon: Trash2, color: 'text-green-500', bg: 'bg-gradient-to-br from-green-500 to-emerald-500', border: 'border-green-200' },
-    { id: 'logement', label: 'Trouver un logement', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
+    { id: 'poubelles', label: 'Vidage de poubelles', icon: Trash2, color: 'text-green-500', bg: 'bg-gradient-to-br from-green-500 to-emerald-500', border: 'border-green-200' },
+    { id: 'logement', label: 'Logements meublés', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
 ];
 
 const stats = [
@@ -43,6 +53,7 @@ const stats = [
 
 export function HeroBookingWizard() {
     const [step, setStep] = useState(0);
+    const [subStep, setSubStep] = useState(1);
     const [selectedService, setSelectedService] = useState<ServiceType>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -52,6 +63,14 @@ export function HeroBookingWizard() {
         details: '',
         quantity: '1',
         bottleType: '',
+        destinationType: 'national',
+        parcelType: '',
+        laundryType: '',
+        cleaningType: '',
+        wasteType: '',
+        wasteFrequency: '',
+        urgency: 'standard',
+        destinationAddress: '',
         pickupAddress: '',
         deliveryAddress: '',
         contactName: '',
@@ -69,11 +88,61 @@ export function HeroBookingWizard() {
 
     const handleNext = () => {
         if (step === 1) {
+            // Validation for the active service
             if (selectedService === 'gaz' && !formData.bottleType) {
                 toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de bouteille." });
                 return;
             }
-            setStep(2);
+            if (selectedService === 'colis') {
+                if (subStep === 1 && !formData.destinationType) return;
+                if (subStep === 2) {
+                    if (!formData.parcelType) {
+                        toast({ variant: "destructive", title: "Oups", description: "Quel type de colis envoyez-vous ?" });
+                        return;
+                    }
+                    if (!formData.destinationAddress) {
+                        toast({ variant: "destructive", title: "Oups", description: "Où envoyez-vous le colis ?" });
+                        return;
+                    }
+                }
+            }
+            if (selectedService === 'lessive') {
+                if (subStep === 1 && !formData.laundryType) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de linge." });
+                    return;
+                }
+            }
+            if (selectedService === 'nettoyage') {
+                if (subStep === 1 && !formData.cleaningType) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de nettoyage." });
+                    return;
+                }
+            }
+            if (selectedService === 'poubelles') {
+                if (subStep === 1 && !formData.wasteType) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le secteur d'activité." });
+                    return;
+                }
+                if (subStep === 2 && !formData.wasteFrequency) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir la fréquence de collecte." });
+                    return;
+                }
+            }
+
+            // Navigation within Step 1
+            const maxSubSteps = (service: ServiceType) => {
+                if (service === 'colis') return 3;
+                if (service === 'lessive') return 2;
+                if (service === 'nettoyage') return 2;
+                if (service === 'poubelles') return 2;
+                return 1;
+            };
+
+            if (subStep < maxSubSteps(selectedService)) {
+                setSubStep(subStep + 1);
+            } else {
+                setStep(2);
+            }
         } else if (step === 2) {
             handleSubmit();
         }
@@ -115,8 +184,25 @@ export function HeroBookingWizard() {
 
     const resetWizard = () => {
         setStep(0);
+        setSubStep(1);
         setSelectedService(null);
-        setFormData({ details: '', quantity: '1', bottleType: '', pickupAddress: '', deliveryAddress: '', contactName: '', contactPhone: '' });
+        setFormData({
+            details: '',
+            quantity: '1',
+            bottleType: '',
+            destinationType: 'national',
+            parcelType: '',
+            laundryType: '',
+            cleaningType: '',
+            wasteType: '',
+            wasteFrequency: '',
+            urgency: 'standard',
+            destinationAddress: '',
+            pickupAddress: '',
+            deliveryAddress: '',
+            contactName: '',
+            contactPhone: ''
+        });
     };
 
     return (
@@ -170,7 +256,7 @@ export function HeroBookingWizard() {
                                 </span>
                             </h1>
                             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                                Gaz, colis, lessive, nettoyage ou logement — <strong className="text-foreground">Le Bon Petit</strong> s'occupe de tout.
+                                Gaz, colis, lessive, nettoyage ou logement meublé — <strong className="text-foreground">Le Bon Petit</strong> s'occupe de tout.
                                 Un service camerounais moderne, fiable et à votre portée.
                             </p>
                         </div>
@@ -282,7 +368,13 @@ export function HeroBookingWizard() {
                                     {step > 0 && step < 3 && (
                                         <div className="animate-fade-in flex flex-col h-full">
                                             <div className="flex items-center justify-between mb-6">
-                                                <Button variant="ghost" size="sm" onClick={() => setStep(step - 1)} className="rounded-full hover:bg-secondary -ml-2">
+                                                <Button variant="ghost" size="sm" onClick={() => {
+                                                    if (subStep > 1) {
+                                                        setSubStep(subStep - 1);
+                                                    } else {
+                                                        setStep(step - 1);
+                                                    }
+                                                }} className="rounded-full hover:bg-secondary -ml-2">
                                                     <ChevronLeft className="w-5 h-5 mr-1" /> Retour
                                                 </Button>
                                                 <div className="flex items-center gap-2">
@@ -301,30 +393,292 @@ export function HeroBookingWizard() {
                                                     <>
                                                         {selectedService === 'gaz' && (
                                                             <>
-                                                                <div className="grid grid-cols-2 gap-3">
-                                                                    {['sctm_12', 'total_12', 'afrigaz_12', 'camgaz_12'].map((b) => (
-                                                                        <div
-                                                                            key={b}
-                                                                            onClick={() => setFormData({ ...formData, bottleType: b })}
-                                                                            className={`cursor-pointer p-4 rounded-xl border-2 text-center transition-all ${formData.bottleType === b ? 'border-primary bg-primary/5 shadow-md' : 'border-border hover:border-primary/50'}`}
+                                                                <div className="space-y-4">
+                                                                    <div className="space-y-2">
+                                                                        <Label>Marque de la bouteille</Label>
+                                                                        <Select
+                                                                            value={formData.bottleType.split(' ')[0]}
+                                                                            onValueChange={(v) => {
+                                                                                const currentSize = formData.bottleType.split(' ')[1] || '12.5kg';
+                                                                                setFormData({ ...formData, bottleType: `${v} ${currentSize}` });
+                                                                            }}
                                                                         >
-                                                                            <Flame className={`w-8 h-8 mx-auto mb-2 ${formData.bottleType === b ? 'text-primary' : 'text-muted-foreground'}`} />
-                                                                            <span className="font-bold text-sm block uppercase">{b.replace('_', ' ')} kg</span>
+                                                                            <SelectTrigger className="h-12">
+                                                                                <SelectValue placeholder="Choisir une marque..." />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                {GAS_BRANDS.map(brand => (
+                                                                                    <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                                                                                ))}
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                    </div>
+
+                                                                    <div className="space-y-2">
+                                                                        <Label>Taille de la bouteille</Label>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {GAS_SIZES.map((size) => {
+                                                                                const brand = formData.bottleType.split(' ')[0] || 'SCTM';
+                                                                                const isSelected = formData.bottleType.includes(size.id);
+                                                                                return (
+                                                                                    <div
+                                                                                        key={size.id}
+                                                                                        onClick={() => setFormData({ ...formData, bottleType: `${brand} ${size.id}` })}
+                                                                                        className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                    >
+                                                                                        <span className={`block font-bold text-sm ${isSelected ? 'text-primary' : ''}`}>{size.id}</span>
+                                                                                        <span className="text-[10px] text-muted-foreground block leading-tight">{size.usage.split(' / ')[0]}</span>
+                                                                                    </div>
+                                                                                );
+                                                                            })}
                                                                         </div>
-                                                                    ))}
+                                                                    </div>
                                                                 </div>
-                                                                <div className="space-y-2">
+                                                                <div className="space-y-2 pt-2">
                                                                     <Label>Quantité</Label>
                                                                     <Input type="number" min="1" className="h-12" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} />
                                                                 </div>
                                                             </>
                                                         )}
-                                                        {selectedService !== 'gaz' && (
+                                                        {selectedService === 'colis' && (
+                                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                                {subStep === 1 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Où envoyez-vous ?</Label>
+                                                                        <RadioGroup
+                                                                            value={formData.destinationType}
+                                                                            onValueChange={v => setFormData({ ...formData, destinationType: v })}
+                                                                            className="grid grid-cols-1 gap-3"
+                                                                        >
+                                                                            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.destinationType === 'national' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}>
+                                                                                <RadioGroupItem value="national" />
+                                                                                <div className="flex flex-col">
+                                                                                    <span className="font-bold">National (Cameroun)</span>
+                                                                                    <span className="text-xs text-muted-foreground">Livraison entre villes camerounaises</span>
+                                                                                </div>
+                                                                            </label>
+                                                                            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.destinationType === 'international' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}>
+                                                                                <RadioGroupItem value="international" />
+                                                                                <div className="flex flex-col">
+                                                                                    <span className="font-bold">International</span>
+                                                                                    <span className="text-xs text-muted-foreground">Envoi vers l'étranger (Europe, USA...)</span>
+                                                                                </div>
+                                                                            </label>
+                                                                        </RadioGroup>
+                                                                    </div>
+                                                                )}
+
+                                                                {subStep === 2 && (
+                                                                    <div className="space-y-4">
+                                                                        <div className="space-y-2">
+                                                                            <Label className="font-bold">Type de colis</Label>
+                                                                            <Select
+                                                                                value={formData.parcelType}
+                                                                                onValueChange={v => setFormData({ ...formData, parcelType: v })}
+                                                                            >
+                                                                                <SelectTrigger className="h-12">
+                                                                                    <SelectValue placeholder="Que contient le colis ?" />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {PARCEL_TYPES.map(type => (
+                                                                                        <SelectItem key={type.id} value={type.id}>{type.label}</SelectItem>
+                                                                                    ))}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+
+                                                                        <div className="space-y-2">
+                                                                            <Label className="font-bold">Destination</Label>
+                                                                            {formData.destinationType === 'national' ? (
+                                                                                <Select
+                                                                                    value={formData.destinationAddress}
+                                                                                    onValueChange={v => setFormData({ ...formData, destinationAddress: v })}
+                                                                                >
+                                                                                    <SelectTrigger className="h-12">
+                                                                                        <SelectValue placeholder="Vers quelle ville ?" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        {CITIES.map(city => (
+                                                                                            <SelectItem key={city} value={city}>{city}</SelectItem>
+                                                                                        ))}
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            ) : (
+                                                                                <Select
+                                                                                    value={formData.destinationAddress}
+                                                                                    onValueChange={v => setFormData({ ...formData, destinationAddress: v })}
+                                                                                >
+                                                                                    <SelectTrigger className="h-12">
+                                                                                        <SelectValue placeholder="Vers quel pays ?" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        {INT_DESTINATIONS.map(country => (
+                                                                                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                                                                                        ))}
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {subStep === 3 && (
+                                                                    <div className="space-y-2">
+                                                                        <Label className="font-bold">Détails (Optionnel)</Label>
+                                                                        <Textarea
+                                                                            className="min-h-[120px] resize-none"
+                                                                            placeholder="Description plus précise, poids estimé, urgence..."
+                                                                            value={formData.details}
+                                                                            onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {selectedService === 'lessive' && (
+                                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                                {subStep === 1 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Quel type de linge ?</Label>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {LAUNDRY_TYPES.map((type) => (
+                                                                                <div
+                                                                                    key={type}
+                                                                                    onClick={() => setFormData({ ...formData, laundryType: type })}
+                                                                                    className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${formData.laundryType === type ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                >
+                                                                                    <span className={`block font-bold text-xs ${formData.laundryType === type ? 'text-primary' : ''}`}>{type}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {subStep === 2 && (
+                                                                    <div className="space-y-4">
+                                                                        <div className="space-y-2">
+                                                                            <Label className="font-bold">Urgence</Label>
+                                                                            <RadioGroup
+                                                                                value={formData.urgency}
+                                                                                onValueChange={v => setFormData({ ...formData, urgency: v })}
+                                                                                className="grid grid-cols-1 gap-2"
+                                                                            >
+                                                                                <label className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${formData.urgency === 'express' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}>
+                                                                                    <div className="flex items-center gap-2">
+                                                                                        <RadioGroupItem value="express" />
+                                                                                        <span className="font-bold text-sm">Express (24h)</span>
+                                                                                    </div>
+                                                                                    <Badge variant="outline" className="text-[10px] text-orange-600 border-orange-200">+ Vite</Badge>
+                                                                                </label>
+                                                                                <label className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${formData.urgency === 'standard' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}>
+                                                                                    <div className="flex items-center gap-2">
+                                                                                        <RadioGroupItem value="standard" />
+                                                                                        <span className="font-bold text-sm">Standard (48h)</span>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </RadioGroup>
+                                                                        </div>
+                                                                        <div className="space-y-2">
+                                                                            <Label className="font-bold">Détails (Optionnel)</Label>
+                                                                            <Textarea
+                                                                                className="min-h-[80px] resize-none"
+                                                                                placeholder="Instructions particulières..."
+                                                                                value={formData.details}
+                                                                                onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        {selectedService === 'nettoyage' && (
+                                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                                {subStep === 1 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Que devons-nous nettoyer ?</Label>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {CLEANING_SERVICES.map((service) => (
+                                                                                <div
+                                                                                    key={service.id}
+                                                                                    onClick={() => setFormData({ ...formData, cleaningType: service.id })}
+                                                                                    className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${formData.cleaningType === service.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                >
+                                                                                    <span className={`block font-bold text-xs ${formData.cleaningType === service.id ? 'text-primary' : ''}`}>{service.label}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {subStep === 2 && (
+                                                                    <div className="space-y-4">
+                                                                        <div className="space-y-2">
+                                                                            <Label className="font-bold">Détails (Surface, pièces, etc.)</Label>
+                                                                            <Textarea
+                                                                                className="min-h-[120px] resize-none"
+                                                                                placeholder="Précisez la surface, le nombre de pièces ou toute instruction particulière..."
+                                                                                value={formData.details}
+                                                                                onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {selectedService === 'poubelles' && (
+                                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                                {subStep === 1 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Pour quel secteur ?</Label>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {WASTE_TYPES.map((type) => (
+                                                                                <div
+                                                                                    key={type.id}
+                                                                                    onClick={() => setFormData({ ...formData, wasteType: type.id })}
+                                                                                    className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${formData.wasteType === type.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                >
+                                                                                    <span className={`block font-bold text-xs ${formData.wasteType === type.id ? 'text-primary' : ''}`}>{type.label}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                {subStep === 2 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Fréquence de collecte</Label>
+                                                                        <div className="grid grid-cols-1 gap-2">
+                                                                            {WASTE_FREQUENCIES.map((freq) => (
+                                                                                <div
+                                                                                    key={freq.id}
+                                                                                    onClick={() => setFormData({ ...formData, wasteFrequency: freq.id })}
+                                                                                    className={`cursor-pointer p-3 rounded-xl border-2 flex items-center justify-between transition-all ${formData.wasteFrequency === freq.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                >
+                                                                                    <span className={`font-bold text-sm ${formData.wasteFrequency === freq.id ? 'text-primary' : ''}`}>{freq.label}</span>
+                                                                                    {formData.wasteFrequency === freq.id && <CheckCircle2 className="w-4 h-4 text-primary" />}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="space-y-2 pt-2">
+                                                                            <Label className="font-bold">Détails (Volume, déchets spéciaux...)</Label>
+                                                                            <Textarea
+                                                                                className="min-h-[80px] resize-none"
+                                                                                placeholder="Précisez le volume ou toute instruction..."
+                                                                                value={formData.details}
+                                                                                onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        {selectedService !== 'gaz' && selectedService !== 'colis' && selectedService !== 'lessive' && selectedService !== 'nettoyage' && selectedService !== 'poubelles' && (
                                                             <div className="space-y-2">
                                                                 <Label>Détails de votre besoin</Label>
                                                                 <Textarea
                                                                     className="min-h-[120px] resize-none"
-                                                                    placeholder={selectedService === 'colis' ? "Poids, contenu, destination..." : "Décrivez ce qu'il faut faire..."}
+                                                                    placeholder="Décrivez ce qu'il faut faire..."
                                                                     value={formData.details}
                                                                     onChange={(e) => setFormData({ ...formData, details: e.target.value })}
                                                                 />
@@ -407,6 +761,6 @@ export function HeroBookingWizard() {
                     <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" />
                 </svg>
             </div>
-        </section>
+        </section >
     );
 }

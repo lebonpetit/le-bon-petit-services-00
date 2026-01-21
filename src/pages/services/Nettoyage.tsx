@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,8 +51,8 @@ import {
     FileText
 } from 'lucide-react';
 
-// Import images
-import nettoyageImage from '@/assets/services/nettoyage.png';
+// Import images - African context
+import nettoyageHeroImage from '@/assets/services/nettoyage-hero.png';
 
 type Section = 'accueil' | 'services' | 'particuliers' | 'professionnels' | 'evenementiel' | 'tarifs' | 'apropos' | 'blog' | 'contact';
 
@@ -184,9 +184,37 @@ const tarifs = [
 ];
 
 export default function Nettoyage() {
-    const [activeSection, setActiveSection] = useState<Section>('accueil');
+    // URL-based navigation
+    const getInitialSection = (): Section => {
+        const hash = window.location.hash.replace('#', '') as Section;
+        return navigation.some(nav => nav.id === hash) ? hash : 'accueil';
+    };
+
+    const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { toast } = useToast();
+
+    // Navigate to section and update URL
+    const navigateToSection = useCallback((section: Section) => {
+        window.location.hash = section; setActiveSection(section);
+    }, []);
+
+    // Handle hash changes (browser back/forward)
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '') as Section;
+            if (navigation.some(nav => nav.id === hash)) {
+                setActiveSection(hash);
+            }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    // Scroll to top when section changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [activeSection]);
 
     // Form states
     const [devisForm, setDevisForm] = useState({
@@ -274,80 +302,94 @@ export default function Nettoyage() {
     };
 
     const renderAccueil = () => (
-        <div className="space-y-12">
-            {/* Hero Section */}
-            <section className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-african-green/90 to-african-earth">
+        <div className="space-y-16 animate-fade-in">
+            {/* Hero Section - Solid background */}
+            <section className="relative rounded-3xl overflow-hidden min-h-[500px] flex items-center shadow-2xl bg-african-green">
+                <div className="absolute inset-0 bg-black/40 z-10" />
                 <div className="absolute inset-0">
-                    <img src={nettoyageImage} alt="Service de nettoyage" className="w-full h-full object-cover opacity-20" />
+                    <img src={nettoyageHeroImage} alt="Service de nettoyage" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
                 </div>
-                <div className="relative z-10 px-6 py-16 md:py-24 text-center text-white">
-                    <h1 className="font-heading text-3xl md:text-5xl font-bold mb-4">
-                        La propreté qui protège votre image et votre santé.
+
+                <div className="relative z-20 px-8 py-20 md:py-28 text-center text-white max-w-4xl mx-auto space-y-8 animate-slide-up">
+                    <Badge className="bg-white/20 text-white border-none py-2 px-4 backdrop-blur-md">
+                        ✨ Nettoyage Professionnel
+                    </Badge>
+                    <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight">
+                        La propreté qui protège<br />
+                        <span className="text-african-yellow">votre image et votre santé.</span>
                     </h1>
-                    <p className="text-lg md:text-xl opacity-90 mb-8 max-w-3xl mx-auto">
-                        Solutions professionnelles de nettoyage, désinfection et salubrité pour domiciles, entreprises, établissements recevant du public et événements.
+                    <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-relaxed font-light">
+                        Solutions professionnelles de nettoyage, désinfection et salubrité pour domiciles, entreprises et événements.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             size="lg"
-                            className="bg-white text-african-green hover:bg-white/90 font-semibold"
+                            className="bg-african-yellow text-black hover:bg-white font-bold h-14 px-8 rounded-full shadow-[0_0_20px_rgba(255,193,7,0.4)] hover:shadow-xl transition-all duration-300"
                             onClick={() => {
-                                setActiveSection('tarifs');
+                                navigateToSection('tarifs');
                                 setTimeout(() => {
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }, 100);
                             }}
                         >
-                            🔘 Demander un devis
+                            <FileText className="mr-2 h-5 w-5" />
+                            Demander un devis
                         </Button>
                         <Button
                             size="lg"
                             variant="outline"
-                            className="border-white text-white hover:bg-white/20"
-                            onClick={() => setActiveSection('contact')}
+                            className="border-2 border-white text-white hover:bg-white/10 font-semibold h-14 px-8 rounded-full"
+                            onClick={() => navigateToSection('contact')}
                         >
-                            🔘 Intervention rapide
+                            <Zap className="mr-2 h-5 w-5" />
+                            Intervention rapide
                         </Button>
                     </div>
                 </div>
             </section>
 
-            {/* Notre expertise */}
-            <section className="bg-secondary/50 rounded-2xl p-8 shadow-sm">
-                <h2 className="font-heading text-2xl md:text-3xl font-bold mb-4 text-center text-african-green">
+            {/* Notre expertise - Clean card design */}
+            <section className="bg-white dark:bg-card rounded-3xl p-10 shadow-xl border border-border/50">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                    <div className="h-1 w-12 bg-african-green rounded-full" />
+                    <Sparkles className="h-8 w-8 text-african-green" />
+                    <div className="h-1 w-12 bg-african-green rounded-full" />
+                </div>
+                <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6 text-center text-african-green">
                     Notre expertise
                 </h2>
-                <div className="max-w-3xl mx-auto text-center space-y-4">
-                    <p className="text-muted-foreground text-lg">
+                <div className="max-w-3xl mx-auto text-center">
+                    <p className="text-muted-foreground text-lg leading-relaxed">
                         Nous accompagnons particuliers, entreprises et établissements professionnels avec des solutions de nettoyage, d'hygiène et de désinfection conformes aux exigences sanitaires et aux normes de qualité.
                     </p>
                 </div>
             </section>
 
-            {/* Pourquoi nous faire confiance */}
+            {/* Pourquoi nous faire confiance - Modern cards */}
             <section>
-                <h2 className="font-heading text-2xl md:text-3xl font-bold mb-8 text-center">
-                    Pourquoi nous faire confiance ?
+                <h2 className="font-heading text-3xl md:text-4xl font-bold mb-10 text-center">
+                    Pourquoi nous <span className="text-african-green">faire confiance</span> ?
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {avantages.map((item, index) => (
-                        <Card key={index} className="text-center hover:shadow-card transition-shadow border-t-4 border-t-african-green">
+                        <Card key={index} className="group text-center hover:-translate-y-2 transition-all duration-300 border shadow-soft hover:shadow-xl bg-card">
                             <CardContent className="p-6">
-                                <div className="w-14 h-14 mx-auto rounded-full bg-african-green/10 flex items-center justify-center mb-4">
-                                    <item.icon className="h-7 w-7 text-african-green" />
+                                <div className="w-16 h-16 mx-auto rounded-2xl bg-african-green/10 flex items-center justify-center mb-4 group-hover:bg-african-green group-hover:text-white transition-all duration-300">
+                                    <item.icon className="h-8 w-8 text-african-green group-hover:text-white transition-colors" />
                                 </div>
-                                <p className="font-medium text-sm">{item.text}</p>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-african-green transition-colors">{item.text}</p>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="text-center bg-gradient-to-r from-african-green/10 to-african-earth/10 rounded-2xl p-8">
-                <h3 className="font-heading text-xl md:text-2xl font-bold mb-4">Besoin d'un devis gratuit ?</h3>
-                <p className="text-muted-foreground mb-6">Recevez votre devis sous 24h</p>
-                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => setActiveSection('tarifs')}>
+            {/* CTA Section - Solid background */}
+            <section className="text-center bg-african-green/10 rounded-3xl p-10 border-2 border-african-green/20">
+                <Zap className="h-12 w-12 mx-auto text-african-green mb-4" />
+                <h3 className="font-heading text-2xl md:text-3xl font-bold mb-4">Besoin d'un devis gratuit ?</h3>
+                <p className="text-muted-foreground text-lg mb-8">Recevez votre devis sous 24h</p>
+                <Button size="lg" className="bg-african-green hover:bg-african-green/90 text-white font-bold h-14 px-10 rounded-xl shadow-lg" onClick={() => navigateToSection('tarifs')}>
                     Demander un devis gratuit
                 </Button>
             </section>
@@ -355,30 +397,34 @@ export default function Nettoyage() {
     );
 
     const renderServices = () => (
-        <div className="space-y-12">
+        <div className="space-y-14 animate-fade-in">
             <div className="text-center">
-                <h2 className="font-heading text-3xl font-bold mb-4 text-african-green">Nos Services</h2>
+                <Badge className="bg-african-green text-white mb-4">Nos Solutions</Badge>
+                <h2 className="font-heading text-4xl font-bold mb-4">Nos <span className="text-african-green">Services</span></h2>
                 <p className="text-muted-foreground text-lg">Des solutions complètes pour tous vos besoins de nettoyage et d'hygiène</p>
             </div>
 
             {/* Services de Nettoyage */}
             <div>
-                <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-african-green" />
-                    Services de Nettoyage
-                </h3>
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-african-green flex items-center justify-center">
+                        <Sparkles className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="font-heading text-2xl font-bold">Services de Nettoyage</h3>
+                </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {servicesNettoyage.map((service, index) => {
                         const Icon = service.icon;
                         return (
-                            <Card key={index} className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-african-green">
+                            <Card key={index} className="group hover:shadow-2xl transition-all duration-500 border-none shadow-lg bg-white dark:bg-card overflow-hidden">
+                                <div className="h-1 bg-african-green w-0 group-hover:w-full transition-all duration-500" />
                                 <CardContent className="p-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-african-green/10 flex items-center justify-center flex-shrink-0">
-                                            <Icon className="h-6 w-6 text-african-green" />
+                                        <div className="w-14 h-14 rounded-2xl bg-african-green/10 flex items-center justify-center flex-shrink-0 group-hover:bg-african-green group-hover:scale-110 transition-all duration-300">
+                                            <Icon className="h-7 w-7 text-african-green group-hover:text-white transition-colors" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-lg mb-1">{service.title}</h4>
+                                            <h4 className="font-bold text-lg mb-1 group-hover:text-african-green transition-colors">{service.title}</h4>
                                             <p className="text-sm text-muted-foreground">{service.description}</p>
                                         </div>
                                     </div>
@@ -391,22 +437,25 @@ export default function Nettoyage() {
 
             {/* Services Antiparasitaires */}
             <div>
-                <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2">
-                    <Bug className="h-6 w-6 text-african-earth" />
-                    Traitement Antiparasitaire
-                </h3>
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-african-earth flex items-center justify-center">
+                        <Bug className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="font-heading text-2xl font-bold">Traitement Antiparasitaire</h3>
+                </div>
                 <div className="grid md:grid-cols-2 gap-6">
                     {servicesAntiparasitaires.map((service, index) => {
                         const Icon = service.icon;
                         return (
-                            <Card key={index} className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-african-earth">
+                            <Card key={index} className="group hover:shadow-2xl transition-all duration-500 border-none shadow-lg bg-white dark:bg-card overflow-hidden">
+                                <div className="h-1 bg-african-earth w-0 group-hover:w-full transition-all duration-500" />
                                 <CardContent className="p-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-african-earth/10 flex items-center justify-center flex-shrink-0">
-                                            <Icon className="h-6 w-6 text-african-earth" />
+                                        <div className="w-14 h-14 rounded-2xl bg-african-earth/10 flex items-center justify-center flex-shrink-0 group-hover:bg-african-earth group-hover:scale-110 transition-all duration-300">
+                                            <Icon className="h-7 w-7 text-african-earth group-hover:text-white transition-colors" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-lg mb-1">{service.title}</h4>
+                                            <h4 className="font-bold text-lg mb-1 group-hover:text-african-earth transition-colors">{service.title}</h4>
                                             <p className="text-sm text-muted-foreground">{service.description}</p>
                                         </div>
                                     </div>
@@ -419,7 +468,7 @@ export default function Nettoyage() {
 
             {/* CTA */}
             <div className="text-center">
-                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => setActiveSection('tarifs')}>
+                <Button size="lg" className="bg-african-green hover:bg-african-green/90 text-white font-bold h-14 px-10 rounded-xl shadow-lg" onClick={() => navigateToSection('tarifs')}>
                     Demander un devis
                 </Button>
             </div>
@@ -436,13 +485,13 @@ export default function Nettoyage() {
             </div>
 
             {/* Image hero */}
-            <Card className="overflow-hidden">
-                <div className="relative h-64 md:h-80">
-                    <img src={nettoyageImage} alt="Nettoyage à domicile" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                        <div className="p-6 text-white">
-                            <h3 className="font-heading text-2xl font-bold mb-2">Votre maison mérite le meilleur</h3>
-                            <p className="opacity-90">Nettoyage professionnel adapté à vos besoins</p>
+            <Card className="overflow-hidden bg-card border shadow-xl">
+                <div className="relative h-64 md:h-80 group">
+                    <img src={nettoyageHeroImage} alt="Nettoyage à domicile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute bottom-6 left-6 right-6 z-10">
+                        <div className="bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-lg border-l-4 border-african-green max-w-lg">
+                            <h3 className="font-heading text-2xl font-bold mb-2 text-african-green uppercase tracking-wider">Votre maison mérite le meilleur</h3>
+                            <p className="text-african-earth opacity-90">Nettoyage professionnel adapté à vos besoins</p>
                         </div>
                     </div>
                 </div>
@@ -486,7 +535,7 @@ export default function Nettoyage() {
             </Card>
 
             <div className="text-center">
-                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => setActiveSection('tarifs')}>
+                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => navigateToSection('tarifs')}>
                     Demander un devis gratuit
                 </Button>
             </div>
@@ -574,7 +623,7 @@ export default function Nettoyage() {
             </div>
 
             <div className="text-center">
-                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => setActiveSection('contact')}>
+                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => navigateToSection('contact')}>
                     Demander un devis entreprise
                 </Button>
             </div>
@@ -582,20 +631,23 @@ export default function Nettoyage() {
     );
 
     const renderEvenementiel = () => (
-        <div className="space-y-12">
+        <div className="space-y-14 animate-fade-in">
             <div className="text-center">
-                <h2 className="font-heading text-3xl font-bold mb-4 text-african-green">
-                    Événementiel & Espaces Ouverts
+                <Badge className="bg-african-green text-white mb-4">Événements</Badge>
+                <h2 className="font-heading text-4xl font-bold mb-4">
+                    Événementiel & <span className="text-african-green">Espaces Ouverts</span>
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                     Avant l'événement : propre. Après l'événement : impeccable.
                 </p>
             </div>
 
-            {/* Image hero */}
-            <Card className="overflow-hidden bg-gradient-to-r from-african-green/90 to-african-earth">
-                <CardContent className="p-8 md:p-12 text-white text-center">
-                    <PartyPopper className="h-16 w-16 mx-auto mb-6 opacity-80" />
+            {/* Image hero - Solid background */}
+            <Card className="overflow-hidden bg-african-green shadow-2xl border-none">
+                <CardContent className="p-10 md:p-14 text-white text-center">
+                    <div className="w-20 h-20 mx-auto rounded-3xl bg-white/20 flex items-center justify-center mb-6">
+                        <PartyPopper className="h-10 w-10" />
+                    </div>
                     <h3 className="font-heading text-2xl md:text-3xl font-bold mb-4">
                         Vos événements méritent un cadre impeccable
                     </h3>
@@ -606,18 +658,21 @@ export default function Nettoyage() {
             </Card>
 
             {/* Types d'événements */}
-            <Card>
+            <Card className="border-none shadow-2xl overflow-hidden">
+                <div className="h-2 bg-african-green w-full" />
                 <CardHeader>
-                    <CardTitle className="text-center">Types d'interventions</CardTitle>
+                    <CardTitle className="text-center text-2xl">Types d'interventions</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                         {typesEvenements.map((event, idx) => {
                             const Icon = event.icon;
                             return (
-                                <div key={idx} className="text-center p-6 rounded-xl bg-secondary/50 hover:bg-african-green/10 transition-colors">
-                                    <Icon className="h-10 w-10 mx-auto text-african-green mb-3" />
-                                    <h4 className="font-semibold">{event.name}</h4>
+                                <div key={idx} className="group text-center p-6 rounded-2xl bg-secondary/30 hover:bg-african-green/10 hover:shadow-lg transition-all duration-300 cursor-default">
+                                    <div className="w-14 h-14 mx-auto rounded-2xl bg-african-green/10 flex items-center justify-center mb-4 group-hover:bg-african-green group-hover:scale-110 transition-all duration-300">
+                                        <Icon className="h-7 w-7 text-african-green group-hover:text-white transition-colors" />
+                                    </div>
+                                    <h4 className="font-bold group-hover:text-african-green transition-colors">{event.name}</h4>
                                 </div>
                             );
                         })}
@@ -626,48 +681,50 @@ export default function Nettoyage() {
             </Card>
 
             {/* Services */}
-            <div className="grid md:grid-cols-2 gap-6">
-                <Card className="border-2 border-african-green">
-                    <CardHeader>
+            <div className="grid md:grid-cols-2 gap-8">
+                <Card className="group border-none shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    <div className="h-2 bg-african-green w-full" />
+                    <CardHeader className="bg-african-green/5">
                         <Badge className="w-fit mb-2 bg-african-green">Avant l'événement</Badge>
-                        <CardTitle>Préparation des sites</CardTitle>
+                        <CardTitle className="text-xl">Préparation des sites</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-3">
-                            <li className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-african-green" />
-                                Nettoyage complet des espaces
+                    <CardContent className="p-6">
+                        <ul className="space-y-4">
+                            <li className="flex items-center gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-african-green flex-shrink-0" />
+                                <span className="font-medium">Nettoyage complet des espaces</span>
                             </li>
-                            <li className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-african-green" />
-                                Désinfection des surfaces
+                            <li className="flex items-center gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-african-green flex-shrink-0" />
+                                <span className="font-medium">Désinfection des surfaces</span>
                             </li>
-                            <li className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-african-green" />
-                                Mise en condition des locaux
+                            <li className="flex items-center gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-african-green flex-shrink-0" />
+                                <span className="font-medium">Mise en condition des locaux</span>
                             </li>
                         </ul>
                     </CardContent>
                 </Card>
 
-                <Card className="border-2 border-african-earth">
-                    <CardHeader>
+                <Card className="group border-none shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    <div className="h-2 bg-african-earth w-full" />
+                    <CardHeader className="bg-african-earth/5">
                         <Badge className="w-fit mb-2 bg-african-earth">Après l'événement</Badge>
-                        <CardTitle>Remise en état</CardTitle>
+                        <CardTitle className="text-xl">Remise en état</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-3">
-                            <li className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-african-earth" />
-                                Nettoyage post-événement
+                    <CardContent className="p-6">
+                        <ul className="space-y-4">
+                            <li className="flex items-center gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-african-earth flex-shrink-0" />
+                                <span className="font-medium">Nettoyage post-événement</span>
                             </li>
-                            <li className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-african-earth" />
-                                Évacuation des déchets
+                            <li className="flex items-center gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-african-earth flex-shrink-0" />
+                                <span className="font-medium">Évacuation des déchets</span>
                             </li>
-                            <li className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-african-earth" />
-                                Remise à neuf des espaces
+                            <li className="flex items-center gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-african-earth flex-shrink-0" />
+                                <span className="font-medium">Remise à neuf des espaces</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -675,7 +732,7 @@ export default function Nettoyage() {
             </div>
 
             <div className="text-center">
-                <Button size="lg" variant="cta" className="bg-african-green hover:bg-african-green/90" onClick={() => setActiveSection('tarifs')}>
+                <Button size="lg" className="bg-african-green hover:bg-african-green/90 text-white font-bold h-14 px-10 rounded-xl shadow-lg" onClick={() => navigateToSection('tarifs')}>
                     Demander un devis événementiel
                 </Button>
             </div>
@@ -692,8 +749,8 @@ export default function Nettoyage() {
             {/* Grille des tarifs */}
             <div className="grid md:grid-cols-2 gap-6">
                 {tarifs.map((item, index) => (
-                    <Card key={index} className={`relative overflow-hidden ${item.type === 'fixed' ? 'border-african-green' : 'border-african-earth'} border-2`}>
-                        <div className={`absolute top-0 left-0 w-full h-1 ${item.type === 'fixed' ? 'bg-african-green' : 'bg-african-earth'}`} />
+                    <Card key={index} className={`relative overflow-hidden ${item.type === 'fixed' ? 'border-african-green shadow-emerald-100 shadow-xl' : 'border-african-earth shadow-orange-100 shadow-xl'} border-2 bg-card`}>
+                        <div className={`absolute top-0 left-0 w-full h-2 ${item.type === 'fixed' ? 'bg-african-green' : 'bg-african-earth'}`} />
                         <CardContent className="p-6">
                             <div className="flex justify-between items-center">
                                 <h3 className="font-heading text-xl font-bold">{item.service}</h3>
@@ -706,12 +763,12 @@ export default function Nettoyage() {
                 ))}
             </div>
 
-            {/* Note devis gratuit */}
-            <Card className="bg-gradient-to-r from-african-green/10 to-african-earth/10 border-none">
-                <CardContent className="p-8 text-center">
-                    <Zap className="h-12 w-12 mx-auto text-african-green mb-4" />
-                    <h3 className="font-heading text-2xl font-bold mb-2">👉 Devis gratuit sous 24h</h3>
-                    <p className="text-muted-foreground">Remplissez le formulaire ci-dessous et recevez votre estimation rapidement</p>
+            {/* Note devis gratuit - Solid background */}
+            <Card className="bg-african-green/10 border-2 border-african-green/20">
+                <CardContent className="p-10 text-center">
+                    <Zap className="h-14 w-14 mx-auto text-african-green mb-4" />
+                    <h3 className="font-heading text-2xl md:text-3xl font-bold mb-3">Devis gratuit sous 24h</h3>
+                    <p className="text-muted-foreground text-lg">Remplissez le formulaire ci-dessous et recevez votre estimation rapidement</p>
                 </CardContent>
             </Card>
 
@@ -778,8 +835,8 @@ export default function Nettoyage() {
 
     const renderAPropos = () => (
         <div className="max-w-3xl mx-auto text-center space-y-8">
-            <h2 className="font-heading text-3xl font-bold mb-6">À Propos</h2>
-            <Card className="bg-gradient-to-b from-transparent to-secondary/30">
+            <Card className="bg-card border-none shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-3 bg-african-green" />
                 <CardContent className="p-10 space-y-6">
                     <Sparkles className="h-16 w-16 mx-auto text-african-green mb-4" />
                     <p className="text-2xl font-light leading-relaxed">
@@ -944,16 +1001,16 @@ export default function Nettoyage() {
                 {/* Sidebar Navigation */}
                 <aside
                     className={`
-            fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card border-r shadow-lg lg:shadow-none
+            fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card/95 backdrop-blur border-r shadow-2xl lg:shadow-none
             transform transition-transform duration-300 ease-in-out
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             flex flex-col
           `}
                 >
-                    <div className="p-6 border-b bg-african-green/5">
+                    <div className="p-6 border-b">
                         <h2 className="font-heading text-xl font-bold text-african-green flex items-center gap-2">
                             <Sparkles className="h-6 w-6" />
-                            Nettoyage Professionnel
+                            Nettoyage
                         </h2>
                         <p className="text-xs text-muted-foreground mt-1">Hygiène & Salubrité</p>
                     </div>
@@ -965,7 +1022,7 @@ export default function Nettoyage() {
                                 <button
                                     key={item.id}
                                     onClick={() => {
-                                        setActiveSection(item.id);
+                                        navigateToSection(item.id);
                                         setSidebarOpen(false);
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }}
@@ -988,7 +1045,7 @@ export default function Nettoyage() {
                         <div className="bg-african-green/10 p-4 rounded-lg">
                             <p className="font-bold text-african-green text-sm mb-1">Besoin d'un devis ?</p>
                             <p className="text-xs text-muted-foreground mb-3">Demandez maintenant par WhatsApp.</p>
-                            <Button size="sm" variant="outline" className="w-full text-xs border-african-green text-african-green hover:bg-african-green hover:text-white" onClick={() => setActiveSection('tarifs')}>
+                            <Button size="sm" variant="outline" className="w-full text-xs border-african-green text-african-green hover:bg-african-green hover:text-white" onClick={() => navigateToSection('tarifs')}>
                                 Demander un devis
                             </Button>
                         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,11 +32,12 @@ import {
     Facebook,
     Instagram,
     Twitter,
-    Send
+    Send,
+    Utensils
 } from 'lucide-react';
 
-// Import images
-import poubellesImage from '@/assets/services/poubelles.png?format=webp&quality=80';
+// Import images - African context
+import poubellesHeroImage from '@/assets/services/poubelles-hero.png';
 
 type Section = 'accueil' | 'services' | 'secteurs' | 'tarifs' | 'entreprises' | 'apropos' | 'blog' | 'contact';
 
@@ -107,16 +108,41 @@ const services = [
     }
 ];
 
-// Helper for icons that are not imported yet
-function Utensils(props: any) {
-    return <Trash2 {...props} />; // Placeholder
-}
+
 
 
 export default function Poubelles() {
-    const [activeSection, setActiveSection] = useState<Section>('accueil');
+    // URL-based navigation
+    const getInitialSection = (): Section => {
+        const hash = window.location.hash.replace('#', '') as Section;
+        return navigation.some(nav => nav.id === hash) ? hash : 'accueil';
+    };
+
+    const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { toast } = useToast();
+
+    // Navigate to section and update URL
+    const navigateToSection = useCallback((section: Section) => {
+        window.location.hash = section; setActiveSection(section);
+    }, []);
+
+    // Handle hash changes (browser back/forward)
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '') as Section;
+            if (navigation.some(nav => nav.id === hash)) {
+                setActiveSection(hash);
+            }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    // Scroll to top when section changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [activeSection]);
 
     // Form states
     const [collecteForm, setCollecteForm] = useState({
@@ -205,27 +231,33 @@ export default function Poubelles() {
 
 
     const renderAccueil = () => (
-        <div className="space-y-12">
-            {/* Hero Section */}
-            <section className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-african-green/90 to-african-earth">
+        <div className="space-y-16 animate-fade-in">
+            {/* Hero Section - Clean solid background */}
+            <section className="relative rounded-3xl overflow-hidden min-h-[500px] flex items-center shadow-2xl bg-african-green">
+                <div className="absolute inset-0 bg-black/40 z-10" />
                 <div className="absolute inset-0">
-                    <img src={poubellesImage} alt="Gestion des déchets" className="w-full h-full object-cover opacity-20" />
+                    <img src={poubellesHeroImage} alt="Gestion des déchets" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
                 </div>
-                <div className="relative z-10 px-6 py-16 md:py-24 text-center text-white">
-                    <h1 className="font-heading text-3xl md:text-5xl font-bold mb-4">
-                        Des espaces propres, des vies protégées. Nous collectons, vous continuez.
+                {/* Decorative elements */}
+
+
+                <div className="relative z-20 px-8 py-20 md:py-28 text-center text-white max-w-4xl mx-auto space-y-8 animate-slide-up">
+                    <Badge className="bg-white/20 text-white border-none py-2 px-4 backdrop-blur-md">
+                        ✨ Service professionnel de collecte
+                    </Badge>
+                    <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight">
+                        Des espaces propres,<br />
+                        <span className="text-african-yellow">des vies protégées.</span>
                     </h1>
-                    <p className="text-lg md:text-xl opacity-90 mb-8 max-w-3xl mx-auto">
-                        Service professionnel de précollecte d’ordures et de gestion de déchets pour ménages, entreprises, établissements sensibles et événements au Cameroun.
+                    <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-relaxed font-light">
+                        Nous collectons, vous continuez. Service de précollecte d'ordures pour ménages, entreprises et événements au Cameroun.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             size="lg"
-                            className="bg-white text-african-green hover:bg-white/90 font-semibold"
+                            className="bg-african-yellow text-black hover:bg-white font-bold h-14 px-8 rounded-full shadow-[0_0_20px_rgba(255,193,7,0.4)] hover:shadow-xl transition-all duration-300"
                             onClick={() => {
-                                // S'assurer qu'on est sur la section accueil où se trouve le formulaire
-                                setActiveSection('accueil');
-                                // Attendre que le DOM soit mis à jour puis faire défiler vers le formulaire
+                                navigateToSection('accueil');
                                 setTimeout(() => {
                                     const formElement = document.getElementById('collecte-form');
                                     if (formElement) {
@@ -234,77 +266,87 @@ export default function Poubelles() {
                                 }, 100);
                             }}
                         >
-                            🔘 Programmer une collecte
+                            <Truck className="mr-2 h-5 w-5" />
+                            Programmer une collecte
                         </Button>
                         <Button
                             size="lg"
                             variant="outline"
-                            className="border-white text-white hover:bg-white/20"
-                            onClick={() => setActiveSection('tarifs')}
+                            className="border-2 border-white text-white hover:bg-white/10 font-semibold h-14 px-8 rounded-full"
+                            onClick={() => navigateToSection('tarifs')}
                         >
-                            🔘 Demander un devis
+                            Voir les tarifs
                         </Button>
                     </div>
                 </div>
             </section>
 
-            {/* Qui sommes-nous */}
-            <section className="bg-secondary/50 rounded-2xl p-8 shadow-sm">
-                <h2 className="font-heading text-2xl md:text-3xl font-bold mb-4 text-center text-african-green">
+            {/* Qui sommes-nous - Clean card design */}
+            <section className="bg-white dark:bg-card rounded-3xl p-10 shadow-xl border border-border/50">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                    <div className="h-1 w-12 bg-african-green rounded-full" />
+                    <Leaf className="h-8 w-8 text-african-green" />
+                    <div className="h-1 w-12 bg-african-green rounded-full" />
+                </div>
+                <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6 text-center text-african-green">
                     Qui sommes-nous ?
                 </h2>
                 <div className="max-w-3xl mx-auto text-center space-y-4">
-                    <p className="text-muted-foreground text-lg">
+                    <p className="text-muted-foreground text-lg leading-relaxed">
                         Nous sommes une startup camerounaise spécialisée dans la précollecte et la gestion responsable des déchets ménagers, commerciaux et institutionnels.
                     </p>
-                    <p className="text-muted-foreground text-lg font-medium">
-                        Notre mission est de contribuer durablement à la salubrité, à la santé publique et à la protection de l’environnement.
+                    <p className="text-xl font-semibold text-african-earth">
+                        Notre mission : contribuer durablement à la salubrité, à la santé publique et à la protection de l'environnement.
                     </p>
                 </div>
             </section>
 
-            {/* Nos engagements */}
+            {/* Nos engagements - Modern cards */}
             <section>
-                <h2 className="font-heading text-2xl md:text-3xl font-bold mb-8 text-center">
-                    Nos engagements
+                <h2 className="font-heading text-3xl md:text-4xl font-bold mb-10 text-center">
+                    Nos <span className="text-african-green">engagements</span>
                 </h2>
-                <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {engagements.map((item, index) => (
-                        <Card key={index} className="text-center hover:shadow-card transition-shadow border-t-4 border-t-african-green">
-                            <CardContent className="p-6">
-                                <div className="w-14 h-14 mx-auto rounded-full bg-african-green/10 flex items-center justify-center mb-4">
-                                    <item.icon className="h-7 w-7 text-african-green" />
+                        <Card key={index} className="group text-center hover:-translate-y-2 transition-all duration-300 border shadow-soft hover:shadow-xl bg-card">
+                            <CardContent className="p-8">
+                                <div className="w-16 h-16 mx-auto rounded-2xl bg-african-green/10 flex items-center justify-center mb-5 group-hover:bg-african-green group-hover:text-white transition-all duration-300">
+                                    <item.icon className="h-8 w-8 text-african-green group-hover:text-white transition-colors" />
                                 </div>
-                                <p className="font-medium text-sm">{item.text}</p>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-african-green transition-colors">{item.text}</p>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
             </section>
 
-            {/* Formulaire Programmer une collecte */}
+            {/* Formulaire Programmer une collecte - Premium design */}
             <div id="collecte-form" className="pt-8">
-                <Card className="bg-african-green/5 border-african-green/20">
-                    <CardHeader>
-                        <CardTitle className="text-center font-heading text-2xl text-african-green">Programmer une collecte</CardTitle>
+                <Card className="border-none shadow-2xl overflow-hidden bg-card">
+                    <div className="h-3 bg-african-green w-full" />
+                    <CardHeader className="bg-secondary/20 border-b">
+                        <div className="flex items-center justify-center gap-3 mb-2">
+                            <Truck className="h-8 w-8 text-african-green" />
+                        </div>
+                        <CardTitle className="text-center font-heading text-3xl text-african-green">Programmer une collecte</CardTitle>
                         <CardDescription className="text-center text-lg">
                             Indiquez vos besoins et notre équipe vous contactera rapidement.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleCollecteSubmit} className="grid md:grid-cols-2 gap-4">
+                    <CardContent className="p-8">
+                        <form onSubmit={handleCollecteSubmit} className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label htmlFor="nom">Nom / Structure</Label>
-                                <Input id="nom" value={collecteForm.nom} onChange={e => setCollecteForm({ ...collecteForm, nom: e.target.value })} placeholder="Votre nom ou entreprise" required />
+                                <Label htmlFor="nom" className="text-sm font-semibold">Nom / Structure</Label>
+                                <Input id="nom" value={collecteForm.nom} onChange={e => setCollecteForm({ ...collecteForm, nom: e.target.value })} placeholder="Votre nom ou entreprise" className="h-12 bg-secondary/30" required />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="telephone">Téléphone / WhatsApp</Label>
-                                <Input id="telephone" value={collecteForm.telephone} onChange={e => setCollecteForm({ ...collecteForm, telephone: e.target.value })} placeholder="+237..." required />
+                                <Label htmlFor="telephone" className="text-sm font-semibold">Téléphone / WhatsApp</Label>
+                                <Input id="telephone" value={collecteForm.telephone} onChange={e => setCollecteForm({ ...collecteForm, telephone: e.target.value })} placeholder="+237..." className="h-12 bg-secondary/30" required />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="secteur">Secteur d’activité</Label>
+                                <Label htmlFor="secteur" className="text-sm font-semibold">Secteur d'activité</Label>
                                 <Select onValueChange={v => setCollecteForm({ ...collecteForm, secteur: v })}>
-                                    <SelectTrigger><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                                    <SelectTrigger className="h-12 bg-secondary/30"><SelectValue placeholder="Choisir..." /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="menage">Ménage</SelectItem>
                                         <SelectItem value="bureau">Bureau / Agence</SelectItem>
@@ -315,13 +357,13 @@ export default function Poubelles() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="localisation">Localisation</Label>
-                                <Input id="localisation" value={collecteForm.localisation} onChange={e => setCollecteForm({ ...collecteForm, localisation: e.target.value })} placeholder="Quartier, Repère..." required />
+                                <Label htmlFor="localisation" className="text-sm font-semibold">Localisation</Label>
+                                <Input id="localisation" value={collecteForm.localisation} onChange={e => setCollecteForm({ ...collecteForm, localisation: e.target.value })} placeholder="Quartier, Repère..." className="h-12 bg-secondary/30" required />
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="frequence">Fréquence souhaitée</Label>
+                                <Label htmlFor="frequence" className="text-sm font-semibold">Fréquence souhaitée</Label>
                                 <Select onValueChange={v => setCollecteForm({ ...collecteForm, frequence: v })}>
-                                    <SelectTrigger><SelectValue placeholder="Choisir..." /></SelectTrigger>
+                                    <SelectTrigger className="h-12 bg-secondary/30"><SelectValue placeholder="Choisir..." /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="hebdo">Hebdomadaire</SelectItem>
                                         <SelectItem value="myenne">2-3 fois par semaine</SelectItem>
@@ -330,9 +372,9 @@ export default function Poubelles() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="md:col-span-2 pt-2">
-                                <Button type="submit" variant="cta" className="w-full bg-african-green hover:bg-african-green/90" disabled={collecteLoading}>
-                                    {collecteLoading ? "Envoi..." : "Envoyer ma demande"}
+                            <div className="md:col-span-2 pt-4">
+                                <Button type="submit" size="lg" className="w-full bg-african-green hover:bg-african-green/90 text-white font-bold h-14 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all" disabled={collecteLoading}>
+                                    {collecteLoading ? "Envoi en cours..." : "Envoyer ma demande"}
                                 </Button>
                             </div>
                         </form>
@@ -343,40 +385,42 @@ export default function Poubelles() {
     );
 
     const renderServices = () => (
-        <div className="space-y-8">
+        <div className="space-y-10 animate-fade-in">
             <div className="text-center">
-                <h2 className="font-heading text-3xl font-bold mb-4">Nos Services</h2>
-                <p className="text-muted-foreground">Des solutions adaptées à chaque besoin</p>
+                <Badge className="bg-african-green text-white mb-4">Nos Solutions</Badge>
+                <h2 className="font-heading text-4xl font-bold mb-4">Nos <span className="text-african-green">Services</span></h2>
+                <p className="text-muted-foreground text-lg">Des solutions adaptées à chaque besoin</p>
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-8">
                 {services.map((service, index) => {
                     const Icon = service.icon;
                     return (
-                        <Card key={index} className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-african-green">
+                        <Card key={index} className="group hover:shadow-2xl transition-all duration-500 border-none shadow-lg bg-white dark:bg-card overflow-hidden">
+                            <div className="h-2 bg-african-green w-0 group-hover:w-full transition-all duration-500" />
                             <CardHeader className="pb-3">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 rounded-lg bg-african-green/10 text-african-green">
-                                        <Icon className="h-6 w-6" />
+                                    <div className="p-4 rounded-2xl bg-african-green/10 text-african-green group-hover:bg-african-green group-hover:text-white transition-all duration-300">
+                                        <Icon className="h-7 w-7" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-xl font-heading">{service.title}</CardTitle>
+                                        <CardTitle className="text-xl font-heading group-hover:text-african-green transition-colors">{service.title}</CardTitle>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground mb-4">{service.description}</p>
+                                <p className="text-muted-foreground mb-4 leading-relaxed">{service.description}</p>
                                 {service.details && (
                                     <ul className="space-y-2 mb-4">
                                         {service.details.map((detail, idx) => (
                                             <li key={idx} className="flex items-center text-sm">
-                                                <CheckCircle2 className="h-4 w-4 text-african-green mr-2 flex-shrink-0" />
-                                                {detail}
+                                                <CheckCircle2 className="h-5 w-5 text-african-green mr-3 flex-shrink-0" />
+                                                <span className="font-medium">{detail}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 )}
                                 {service.warning && (
-                                    <div className="bg-yellow-50 text-yellow-800 p-3 rounded-lg text-sm border border-yellow-200">
+                                    <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 p-4 rounded-xl text-sm border border-amber-200 dark:border-amber-800">
                                         ⚠️ {service.warning}
                                     </div>
                                 )}
@@ -389,28 +433,37 @@ export default function Poubelles() {
     );
 
     const renderSecteurs = () => (
-        <div className="max-w-4xl mx-auto">
-            <h2 className="font-heading text-3xl font-bold mb-8 text-center">Secteurs Desservis</h2>
-            <Card>
-                <CardContent className="p-8">
-                    <div className="grid md:grid-cols-2 gap-y-4 gap-x-8">
+        <div className="max-w-5xl mx-auto animate-fade-in">
+            <div className="text-center mb-10">
+                <Badge className="bg-african-green text-white mb-4">Couverture</Badge>
+                <h2 className="font-heading text-4xl font-bold">Secteurs <span className="text-african-green">Desservis</span></h2>
+            </div>
+            <Card className="border-none shadow-2xl overflow-hidden">
+                <div className="h-2 bg-african-green w-full" />
+                <CardContent className="p-10">
+                    <div className="grid md:grid-cols-2 gap-4">
                         {[
-                            "Ménages & résidences",
-                            "Bureaux & administrations",
-                            "Agences de voyage",
-                            "Grands magasins & supermarchés",
-                            "Restaurants, snacks & hôtels",
-                            "Hôpitaux & centres de santé",
-                            "Marchés & espaces ouverts",
-                            "Boîtes de nuit & bars",
-                            "Espaces pour enfants",
-                            "Événementiel"
-                        ].map((secteur, idx) => (
-                            <div key={idx} className="flex items-center p-3 rounded-lg bg-secondary/50 hover:bg-african-green/5 transition-colors">
-                                <div className="h-2 w-2 rounded-full bg-african-green mr-3" />
-                                <span className="font-medium">{secteur}</span>
-                            </div>
-                        ))}
+                            { name: "Ménages & résidences", icon: Home },
+                            { name: "Bureaux & administrations", icon: Building2 },
+                            { name: "Agences de voyage", icon: MapPin },
+                            { name: "Grands magasins & supermarchés", icon: Building2 },
+                            { name: "Restaurants, snacks & hôtels", icon: Utensils },
+                            { name: "Hôpitaux & centres de santé", icon: ShieldCheck },
+                            { name: "Marchés & espaces ouverts", icon: MapPin },
+                            { name: "Boîtes de nuit & bars", icon: Users },
+                            { name: "Espaces pour enfants", icon: Users },
+                            { name: "Événementiel", icon: Users }
+                        ].map((secteur, idx) => {
+                            const Icon = secteur.icon;
+                            return (
+                                <div key={idx} className="group flex items-center p-4 rounded-xl bg-secondary/30 hover:bg-african-green/10 hover:shadow-md transition-all duration-300 cursor-default">
+                                    <div className="w-10 h-10 rounded-lg bg-african-green/10 flex items-center justify-center mr-4 group-hover:bg-african-green group-hover:scale-110 transition-all duration-300">
+                                        <Icon className="h-5 w-5 text-african-green group-hover:text-white transition-colors" />
+                                    </div>
+                                    <span className="font-semibold group-hover:text-african-green transition-colors">{secteur.name}</span>
+                                </div>
+                            );
+                        })}
                     </div>
                 </CardContent>
             </Card>
@@ -418,81 +471,116 @@ export default function Poubelles() {
     );
 
     const renderTarifs = () => (
-        <div className="max-w-5xl mx-auto space-y-8">
-            <h2 className="font-heading text-3xl font-bold mb-8 text-center text-african-green">Abonnements & Tarifs</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                    { title: "Ménages", price: "5 000 – 10 000 FCFA", unit: "/ mois", desc: "Pour les particuliers" },
-                    { title: "Bureaux & Agences", price: "15 000 – 100 000 FCFA", unit: "/ mois", desc: "Adapté aux volumes" },
-                    { title: "Restaurants / Snacks", price: "À partir de 30 000 FCFA", unit: "/ mois", desc: "Hygiène garantie" },
-                    { title: "Événements", price: "20 000 – 200 000 FCFA", unit: "/ intervention", desc: "Nettoyage complet" },
-                ].map((item, idx) => (
-                    <Card key={idx} className="text-center hover:scale-105 transition-transform border-african-green/20">
-                        <CardHeader>
-                            <CardTitle className="text-xl">{item.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-african-green mb-1">{item.price}</div>
-                            <div className="text-muted-foreground text-sm mb-4">{item.unit}</div>
-                            <p className="text-sm text-balance">{item.desc}</p>
-                        </CardContent>
-                    </Card>
-                ))}
-
-                <Card className="md:col-span-2 lg:col-span-2 bg-gradient-to-br from-secondary to-background border-african-green">
-                    <CardHeader>
-                        <CardTitle className="text-xl">Hôpitaux / Marchés / Grands Magasins</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center h-full pb-8">
-                        <div className="text-2xl font-bold text-african-green mb-4">Devis Personnalisé</div>
-                        <p className="mb-6 opacity-80">Prix basés sur le volume et la fréquence de collecte.</p>
-                        <Button onClick={() => setActiveSection('contact')} variant="cta">Demander un devis</Button>
-                    </CardContent>
-                </Card>
+        <div className="max-w-6xl mx-auto space-y-10 animate-fade-in">
+            <div className="text-center">
+                <Badge className="bg-african-green text-white mb-4">Tarification</Badge>
+                <h2 className="font-heading text-4xl font-bold">Abonnements & <span className="text-african-green">Tarifs</span></h2>
             </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                    { title: "Ménages", price: "5 000 – 10 000", unit: "FCFA / mois", desc: "Pour les particuliers", icon: Home },
+                    { title: "Bureaux & Agences", price: "15 000 – 100 000", unit: "FCFA / mois", desc: "Adapté aux volumes", icon: Building2 },
+                    { title: "Restaurants / Snacks", price: "À partir de 30 000", unit: "FCFA / mois", desc: "Hygiène garantie", icon: Utensils },
+                    { title: "Événements", price: "20 000 – 200 000", unit: "FCFA / intervention", desc: "Nettoyage complet", icon: Users },
+                ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                        <Card key={idx} className="group text-center hover:-translate-y-2 transition-all duration-300 border-none shadow-lg hover:shadow-2xl bg-white dark:bg-card overflow-hidden">
+                            <div className="h-1 bg-african-green w-0 group-hover:w-full transition-all duration-500" />
+                            <CardHeader className="pb-2">
+                                <div className="w-14 h-14 mx-auto rounded-2xl bg-african-green/10 flex items-center justify-center mb-3 group-hover:bg-african-green group-hover:scale-110 transition-all duration-300">
+                                    <Icon className="h-7 w-7 text-african-green group-hover:text-white transition-colors" />
+                                </div>
+                                <CardTitle className="text-lg">{item.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-african-green mb-1">{item.price}</div>
+                                <div className="text-muted-foreground text-sm mb-3">{item.unit}</div>
+                                {item.desc && <p className="text-sm text-muted-foreground">{item.desc}</p>}
+                            </CardContent>
+                            {/* Interactive background */}
+                            <div className="absolute inset-0 bg-african-green/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </Card>
+                    );
+                })}
+            </div>
+
+            <Card className="border-2 border-african-green/30 shadow-xl bg-african-green/5">
+                <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="text-center md:text-left">
+                        <h3 className="text-2xl font-bold text-african-green mb-2">Hôpitaux / Marchés / Grands Magasins</h3>
+                        <p className="text-muted-foreground text-lg">Prix basés sur le volume et la fréquence de collecte.</p>
+                    </div>
+                    <Button onClick={() => navigateToSection('contact')} size="lg" className="bg-african-green hover:bg-african-green/90 text-white font-bold h-14 px-8 rounded-xl shadow-lg">
+                        Demander un devis personnalisé
+                    </Button>
+                </CardContent>
+            </Card>
         </div>
     );
 
     const renderEntreprises = () => (
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-            <div>
-                <h2 className="font-heading text-3xl font-bold mb-6 text-african-green">
-                    Une solution fiable pour des environnements propres et conformes
+        <div className="max-w-5xl mx-auto space-y-12 animate-fade-in">
+            <div className="text-center">
+                <Badge className="bg-african-green text-white mb-4">B2B</Badge>
+                <h2 className="font-heading text-4xl font-bold mb-6">
+                    Une solution <span className="text-african-green">fiable</span> pour vos locaux
                 </h2>
                 <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                    Nous accompagnons les entreprises, institutions, marchés et organisateurs d’événements avec des solutions de collecte adaptées, sécurisées et responsables.
+                    Nous accompagnons les entreprises, institutions, marchés et organisateurs d'événements avec des solutions de collecte adaptées, sécurisées et responsables.
                 </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6 text-left">
+            <div className="grid sm:grid-cols-2 gap-6">
                 {[
-                    "Contrats clairs et transparents",
-                    "Facturation mensuelle simplifiée",
-                    "Équipe dédiée et réactive",
-                    "Image professionnelle & responsable"
-                ].map((avantage, idx) => (
-                    <Card key={idx} className="bg-african-green/5 border-none">
-                        <CardContent className="p-6 flex items-center gap-4">
-                            <CheckCircle2 className="h-8 w-8 text-african-green" />
-                            <span className="font-semibold text-lg">{avantage}</span>
-                        </CardContent>
-                    </Card>
-                ))}
+                    { text: "Contrats clairs et transparents", icon: CheckCircle2 },
+                    { text: "Facturation mensuelle simplifiée", icon: CreditCard },
+                    { text: "Équipe dédiée et réactive", icon: Users },
+                    { text: "Image professionnelle & responsable", icon: ShieldCheck }
+                ].map((avantage, idx) => {
+                    const Icon = avantage.icon;
+                    return (
+                        <Card key={idx} className="group border-none shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 bg-white dark:bg-card">
+                            <CardContent className="p-6 flex items-center gap-5">
+                                <div className="w-14 h-14 rounded-2xl bg-african-green/10 flex items-center justify-center group-hover:bg-african-green group-hover:scale-110 transition-all duration-300">
+                                    <Icon className="h-7 w-7 text-african-green group-hover:text-white transition-colors" />
+                                </div>
+                                <span className="font-bold text-lg">{avantage.text}</span>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
+            </div>
+
+            <div className="text-center">
+                <Button onClick={() => navigateToSection('contact')} size="lg" className="bg-african-green hover:bg-african-green/90 text-white font-bold h-14 px-10 rounded-xl shadow-lg">
+                    Demander un devis entreprise
+                </Button>
             </div>
         </div>
     );
 
     const renderAPropos = () => (
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-            <h2 className="font-heading text-3xl font-bold mb-6">À Propos</h2>
-            <Card className="bg-gradient-to-b from-transparent to-secondary/30">
-                <CardContent className="p-10 space-y-6">
-                    <Leaf className="h-16 w-16 mx-auto text-african-green mb-4" />
-                    <p className="text-2xl font-light leading-relaxed">
-                        "Nous croyons qu’un environnement propre est un pilier essentiel de la santé publique et du développement durable."
-                    </p>
-                    <div className="h-1 w-20 bg-african-earth mx-auto rounded-full" />
-                    <p className="text-xl text-muted-foreground">
+        <div className="max-w-4xl mx-auto text-center space-y-10 animate-fade-in">
+            <div>
+                <Badge className="bg-african-green text-white mb-4">Notre Vision</Badge>
+                <h2 className="font-heading text-4xl font-bold">À <span className="text-african-green">Propos</span></h2>
+            </div>
+            <Card className="border-none shadow-2xl bg-white dark:bg-card overflow-hidden">
+                <div className="h-2 bg-african-green w-full" />
+                <CardContent className="p-12 space-y-8">
+                    <div className="w-20 h-20 mx-auto rounded-3xl bg-african-green/10 flex items-center justify-center">
+                        <Leaf className="h-10 w-10 text-african-green" />
+                    </div>
+                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed text-gray-700 dark:text-gray-300 italic">
+                        "Nous croyons qu'un environnement propre est un pilier essentiel de la santé publique et du développement durable."
+                    </blockquote>
+                    <div className="flex items-center justify-center gap-4">
+                        <div className="h-0.5 w-16 bg-african-green rounded-full" />
+                        <div className="h-2 w-2 rounded-full bg-african-earth" />
+                        <div className="h-0.5 w-16 bg-african-green rounded-full" />
+                    </div>
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                         Notre startup agit chaque jour pour un Cameroun plus sain et plus responsable.
                     </p>
                 </CardContent>
@@ -637,16 +725,16 @@ export default function Poubelles() {
                 {/* Sidebar Navigation */}
                 <aside
                     className={`
-            fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card border-r shadow-lg lg:shadow-none
+            fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card/95 backdrop-blur border-r shadow-2xl lg:shadow-none
             transform transition-transform duration-300 ease-in-out
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             flex flex-col
           `}
                 >
-                    <div className="p-6 border-b bg-african-green/5">
+                    <div className="p-6 border-b">
                         <h2 className="font-heading text-xl font-bold text-african-green flex items-center gap-2">
                             <Trash2 className="h-6 w-6" />
-                            Gestion des Déchets
+                            Poubelles
                         </h2>
                         <p className="text-xs text-muted-foreground mt-1">Précollecte & Salubrité</p>
                     </div>
@@ -658,7 +746,7 @@ export default function Poubelles() {
                                 <button
                                     key={item.id}
                                     onClick={() => {
-                                        setActiveSection(item.id);
+                                        navigateToSection(item.id);
                                         setSidebarOpen(false);
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }}
@@ -681,7 +769,7 @@ export default function Poubelles() {
                         <div className="bg-african-earth/10 p-4 rounded-lg">
                             <p className="font-bold text-african-earth text-sm mb-1">Besoin d'aide ?</p>
                             <p className="text-xs text-muted-foreground mb-3">Contactez notre support client disponible 7j/7.</p>
-                            <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => setActiveSection('contact')}>
+                            <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => navigateToSection('contact')}>
                                 Nous contacter
                             </Button>
                         </div>
@@ -719,7 +807,6 @@ export default function Poubelles() {
             <WhatsAppButton
                 phoneNumber="+237690000000"
                 message="Bonjour, je souhaite programmer une collecte d'ordures."
-                label="Programmer une collecte"
             />
         </Layout>
     );

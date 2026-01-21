@@ -17,8 +17,8 @@ export function CTASection() {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="relative overflow-hidden rounded-[2rem] lg:rounded-[3rem]">
-          {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-african-green via-primary to-african-earth" />
+          {/* Solid background */}
+          <div className="absolute inset-0 bg-primary" />
 
           {/* Pattern overlay */}
           <div className="absolute inset-0 opacity-10">

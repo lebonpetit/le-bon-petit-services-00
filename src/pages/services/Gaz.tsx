@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { GAS_BRANDS, GAS_SIZES } from '@/lib/constants';
 import {
     Home,
     Flame,
@@ -39,8 +40,8 @@ import {
     ChefHat
 } from 'lucide-react';
 
-// Import images
-import gazCookingImage from '@/assets/services/gaz-cooking.png?format=webp&quality=80';
+// Import images - African context
+import gazHeroImage from '@/assets/services/gaz-hero.png';
 import gazDeliveryImage from '@/assets/services/gaz-delivery.png?format=webp&quality=80';
 import gazStockImage from '@/assets/services/gaz-stock.png?format=webp&quality=80';
 
@@ -137,9 +138,32 @@ const formules = [
 ];
 
 export default function Gaz() {
-    const [activeSection, setActiveSection] = useState<Section>('accueil');
+    // URL-based navigation
+    const getInitialSection = (): Section => {
+        const hash = window.location.hash.replace('#', '') as Section;
+        return navigation.some(nav => nav.id === hash) ? hash : 'accueil';
+    };
+
+    const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { toast } = useToast();
+
+    // Navigate to section and update URL
+    const navigateToSection = useCallback((section: Section) => {
+        window.location.hash = section; setActiveSection(section);
+    }, []);
+
+    // Handle hash changes (browser back/forward)
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '') as Section;
+            if (navigation.some(nav => nav.id === hash)) {
+                setActiveSection(hash);
+            }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
 
     // Form states
     const [commandeForm, setCommandeForm] = useState({
@@ -237,9 +261,9 @@ export default function Gaz() {
         <div className="space-y-16 animate-fade-in">
             {/* Hero Section */}
             <section className="relative rounded-3xl overflow-hidden min-h-[500px] flex items-center shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-r from-african-red/90 via-african-earth/80 to-black/80 z-10" />
+                <div className="absolute inset-0 bg-black/50 z-10" />
                 <div className="absolute inset-0">
-                    <img src={gazCookingImage} alt="Maman qui cuisine heureuse" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
+                    <img src={gazHeroImage} alt="Maman qui cuisine heureuse" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
                 </div>
                 <div className="relative z-20 container px-6 md:px-12 py-16 text-white grid md:grid-cols-2 gap-8 items-center">
                     <div className="space-y-6 animate-slide-up">
@@ -256,7 +280,7 @@ export default function Gaz() {
                             <Button
                                 size="lg"
                                 className="bg-african-yellow text-black hover:bg-white font-bold h-14 px-8 rounded-full shadow-[0_0_20px_rgba(255,193,7,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] transition-all duration-300"
-                                onClick={() => setActiveSection('commander')}
+                                onClick={() => navigateToSection('commander')}
                             >
                                 Commander Maintenant <ArrowRight className="ml-2 h-5 w-5" />
                             </Button>
@@ -264,7 +288,7 @@ export default function Gaz() {
                                 size="lg"
                                 variant="outline"
                                 className="border-white/50 text-white hover:bg-white/10 h-14 px-8 rounded-full backdrop-blur-sm"
-                                onClick={() => setActiveSection('abonnements')}
+                                onClick={() => navigateToSection('abonnements')}
                             >
                                 Créer un abonnement
                             </Button>
@@ -278,10 +302,12 @@ export default function Gaz() {
             {/* Qui sommes-nous */}
             <section className="relative py-8">
                 <div className="grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
-                    <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500">
+                    <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500 group">
                         <img src={gazDeliveryImage} alt="Livraison de gaz à moto" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                            <p className="text-white font-medium italic">"Rapide comme l'éclair, sûr comme le roc"</p>
+                        <div className="absolute bottom-6 left-6 right-6">
+                            <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border-l-4 border-african-red">
+                                <p className="text-african-earth font-medium italic">"Rapide comme l'éclair, sûr comme le roc"</p>
+                            </div>
                         </div>
                     </div>
                     <div className="order-1 md:order-2 space-y-6">
@@ -312,10 +338,10 @@ export default function Gaz() {
             <section>
                 <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {avantages.map((item, index) => (
-                        <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border-none shadow-soft hover:shadow-card bg-card/50 backdrop-blur-sm">
+                        <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border shadow-soft hover:shadow-xl bg-card">
                             <CardContent className="p-6 text-center">
-                                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-african-red/20 to-african-yellow/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                                    <item.icon className="h-8 w-8 text-african-red" />
+                                <div className="w-16 h-16 mx-auto rounded-2xl bg-african-red/10 flex items-center justify-center mb-4 group-hover:bg-african-red group-hover:text-white transition-colors duration-300">
+                                    <item.icon className="h-8 w-8 text-african-red group-hover:text-white transition-colors duration-300" />
                                 </div>
                                 <p className="font-bold text-gray-800">{item.text}</p>
                             </CardContent>
@@ -348,8 +374,8 @@ export default function Gaz() {
             </div>
 
             {/* Formulaire de commande */}
-            <Card className="border-none shadow-2xl overflow-hidden bg-card/80 backdrop-blur">
-                <div className="h-2 w-full bg-gradient-to-r from-african-red to-african-yellow" />
+            <Card className="border-none shadow-2xl overflow-hidden bg-card">
+                <div className="h-3 w-full bg-african-red" />
                 <CardHeader className="bg-secondary/20 border-b">
                     <CardTitle className="flex items-center gap-3 text-2xl">
                         <Flame className="h-6 w-6 text-african-red" />
@@ -359,31 +385,51 @@ export default function Gaz() {
                 </CardHeader>
                 <CardContent className="p-6 md:p-8">
                     <form onSubmit={handleCommandeSubmit} className="grid md:grid-cols-2 gap-6">
-                        <div className="bg-secondary/30 p-4 rounded-xl space-y-4">
-                            <Label className="font-semibold text-base">Type de bouteille</Label>
-                            <RadioGroup value={commandeForm.typeBouteille} onValueChange={v => setCommandeForm({ ...commandeForm, typeBouteille: v })} className="grid grid-cols-1 gap-3">
-                                <label className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${commandeForm.typeBouteille === '12.5kg' ? 'border-african-red bg-african-red/5' : 'border-transparent bg-background hover:bg-secondary'}`}>
-                                    <div className="flex items-center gap-3">
-                                        <RadioGroupItem value="12.5kg" id="bt-12" />
-                                        <div className="font-medium">12,5 kg (Standard)</div>
-                                    </div>
-                                    <Badge variant="outline">Cuisine</Badge>
-                                </label>
-                                <label className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${commandeForm.typeBouteille === '6kg' ? 'border-african-red bg-african-red/5' : 'border-transparent bg-background hover:bg-secondary'}`}>
-                                    <div className="flex items-center gap-3">
-                                        <RadioGroupItem value="6kg" id="bt-6" />
-                                        <div className="font-medium">6 kg (Petite)</div>
-                                    </div>
-                                    <Badge variant="outline">Camping</Badge>
-                                </label>
-                                <label className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${commandeForm.typeBouteille === '50kg' ? 'border-african-red bg-african-red/5' : 'border-transparent bg-background hover:bg-secondary'}`}>
-                                    <div className="flex items-center gap-3">
-                                        <RadioGroupItem value="50kg" id="bt-50" />
-                                        <div className="font-medium">50 kg (Pro)</div>
-                                    </div>
-                                    <Badge variant="outline">Resto</Badge>
-                                </label>
-                            </RadioGroup>
+                        <div className="bg-secondary/30 p-4 rounded-xl space-y-6">
+                            <div className="space-y-3">
+                                <Label className="font-semibold text-base">Marque de la bouteille</Label>
+                                <Select
+                                    value={commandeForm.typeBouteille.split(' ')[0]}
+                                    onValueChange={(v) => {
+                                        const currentSize = commandeForm.typeBouteille.split(' ')[1] || '12.5kg';
+                                        setCommandeForm({ ...commandeForm, typeBouteille: `${v} ${currentSize}` });
+                                    }}
+                                >
+                                    <SelectTrigger className="bg-background border-none shadow-sm h-12">
+                                        <SelectValue placeholder="Choisir une marque..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {GAS_BRANDS.map(brand => (
+                                            <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="font-semibold text-base">Taille de la bouteille</Label>
+                                <RadioGroup
+                                    value={commandeForm.typeBouteille.split(' ')[1] || ''}
+                                    onValueChange={v => {
+                                        const brand = commandeForm.typeBouteille.split(' ')[0] || 'SCTM';
+                                        setCommandeForm({ ...commandeForm, typeBouteille: `${brand} ${v}` });
+                                    }}
+                                    className="grid grid-cols-1 gap-2"
+                                >
+                                    {GAS_SIZES.map((size) => (
+                                        <label
+                                            key={size.id}
+                                            className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${commandeForm.typeBouteille.includes(size.id) ? 'border-african-red bg-african-red/5' : 'border-transparent bg-background hover:bg-secondary'}`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <RadioGroupItem value={size.id} id={`bt-${size.id}`} />
+                                                <div className="font-medium">{size.label}</div>
+                                            </div>
+                                            <Badge variant="outline" className="text-[10px]">{size.usage.split(' / ')[0]}</Badge>
+                                        </label>
+                                    ))}
+                                </RadioGroup>
+                            </div>
                         </div>
 
                         <div className="space-y-4">
@@ -464,7 +510,7 @@ export default function Gaz() {
                             </div>
                         )}
                         <div className="p-8 text-center relative z-10">
-                            <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-african-red/10 to-transparent flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <div className="w-32 h-32 mx-auto rounded-full bg-african-red/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-african-red/10 transition-all duration-500">
                                 <Package className="h-16 w-16 text-african-red" />
                             </div>
                             <h3 className="text-3xl font-extrabold text-african-earth mb-2">{bouteille.taille}</h3>
@@ -475,13 +521,13 @@ export default function Gaz() {
 
                             <Button
                                 className="w-full bg-african-red hover:bg-african-earth text-white rounded-full font-bold"
-                                onClick={() => setActiveSection('commander')}
+                                onClick={() => navigateToSection('commander')}
                             >
                                 Commander
                             </Button>
                         </div>
-                        {/* Hover gradient background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-african-yellow/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        {/* Interactive background */}
+                        <div className="absolute inset-0 bg-african-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     </Card>
                 ))}
             </div>
@@ -536,13 +582,13 @@ export default function Gaz() {
                                 </div>
                             ))}
                         </div>
-                        <Button size="lg" className="w-full bg-african-earth text-white hover:bg-black" onClick={() => setActiveSection('contact')}>
+                        <Button size="lg" className="w-full bg-african-earth text-white hover:bg-black" onClick={() => navigateToSection('contact')}>
                             Demander un devis Pro
                         </Button>
                     </div>
-                    <div className="relative h-[400px] bg-gradient-to-br from-gray-900 to-black rounded-2xl flex items-center justify-center text-white p-8 overflow-hidden shadow-2xl">
+                    <div className="relative h-[400px] bg-african-earth rounded-2xl flex items-center justify-center text-white p-8 overflow-hidden shadow-2xl">
                         <div className="absolute inset-0">
-                            <img src={gazStockImage} alt="Entrepôt de gaz" className="w-full h-full object-cover opacity-40" />
+                            <img src={gazStockImage} alt="Entrepôt de gaz" className="w-full h-full object-cover opacity-20" />
                         </div>
                         <div className="relative z-10 text-center">
                             <ChefHat className="h-16 w-16 mx-auto mb-4 opacity-80" />
@@ -580,8 +626,8 @@ export default function Gaz() {
                 {formules.map((formule, index) => {
                     const Icon = formule.icon;
                     return (
-                        <Card key={index} className="relative overflow-hidden hover:shadow-2xl transition-all duration-300 border hover:border-african-red flex flex-col">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-african-red to-african-yellow" />
+                        <Card key={index} className="relative overflow-hidden hover:shadow-2xl transition-all duration-300 border hover:border-african-red flex flex-col bg-card">
+                            <div className="absolute top-0 left-0 w-full h-2 bg-african-red" />
                             <CardHeader className="text-center pt-8">
                                 <div className="w-16 h-16 mx-auto rounded-full bg-african-red/10 flex items-center justify-center mb-4">
                                     <Icon className="h-8 w-8 text-african-red" />
@@ -602,7 +648,7 @@ export default function Gaz() {
                                     <div className="text-lg font-bold text-african-earth mb-4">{formule.prix}</div>
                                     <Button
                                         className="w-full bg-african-earth text-white hover:bg-african-red"
-                                        onClick={() => setActiveSection('contact')}
+                                        onClick={() => navigateToSection('contact')}
                                     >
                                         Je m'abonne
                                     </Button>
@@ -623,7 +669,7 @@ export default function Gaz() {
             </div>
 
             <div className="bg-card border-none shadow-2xl rounded-3xl overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-african-red via-orange-500 to-yellow-500" />
+                <div className="absolute top-0 left-0 w-full h-3 bg-african-red" />
                 <CardContent className="p-10 md:p-16 space-y-8">
                     <Flame className="h-20 w-20 mx-auto text-african-red mb-6 animate-pulse-glow" />
                     <blockquote className="text-2xl md:text-3xl font-light leading-relaxed font-heading italic text-gray-700">
@@ -678,7 +724,7 @@ export default function Gaz() {
 
             <div className="grid lg:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                    <Card className="bg-gradient-to-br from-african-red/10 to-transparent border-african-red/20">
+                    <Card className="bg-african-red/5 border-african-red/20">
                         <CardContent className="p-8 flex items-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-lg shrink-0">
                                 <MessageCircle className="h-8 w-8" />
@@ -778,7 +824,7 @@ export default function Gaz() {
                 >
                     <div className="flex flex-col h-full">
                         <div className="p-6 border-b flex items-center justify-between">
-                            <span className="font-heading text-2xl font-bold bg-gradient-to-r from-african-red to-orange-500 bg-clip-text text-transparent">
+                            <span className="font-heading text-2xl font-bold text-african-red">
                                 Gaz Rapide
                             </span>
                             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
@@ -791,7 +837,7 @@ export default function Gaz() {
                                 <button
                                     key={item.id}
                                     onClick={() => {
-                                        setActiveSection(item.id);
+                                        navigateToSection(item.id);
                                         setSidebarOpen(false);
                                     }}
                                     className={`

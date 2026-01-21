@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,10 +40,13 @@ import {
     Zap
 } from 'lucide-react';
 
-// Import images
-import lessiveImage from '@/assets/services/lessive-hero.jpg?format=webp&quality=80';
-import deliveryImage from '@/assets/services/gaz-delivery.png?format=webp&quality=80';
-import ironingImage from '@/assets/services/lessive-ironing.jpg?format=webp&quality=80';
+// Import images - African context
+import lessiveHeroImage from '@/assets/services/lessive-hero.png';
+import africanLessiveArt from '@/assets/services/african-lessive-art.png';
+import pressingWashing from '@/assets/services/pressing-washing.png';
+import pressingIroning from '@/assets/services/pressing-ironing.png';
+import pressingFolding from '@/assets/services/pressing-folding.png';
+import pressingDelivery from '@/assets/services/pressing-delivery.png';
 
 type Section = 'accueil' | 'commander' | 'services' | 'abonnements' | 'entreprises' | 'apropos' | 'blog' | 'contact';
 
@@ -79,28 +82,32 @@ const servicesDetails = [
         icon: Shirt,
         color: "green",
         items: ["Lavage machine", "Séchage", "Pliage soigné"],
-        description: "Pour le linge du quotidien."
+        description: "Pour le linge du quotidien.",
+        image: pressingWashing
     },
     {
         title: "Repassage",
         icon: Layers,
         color: "emerald",
         items: ["Repassage main", "Sur cintre ou plié"],
-        description: "Fini la corvée de repassage."
+        description: "Fini la corvée de repassage.",
+        image: pressingIroning
     },
     {
         title: "Délicat & Pressing",
         icon: Sparkles,
         color: "teal",
         items: ["Nettoyage à sec", "Tâches tenaces", "Textiles fragiles"],
-        description: "Costumes, robes de soirée..."
+        description: "Costumes, robes de soirée...",
+        image: pressingFolding
     },
     {
         title: "Gros volumes",
         icon: Building2,
         color: "green",
         items: ["Couettes", "Rideaux", "Nappes"],
-        description: "Lavage spécial grandes pièces."
+        description: "Lavage spécial grandes pièces.",
+        image: lessiveHeroImage
     }
 ];
 
@@ -140,9 +147,32 @@ const typesLinge = [
 ];
 
 export default function Lessive() {
-    const [activeSection, setActiveSection] = useState<Section>('accueil');
+    // URL-based navigation
+    const getInitialSection = (): Section => {
+        const hash = window.location.hash.replace('#', '') as Section;
+        return navigation.some(nav => nav.id === hash) ? hash : 'accueil';
+    };
+
+    const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { toast } = useToast();
+
+    // Navigate to section and update URL
+    const navigateToSection = useCallback((section: Section) => {
+        window.location.hash = section; setActiveSection(section);
+    }, []);
+
+    // Handle hash changes (browser back/forward)
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '') as Section;
+            if (navigation.some(nav => nav.id === hash)) {
+                setActiveSection(hash);
+            }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
 
     // Form states
     const [commandeForm, setCommandeForm] = useState({
@@ -216,9 +246,9 @@ export default function Lessive() {
         <div className="space-y-16 animate-fade-in">
             {/* Hero Section */}
             <section className="relative rounded-3xl overflow-hidden min-h-[500px] flex items-center shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-600/90 via-emerald-500/80 to-teal-700/90 z-10" />
+                <div className="absolute inset-0 bg-black/50 z-10" />
                 <div className="absolute inset-0">
-                    <img src={lessiveImage} alt="Linge propre" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
+                    <img src={lessiveHeroImage} alt="Linge propre" className="w-full h-full object-cover scale-105 animate-slow-zoom" />
                 </div>
                 <div className="relative z-20 container px-6 md:px-12 py-16 text-white grid md:grid-cols-2 gap-8 items-center">
                     <div className="space-y-6 animate-slide-up">
@@ -235,7 +265,7 @@ export default function Lessive() {
                             <Button
                                 size="lg"
                                 className="bg-emerald-400 text-green-900 hover:bg-white font-bold h-14 px-8 rounded-full shadow-[0_0_20px_rgba(52,211,153,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] transition-all duration-300"
-                                onClick={() => setActiveSection('commander')}
+                                onClick={() => navigateToSection('commander')}
                             >
                                 Programmer un ramassage <ArrowRight className="ml-2 h-5 w-5" />
                             </Button>
@@ -248,10 +278,12 @@ export default function Lessive() {
             {/* Qui sommes-nous */}
             <section className="relative py-8">
                 <div className="grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
-                    <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500">
-                        <img src={ironingImage} alt="Repassage professionnel" className="w-full h-96 object-cover hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-green-900/60 to-transparent flex items-end p-6">
-                            <p className="text-white font-medium italic">"Soin du détail"</p>
+                    <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500 group">
+                        <img src={africanLessiveArt} alt="Femme africaine faisant la lessive" className="w-full h-96 object-cover hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute bottom-6 left-6 right-6">
+                            <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border-l-4 border-emerald-500">
+                                <p className="text-green-900 font-medium italic">"L'art de la lessive africaine"</p>
+                            </div>
                         </div>
                     </div>
                     <div className="order-1 md:order-2 space-y-6">
@@ -279,10 +311,10 @@ export default function Lessive() {
             <section>
                 <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {avantages.map((item, index) => (
-                        <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border-none shadow-soft hover:shadow-card bg-card/50 backdrop-blur-sm">
+                        <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border shadow-soft hover:shadow-xl bg-card">
                             <CardContent className="p-6 text-center">
-                                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-400/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                                    <item.icon className="h-8 w-8 text-green-600" />
+                                <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 flex items-center justify-center mb-4 group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
+                                    <item.icon className="h-8 w-8 text-green-600 group-hover:text-white transition-colors duration-300" />
                                 </div>
                                 <p className="font-bold text-gray-800">{item.text}</p>
                             </CardContent>
@@ -301,20 +333,25 @@ export default function Lessive() {
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Remplissez le formulaire et nous arrivons.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {etapesCommande.map((etape, index) => (
-                    <div key={index} className="relative p-6 rounded-2xl bg-card border hover:border-emerald-400 transition-colors group">
-                        <div className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shadow-lg group-hover:scale-110 transition-transform">
-                            {etape.step}
+            <div className="grid lg:grid-cols-3 gap-8 items-center">
+                <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
+                    {etapesCommande.map((etape, index) => (
+                        <div key={index} className="relative p-6 rounded-2xl bg-card border hover:border-emerald-400 transition-colors group">
+                            <div className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shadow-lg group-hover:scale-110 transition-transform">
+                                {etape.step}
+                            </div>
+                            <h3 className="font-heading text-lg font-bold mb-2 mt-2">{etape.title}</h3>
+                            <p className="text-sm text-muted-foreground">{etape.description}</p>
                         </div>
-                        <h3 className="font-heading text-lg font-bold mb-2 mt-2">{etape.title}</h3>
-                        <p className="text-sm text-muted-foreground">{etape.description}</p>
-                    </div>
-                ))}
+                    ))}
+                </div>
+                <div className="hidden lg:block rounded-2xl overflow-hidden shadow-xl rotate-2 hover:rotate-0 transition-all duration-500">
+                    <img src={pressingDelivery} alt="Livraison de linge propre" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" />
+                </div>
             </div>
 
-            <Card className="border-none shadow-2xl overflow-hidden bg-card/80 backdrop-blur">
-                <div className="h-2 w-full bg-gradient-to-r from-green-600 to-emerald-400" />
+            <Card className="border-none shadow-2xl overflow-hidden bg-card">
+                <div className="h-3 w-full bg-emerald-500" />
                 <CardHeader className="bg-secondary/20 border-b">
                     <CardTitle className="flex items-center gap-3 text-2xl">
                         <ShoppingBag className="h-6 w-6 text-green-600" />
@@ -396,7 +433,15 @@ export default function Lessive() {
                     };
 
                     return (
-                        <Card key={index} className={`border ${colorMap[service.color]} hover:shadow-lg transition-all`}>
+                        <Card key={index} className={`border ${colorMap[service.color]} hover:shadow-lg transition-all overflow-hidden`}>
+                            <div className="h-48 overflow-hidden relative group-hover:shadow-inner">
+                                <div className={`absolute inset-0 bg-${service.color}-900/10 z-10`} />
+                                <img
+                                    src={service.image}
+                                    alt={service.title}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                            </div>
                             <CardHeader>
                                 <div className="flex items-center gap-4">
                                     <div className={`p-3 rounded-xl bg-white shadow-sm ${iconColor[service.color]}`}>
@@ -436,8 +481,9 @@ export default function Lessive() {
                 {formules.map((f, i) => {
                     const Icon = f.icon;
                     return (
-                        <Card key={i} className={`relative hover:shadow-2xl transition-all duration-300 flex flex-col ${f.popular ? 'border-emerald-400 border-2 scale-105 z-10 shadow-xl' : 'border-border'}`}>
+                        <Card key={i} className={`relative hover:shadow-2xl transition-all duration-300 flex flex-col bg-card ${f.popular ? 'border-emerald-400 border-2 scale-105 z-10 shadow-xl' : 'border-border'}`}>
                             {f.popular && <div className="absolute top-0 right-0 bg-emerald-500 text-white px-3 py-1 text-sm font-bold rounded-bl-lg">Choix Malin</div>}
+                            <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500" />
                             <CardHeader className="text-center pt-8">
                                 <div className="w-16 h-16 mx-auto rounded-full bg-green-50 flex items-center justify-center mb-4">
                                     <Icon className="h-8 w-8 text-green-600" />
@@ -454,7 +500,7 @@ export default function Lessive() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Button className={`w-full ${f.popular ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-slate-800 hover:bg-black'} text-white`} onClick={() => setActiveSection('contact')}>
+                                <Button className={`w-full ${f.popular ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-slate-800 hover:bg-black'} text-white`} onClick={() => navigateToSection('contact')}>
                                     Choisir cette formule
                                 </Button>
                             </CardContent>
@@ -473,7 +519,7 @@ export default function Lessive() {
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Confiez-nous la gestion du linge de votre établissement.</p>
             </div>
 
-            <Card className="bg-gradient-to-br from-green-900 to-teal-900 text-white overflow-hidden max-w-5xl mx-auto">
+            <Card className="bg-green-900 text-white overflow-hidden max-w-5xl mx-auto shadow-2xl border-none">
                 <CardContent className="p-12 space-y-8">
                     <Building2 className="h-16 w-16 mx-auto opacity-80" />
                     <div className="grid md:grid-cols-2 gap-8 text-left">
@@ -490,7 +536,7 @@ export default function Lessive() {
                             <div className="flex flex-wrap gap-2">
                                 {ciblesPro.map((c, i) => <Badge key={i} variant="secondary" className="bg-white/20 hover:bg-white/30 text-white">{c}</Badge>)}
                             </div>
-                            <Button className="w-full mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold" onClick={() => setActiveSection('contact')}>
+                            <Button className="w-full mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold" onClick={() => navigateToSection('contact')}>
                                 Demander un devis
                             </Button>
                         </div>
@@ -577,7 +623,7 @@ export default function Lessive() {
                 <aside className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card/95 backdrop-blur border-r shadow-2xl lg:shadow-none transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                     <div className="flex flex-col h-full">
                         <div className="p-6 border-b flex items-center justify-between">
-                            <span className="font-heading text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                            <span className="font-heading text-2xl font-bold text-green-700">
                                 Pressing Plus
                             </span>
                             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}><X /></Button>
@@ -586,7 +632,7 @@ export default function Lessive() {
                             {navigation.map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
+                                    onClick={() => { navigateToSection(item.id); setSidebarOpen(false); }}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeSection === item.id ? 'bg-green-600 text-white shadow-md' : 'text-muted-foreground hover:bg-secondary'}`}
                                 >
                                     <item.icon className="h-5 w-5" />

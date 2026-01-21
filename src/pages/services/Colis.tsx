@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,8 +42,8 @@ import {
     ArrowRight
 } from 'lucide-react';
 
-// Import images
-import colisCustomerImage from '@/assets/services/colis-customer.png?format=webp&quality=80';
+// Import images - African context
+import colisHeroImage from '@/assets/services/colis-hero.png';
 import colisDeliveryImage from '@/assets/services/colis-delivery.png?format=webp&quality=80';
 import colisWarehouseImage from '@/assets/services/colis-warehouse.png?format=webp&quality=80';
 
@@ -129,9 +129,32 @@ const paysInternational = [
 ];
 
 export default function Colis() {
-    const [activeSection, setActiveSection] = useState<Section>('accueil');
+    // URL-based navigation
+    const getInitialSection = (): Section => {
+        const hash = window.location.hash.replace('#', '') as Section;
+        return navigation.some(nav => nav.id === hash) ? hash : 'accueil';
+    };
+
+    const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { toast } = useToast();
+
+    // Navigate to section and update URL
+    const navigateToSection = useCallback((section: Section) => {
+        window.location.hash = section; setActiveSection(section);
+    }, []);
+
+    // Handle hash changes (browser back/forward)
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '') as Section;
+            if (navigation.some(nav => nav.id === hash)) {
+                setActiveSection(hash);
+            }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
 
     // Form states
     const [envoiForm, setEnvoiForm] = useState({
@@ -247,9 +270,9 @@ export default function Colis() {
         <div className="space-y-16 animate-fade-in">
             {/* Hero Section */}
             <section className="relative rounded-3xl overflow-hidden min-h-[500px] flex items-center shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-r from-african-yellow/90 via-african-earth/80 to-black/80 z-10" />
+                <div className="absolute inset-0 bg-black/50 z-10" />
                 <div className="absolute inset-0">
-                    <img src={colisCustomerImage} alt="Cliente heureuse recevant un colis" className="w-full h-full object-cover scale-105 animate-slow-zoom" style={{ objectPosition: 'center 20%' }} />
+                    <img src={colisHeroImage} alt="Cliente heureuse recevant un colis" className="w-full h-full object-cover scale-105 animate-slow-zoom" style={{ objectPosition: 'center 20%' }} />
                 </div>
 
                 <div className="relative z-20 container px-6 md:px-12 py-16 text-white grid md:grid-cols-2 gap-8 items-center">
@@ -257,8 +280,8 @@ export default function Colis() {
                         <Badge className="bg-white/20 hover:bg-white/30 text-white border-none py-1.5 px-4 backdrop-blur-md mb-2">
                             🌍 Leader de la logistique au Cameroun
                         </Badge>
-                        <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight">
-                            Vos colis, notre <span className="text-african-yellow">priorité</span>.
+                        <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+                            Envoyez vos colis partout au <span className="text-african-yellow">Cameroun</span> et à l'international
                         </h1>
                         <p className="text-lg md:text-xl text-white/90 max-w-xl font-light leading-relaxed">
                             Envoyez vos colis partout au Cameroun et dans le monde avec rapidité, sécurité et des tarifs imbattables.
@@ -267,7 +290,7 @@ export default function Colis() {
                             <Button
                                 size="lg"
                                 className="bg-african-yellow text-black hover:bg-white font-bold h-14 px-8 rounded-full shadow-[0_0_20px_rgba(255,193,7,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] transition-all duration-300"
-                                onClick={() => setActiveSection('envoyer')}
+                                onClick={() => navigateToSection('envoyer')}
                             >
                                 Envoyer un colis <ChevronRight className="ml-2 h-5 w-5" />
                             </Button>
@@ -275,7 +298,7 @@ export default function Colis() {
                                 size="lg"
                                 variant="outline"
                                 className="border-white/50 text-white hover:bg-white/10 h-14 px-8 rounded-full backdrop-blur-sm"
-                                onClick={() => setActiveSection('tarifs')}
+                                onClick={() => navigateToSection('tarifs')}
                             >
                                 Voir les tarifs
                             </Button>
@@ -289,10 +312,12 @@ export default function Colis() {
             {/* Qui sommes-nous */}
             <section className="relative py-8">
                 <div className="grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
-                    <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500">
+                    <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500 group">
                         <img src={colisDeliveryImage} alt="Livreur Le Bon Petit remettant un colis" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                            <p className="text-white font-medium italic">"Le sourire à chaque livraison"</p>
+                        <div className="absolute bottom-6 left-6 right-6">
+                            <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border-l-4 border-african-yellow">
+                                <p className="text-african-earth font-medium italic">"Le sourire à chaque livraison"</p>
+                            </div>
                         </div>
                     </div>
                     <div className="order-1 md:order-2 space-y-6">
@@ -322,10 +347,10 @@ export default function Colis() {
             <section>
                 <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {avantages.map((item, index) => (
-                        <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border-none shadow-soft hover:shadow-card bg-card/50 backdrop-blur-sm">
+                        <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border shadow-soft hover:shadow-xl bg-card">
                             <CardContent className="p-6 text-center">
-                                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-african-yellow/20 to-african-yellow/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                                    <item.icon className="h-8 w-8 text-african-earth" />
+                                <div className="w-16 h-16 mx-auto rounded-2xl bg-african-yellow/20 flex items-center justify-center mb-4 group-hover:bg-african-yellow group-hover:text-black transition-colors duration-300">
+                                    <item.icon className="h-8 w-8 text-african-earth group-hover:text-black transition-colors duration-300" />
                                 </div>
                                 <p className="font-bold text-gray-800">{item.text}</p>
                             </CardContent>
@@ -335,8 +360,8 @@ export default function Colis() {
             </section>
 
             {/* CTA Rapide */}
-            <div className="rounded-3xl bg-gradient-to-r from-african-earth to-black p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-african-yellow/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="rounded-3xl bg-african-earth p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 <div className="relative z-10 space-y-6">
                     <h3 className="font-heading text-3xl font-bold">Prêt à expédier ?</h3>
                     <p className="text-white/80 max-w-2xl mx-auto text-lg">
@@ -345,7 +370,7 @@ export default function Colis() {
                     <Button
                         size="lg"
                         className="bg-white text-african-earth hover:bg-african-yellow hover:text-black font-bold rounded-full h-12 px-8"
-                        onClick={() => setActiveSection('envoyer')}
+                        onClick={() => navigateToSection('envoyer')}
                     >
                         Commencer l'envoi
                     </Button>
@@ -376,8 +401,8 @@ export default function Colis() {
             </div>
 
             {/* Formulaire complet */}
-            <Card className="border-none shadow-2xl overflow-hidden bg-card/80 backdrop-blur">
-                <div className="h-2 w-full bg-gradient-to-r from-african-yellow to-african-earth" />
+            <Card className="border-none shadow-2xl overflow-hidden bg-card">
+                <div className="h-3 w-full bg-african-yellow" />
                 <CardHeader className="bg-secondary/20 border-b">
                     <CardTitle className="flex items-center gap-3 text-2xl">
                         <Package className="h-6 w-6 text-african-yellow" />
@@ -575,7 +600,7 @@ export default function Colis() {
             <div className="bg-african-yellow/10 rounded-2xl p-8 text-center borderBorder-african-yellow/20">
                 <h4 className="font-heading text-xl font-bold mb-2">Une destination spécifique ?</h4>
                 <p className="text-muted-foreground mb-6">Nous pouvons probablement livrer là où vous en avez besoin. Contactez-nous pour une étude personnalisée.</p>
-                <Button variant="outline" className="border-african-earth text-african-earth hover:bg-african-earth hover:text-white" onClick={() => setActiveSection('contact')}>
+                <Button variant="outline" className="border-african-earth text-african-earth hover:bg-african-earth hover:text-white" onClick={() => navigateToSection('contact')}>
                     Contacter le service client
                 </Button>
             </div>
@@ -592,8 +617,8 @@ export default function Colis() {
 
             <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 {tarifs.map((tarif, index) => (
-                    <Card key={index} className="relative group overflow-hidden border-2 hover:border-african-yellow transition-all duration-300">
-                        <div className="absolute top-0 left-0 w-2 h-full bg-african-yellow group-hover:w-full group-hover:opacity-10 transition-all duration-300" />
+                    <Card key={index} className="relative group overflow-hidden border-2 hover:border-african-yellow transition-all duration-300 shadow-md hover:shadow-xl bg-card">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-african-yellow group-hover:w-3 transition-all duration-300" />
                         <CardHeader>
                             <div className="flex justify-between items-start mb-2">
                                 <Badge variant="outline" className="bg-background">{tarif.type.split(' ')[0]}</Badge>
@@ -622,7 +647,7 @@ export default function Colis() {
                         <h3 className="font-heading text-2xl font-bold mb-2">Gros volumes ou Expéditions régulières ?</h3>
                         <p className="text-white/80 max-w-md">Obtenez des tarifs préférentiels et un compte pro pour gérer vos envois business.</p>
                     </div>
-                    <Button size="lg" className="bg-white text-african-earth hover:bg-african-yellow hover:text-black font-bold whitespace-nowrap" onClick={() => setActiveSection('entreprises')}>
+                    <Button size="lg" className="bg-white text-african-earth hover:bg-african-yellow hover:text-black font-bold whitespace-nowrap" onClick={() => navigateToSection('entreprises')}>
                         Voir les offres Pro
                     </Button>
                 </CardContent>
@@ -663,11 +688,11 @@ export default function Colis() {
                                 </li>
                             ))}
                         </ul>
-                        <Button size="lg" className="w-full bg-african-earth text-white hover:bg-black" onClick={() => setActiveSection('contact')}>
+                        <Button size="lg" className="w-full bg-african-earth text-white hover:bg-black" onClick={() => navigateToSection('contact')}>
                             Devenir Partenaire
                         </Button>
                     </div>
-                    <div className="relative h-[400px] bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl flex items-center justify-center text-white p-8 overflow-hidden shadow-2xl">
+                    <div className="relative h-[400px] bg-african-earth rounded-2xl flex items-center justify-center text-white p-8 overflow-hidden shadow-2xl">
                         <div className="absolute inset-0">
                             <img src={colisWarehouseImage} alt="Entrepôt logistique moderne" className="w-full h-full object-cover opacity-30" />
                         </div>
@@ -692,7 +717,7 @@ export default function Colis() {
             </div>
 
             <div className="bg-card border-none shadow-2xl rounded-3xl overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-500 via-red-500 to-yellow-500" />
+                <div className="absolute top-0 left-0 w-full h-3 bg-african-yellow" />
                 <CardContent className="p-10 md:p-16 space-y-8">
                     <Package className="h-20 w-20 mx-auto text-african-yellow mb-6 animate-pulse-glow" />
                     <blockquote className="text-2xl md:text-3xl font-light leading-relaxed font-heading italic text-gray-700">
@@ -744,7 +769,7 @@ export default function Colis() {
 
             <div className="grid lg:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                    <Card className="bg-gradient-to-br from-african-yellow/10 to-transparent border-african-yellow/20">
+                    <Card className="bg-african-yellow/5 border-african-yellow/20">
                         <CardContent className="p-8 flex items-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-lg shrink-0">
                                 <MessageCircle className="h-8 w-8" />
@@ -844,7 +869,7 @@ export default function Colis() {
                 >
                     <div className="flex flex-col h-full">
                         <div className="p-6 border-b flex items-center justify-between">
-                            <span className="font-heading text-2xl font-bold bg-gradient-to-r from-african-yellow to-african-earth bg-clip-text text-transparent">
+                            <span className="font-heading text-2xl font-bold text-african-earth">
                                 Colis
                             </span>
                             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
@@ -857,7 +882,7 @@ export default function Colis() {
                                 <button
                                     key={item.id}
                                     onClick={() => {
-                                        setActiveSection(item.id);
+                                        navigateToSection(item.id);
                                         setSidebarOpen(false);
                                     }}
                                     className={`

@@ -194,9 +194,14 @@ export default function ListingDetail() {
                             <Home className="h-24 w-24 text-muted-foreground" />
                         </div>
                     )}
-                    <Badge className="absolute top-4 right-4 bg-african-green text-white">
-                        {listing.type_logement}
-                    </Badge>
+                    <div className="absolute top-4 right-4 flex gap-2">
+                        <Badge className="bg-white/90 backdrop-blur text-african-earth border-none">
+                            {listing.furnished ? 'Meublé' : 'Non meublé'}
+                        </Badge>
+                        <Badge className="bg-african-green text-white border-none">
+                            {listing.type_logement}
+                        </Badge>
+                    </div>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-6">

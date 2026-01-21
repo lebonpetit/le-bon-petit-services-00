@@ -107,6 +107,7 @@ export default function AdminDashboard() {
     const [listingsSearchTerm, setListingsSearchTerm] = useState('');
     const [serviceFilter, setServiceFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [landlordFilter, setLandlordFilter] = useState<string>('all');
     const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
     // Settings states
@@ -462,7 +463,8 @@ export default function AdminDashboard() {
             r.service_type.includes(searchTerm.toLowerCase());
         const matchesService = serviceFilter === 'all' || r.service_type === serviceFilter;
         const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-        return matchesSearch && matchesService && matchesStatus;
+        const matchesLandlord = landlordFilter === 'all' || r.landlord_id === landlordFilter;
+        return matchesSearch && matchesService && matchesStatus && matchesLandlord;
     });
 
     const pathToTab = (pathname: string) => {
@@ -1112,6 +1114,18 @@ export default function AdminDashboard() {
                                             <SelectItem value="all">Tous</SelectItem>
                                             <SelectItem value="new">Nouveaux</SelectItem>
                                             <SelectItem value="processed">Traités</SelectItem>
+                                            <SelectItem value="cancelled">Non conclues</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Select value={landlordFilter} onValueChange={setLandlordFilter}>
+                                        <SelectTrigger className="w-[200px]">
+                                            <SelectValue placeholder="Par Propriétaire" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Tous les propriétaires</SelectItem>
+                                            {landlords.map((l) => (
+                                                <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -1153,14 +1167,20 @@ export default function AdminDashboard() {
                                                 </a>
                                             </TableCell>
                                             <TableCell>
-                                                <span className="flex items-center gap-1 text-sm">
-                                                    <Calendar className="h-3 w-3 text-muted-foreground" />
-                                                    {new Date(request.created_at).toLocaleDateString('fr-FR')}
-                                                </span>
+                                                <div className="flex flex-col text-sm">
+                                                    <span className="flex items-center gap-1">
+                                                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                                                        {new Date(request.created_at).toLocaleDateString('fr-FR')}
+                                                    </span>
+                                                    <span className="flex items-center gap-1 text-xs text-muted-foreground ml-4">
+                                                        <Clock className="h-3 w-3" />
+                                                        {new Date(request.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant={request.status === 'new' ? 'destructive' : 'default'}>
-                                                    {request.status === 'new' ? 'Nouveau' : 'Traité'}
+                                                <Badge variant={request.status === 'new' ? 'destructive' : request.status === 'cancelled' ? 'secondary' : 'default'}>
+                                                    {request.status === 'new' ? 'Nouveau' : request.status === 'cancelled' ? 'Non conclue' : 'Traité'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>

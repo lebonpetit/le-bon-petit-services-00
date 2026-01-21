@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Loading component for lazy-loaded routes
@@ -43,6 +44,7 @@ const TenantMessages = lazy(() => import("./pages/tenant/Messages"));
 
 // Landlord Pages - lazy loaded
 const LandlordDashboard = lazy(() => import("./pages/landlord/LandlordDashboard"));
+const LandlordRequests = lazy(() => import("./pages/landlord/Requests"));
 const AddListing = lazy(() => import("./pages/landlord/AddListing"));
 const EditListing = lazy(() => import("./pages/landlord/EditListing"));
 const LandlordMessages = lazy(() => import("./pages/landlord/Messages"));
@@ -63,6 +65,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
 // Protected Route Component - keep sync for fast auth checks
 import { ProtectedRoute } from "./components/ProtectedRoute";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,167 +108,177 @@ function RoleBasedRedirect() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <BrowserRouter>
-        <Toaster />
-        <Sonner />
-        <ErrorBoundary>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <AuthProvider>
+        <BrowserRouter>
+          <Toaster />
+          <Sonner />
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Index />} />
 
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register/tenant" element={<RegisterTenant />} />
-              <Route path="/register/landlord" element={<RegisterLandlord />} />
-              <Route path="/pending-payment" element={<PendingPayment />} />
-              <Route path="/account-blocked" element={<AccountBlocked />} />
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register/tenant" element={<RegisterTenant />} />
+                <Route path="/register/landlord" element={<RegisterLandlord />} />
+                <Route path="/pending-payment" element={<PendingPayment />} />
+                <Route path="/account-blocked" element={<AccountBlocked />} />
 
-              {/* Service Forms (no auth required) */}
-              <Route path="/colis" element={<Colis />} />
-              <Route path="/gaz" element={<Gaz />} />
-              <Route path="/lessive" element={<Lessive />} />
-              <Route path="/poubelles" element={<Poubelles />} />
-              <Route path="/nettoyage" element={<Nettoyage />} />
+                {/* Service Forms (no auth required) */}
+                <Route path="/colis" element={<Colis />} />
+                <Route path="/gaz" element={<Gaz />} />
+                <Route path="/lessive" element={<Lessive />} />
+                <Route path="/poubelles" element={<Poubelles />} />
+                <Route path="/nettoyage" element={<Nettoyage />} />
 
-              {/* Logements - Public apartment rental section (furnished) */}
-              <Route path="/logements" element={<Logements />} />
-              <Route path="/appartements/:id" element={<ApartmentDetail />} />
+                {/* Logements - Public apartment rental section (furnished) */}
+                <Route path="/logements" element={<Logements />} />
+                <Route path="/appartements/:id" element={<ApartmentDetail />} />
 
-              {/* Habitations - Public housing rental section (unfurnished) */}
-              <Route path="/habitations" element={<Habitations />} />
-              <Route path="/habitations/:id" element={<HabitationDetail />} />
+                {/* Habitations - Public housing rental section (unfurnished) */}
+                <Route path="/habitations" element={<Habitations />} />
+                <Route path="/habitations/:id" element={<HabitationDetail />} />
 
-              {/* Tenant Routes */}
-              <Route
-                path="/tenant/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['tenant']}>
-                    <TenantDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Tenant Routes */}
+                <Route
+                  path="/tenant/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant']}>
+                      <TenantDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Landlord Routes */}
-              <Route
-                path="/landlord/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <LandlordDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/listings"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <LandlordDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/add-listing"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <AddListing />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/edit-listing/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <EditListing />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/landlord/messages"
-                element={
-                  <ProtectedRoute allowedRoles={['landlord']}>
-                    <LandlordMessages />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Landlord Routes */}
+                <Route
+                  path="/landlord/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/listings"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/add-listing"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <AddListing />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/requests"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordRequests />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/edit-listing/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <EditListing />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/landlord/messages"
+                  element={
+                    <ProtectedRoute allowedRoles={['landlord']}>
+                      <LandlordMessages />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Tenant Messages */}
-              <Route
-                path="/tenant/messages"
-                element={
-                  <ProtectedRoute allowedRoles={['tenant']}>
-                    <TenantMessages />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Tenant Messages */}
+                <Route
+                  path="/tenant/messages"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant']}>
+                      <TenantMessages />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Listing Detail (accessible to authenticated users) */}
-              <Route
-                path="/listings/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['tenant', 'landlord', 'admin']}>
-                    <ListingDetail />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Listing Detail (accessible to authenticated users) */}
+                <Route
+                  path="/listings/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['tenant', 'landlord', 'admin']}>
+                      <ListingDetail />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Admin Routes */}
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/tenants"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/landlords"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/listings"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/requests"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/settings"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Admin Routes */}
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/tenants"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/landlords"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/listings"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/requests"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/settings"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </BrowserRouter>
-    </AuthProvider>
+                {/* Catch-all */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider >
 );
 

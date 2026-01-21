@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -14,18 +14,27 @@ import {
 
 const navigation = [
   { name: "Accueil", href: "/", icon: Home },
-  { name: "Colis", href: "/colis", icon: Package },
-  { name: "Gaz", href: "/gaz", icon: Flame },
+  { name: "Expédition de colis", href: "/colis", icon: Package },
+  { name: "Livraison de gaz", href: "/gaz", icon: Flame },
   { name: "Lessive", href: "/lessive", icon: Shirt },
-  { name: "Poubelles", href: "/poubelles", icon: Trash2 },
+  { name: "Vidage de poubelles", href: "/poubelles", icon: Trash2 },
   { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
-  { name: "Logement", href: "/logements", icon: Building2 },
+  { name: "Logements meublés", href: "/logements", icon: Building2 },
   { name: "Habitations", href: "/habitations", icon: Home },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const location = useLocation();
+
+  // Check if current path matches navigation item
+  const isActive = (href: string) => {
+    if (href === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(href);
+  };
 
   const getDashboardLink = () => {
     if (!user) return "/logements";
@@ -79,15 +88,26 @@ export function Header() {
           {/* Desktop Navigation */}
           {!user && (
             <div className="hidden lg:flex items-center gap-1">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-secondary transition-colors duration-200"
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navigation.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 ${active
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-primary'
+                      }`}
+                  >
+                    {item.name}
+                    {/* Active underline indicator */}
+                    <span
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-primary rounded-full transition-all duration-300 ${active ? 'w-3/4 opacity-100' : 'w-0 opacity-0'
+                        }`}
+                    />
+                  </Link>
+                );
+              })}
             </div>
           )}
 
@@ -124,7 +144,7 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <Button variant="cta" size="sm" className="flex px-3 sm:px-4 text-xs sm:text-sm" asChild>
-                <Link to="/logements">Connexion</Link>
+                <Link to="/login">Connexion</Link>
               </Button>
             )}
 
@@ -145,17 +165,26 @@ export function Header() {
           <div className="lg:hidden absolute top-[calc(100%+1px)] left-0 w-full bg-background/95 backdrop-blur-md border-b border-border shadow-lg animate-slide-up py-4">
             <div className="flex flex-col gap-2">
               {!user &&
-                navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-secondary transition-colors duration-200"
-                  >
-                    <item.icon className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{item.name}</span>
-                  </Link>
-                ))}
+                navigation.map((item) => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active
+                        ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                        : 'text-foreground hover:bg-secondary'
+                        }`}
+                    >
+                      <item.icon className={`h-5 w-5 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className="font-medium">{item.name}</span>
+                      {active && (
+                        <span className="ml-auto w-2 h-2 rounded-full bg-primary animate-pulse" />
+                      )}
+                    </Link>
+                  );
+                })}
 
               {user ? (
                 <>
@@ -176,8 +205,8 @@ export function Header() {
                 </>
               ) : (
                 <Button variant="cta" className="mt-2 mx-4" asChild>
-                  <Link to="/logements" onClick={() => setMobileMenuOpen(false)}>
-                    Connexion Logements
+                  <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                    Connexion
                   </Link>
                 </Button>
               )}
