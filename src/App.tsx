@@ -44,7 +44,7 @@ const TenantMessages = lazy(() => import("./pages/tenant/Messages"));
 
 // Landlord Pages - lazy loaded
 const LandlordDashboard = lazy(() => import("./pages/landlord/LandlordDashboard"));
-const LandlordRequests = lazy(() => import("./pages/landlord/Requests"));
+const LandlordRequests = lazy(() => import("./pages/landlord/LandlordRequestsPage"));
 const AddListing = lazy(() => import("./pages/landlord/AddListing"));
 const EditListing = lazy(() => import("./pages/landlord/EditListing"));
 const LandlordMessages = lazy(() => import("./pages/landlord/Messages"));
