@@ -58,6 +58,10 @@ const fieldLabels: Record<string, string> = {
     contenu: 'Contenu du colis',
     destinataire: 'Destinataire',
     telephoneDestinataire: 'Téléphone destinataire',
+    type: 'Type de demande',
+    description: 'Description du besoin',
+    adresse: 'Adresse / Quartier',
+    service_demande: 'Service souhaité',
 };
 
 // Labels pour les services de nettoyage

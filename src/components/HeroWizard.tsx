@@ -245,15 +245,20 @@ export function HeroBookingWizard() {
             return;
         }
 
+        // Map 'autre' to a valid service type (using 'nettoyage' as generic service fallback)
+        // and 'gestion_ordure' etc to strict ServiceType if they don't match exactly.
+        // Since we updated Select values to match ServiceType, we just handle 'autre'.
+        const validServiceType = orderForm.service === 'autre' ? 'nettoyage' : orderForm.service;
+
         setOrderLoading(true);
         try {
             const { error } = await supabase.from('requests').insert({
-                service_type: 'commande_generale',
+                service_type: validServiceType,
                 payload: {
                     type: 'commande_generale',
                     nom: orderForm.nom,
                     telephone: orderForm.telephone,
-                    service_demande: orderForm.service,
+                    service_demande: orderForm.service, // Keeps 'autre' if selected
                     description: orderForm.description,
                     adresse: orderForm.adresse,
                 },
@@ -918,9 +923,9 @@ export function HeroBookingWizard() {
             {showOrderModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowOrderModal(false)} />
-                    <div className="relative bg-card rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="relative bg-card rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-african-green to-primary p-6 text-white">
+                        <div className="bg-gradient-to-r from-african-green to-primary p-6 text-white sticky top-0 z-10">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="font-heading font-bold text-2xl">Commande Rapide</h3>
@@ -934,7 +939,7 @@ export function HeroBookingWizard() {
 
                         {/* Form */}
                         <form onSubmit={handleOrderSubmit} className="p-6 space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="order-nom">Nom complet *</Label>
                                     <Input
@@ -967,10 +972,10 @@ export function HeroBookingWizard() {
                                         <SelectValue placeholder="Choisir un service" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="gestion_ordure">Gestion d'ordure</SelectItem>
-                                        <SelectItem value="livraison_gaz">Livraison de gaz</SelectItem>
-                                        <SelectItem value="expedition_colis">Expédition de colis</SelectItem>
-                                        <SelectItem value="ramassage_lessive">Ramassage lessive</SelectItem>
+                                        <SelectItem value="poubelles">Gestion d'ordure</SelectItem>
+                                        <SelectItem value="gaz">Livraison de gaz</SelectItem>
+                                        <SelectItem value="colis">Expédition de colis</SelectItem>
+                                        <SelectItem value="lessive">Ramassage lessive</SelectItem>
                                         <SelectItem value="nettoyage">Nettoyage professionnel</SelectItem>
                                         <SelectItem value="logement">Recherche de logement</SelectItem>
                                         <SelectItem value="autre">Autre service</SelectItem>

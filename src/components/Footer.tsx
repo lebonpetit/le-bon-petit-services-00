@@ -96,7 +96,7 @@ export function Footer() {
         <div className="mt-6 lg:mt-12 pt-4 lg:pt-6 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Le Bon Petit. Tous droits réservés.
+              © {new Date().getFullYear()} Le Bon Petit. Tous droits réservés. | Développé par <a href="https://www.facebook.com/jbs2237" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">L'agence Johnny Black Solutions</a>
             </p>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Fièrement camerounais</span>
@@ -112,6 +112,6 @@ export function Footer() {
 
       {/* Bottom Ndop border */}
       <div className="h-1 ndop-border" />
-    </footer>
+    </footer >
   );
 }
