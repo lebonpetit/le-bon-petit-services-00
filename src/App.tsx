@@ -38,6 +38,7 @@ const Gaz = lazy(() => import("./pages/services/Gaz"));
 const Lessive = lazy(() => import("./pages/services/Lessive"));
 const Poubelles = lazy(() => import("./pages/services/Poubelles"));
 const Nettoyage = lazy(() => import("./pages/services/Nettoyage"));
+const Demenagement = lazy(() => import("./pages/services/Demenagement"));
 
 // Tenant Pages - lazy loaded
 const TenantDashboard = lazy(() => import("./pages/tenant/TenantDashboard"));
@@ -141,6 +142,7 @@ const App = () => (
                 <Route path="/lessive" element={<><SEO title="Service de Lessive" description="Ramassage et livraison de votre lessive à domicile. Pressing de qualité à Douala." /><Lessive /></>} />
                 <Route path="/poubelles" element={<><SEO title="Gestion des Ordures" description="Service de collecte et gestion des ordures ménagères à Douala." /><Poubelles /></>} />
                 <Route path="/nettoyage" element={<><SEO title="Nettoyage & Entretien" description="Service de nettoyage professionnel pour particuliers et entreprises." /><Nettoyage /></>} />
+                <Route path="/demenagement" element={<><SEO title="Déménagement & Aménagement" description="Service de déménagement et aménagement professionnel à Douala." /><Demenagement /></>} />
 
                 {/* Static Info Pages */}
                 <Route path="/a-propos" element={<><SEO title="À Propos" description="Découvrez Le Bon Petit, startup camerounaise de services de proximité." /><APropos /></>} />

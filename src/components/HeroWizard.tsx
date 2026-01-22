@@ -20,7 +20,8 @@ import {
     MapPin,
     X,
     Send,
-    Bug
+    Bug,
+    Truck
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
@@ -36,7 +37,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 
-type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement' | null;
+type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement' | 'demenagement' | null;
 
 const services = [
     { id: 'poubelles', label: "Gestion d'ordure", icon: Trash2, color: 'text-green-500', bg: 'bg-gradient-to-br from-green-500 to-emerald-500', border: 'border-green-200' },
@@ -45,6 +46,7 @@ const services = [
     { id: 'lessive', label: 'Ramassage lessive', icon: Shirt, color: 'text-violet-500', bg: 'bg-gradient-to-br from-violet-500 to-purple-500', border: 'border-violet-200' },
     { id: 'nettoyage', label: 'Nettoyage & Assainissement', icon: Sparkles, color: 'text-teal-500', bg: 'bg-gradient-to-br from-teal-500 to-green-500', border: 'border-teal-200' },
     { id: 'logement', label: 'Logements meublés', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
+    { id: 'demenagement', label: 'Déménagement', icon: Truck, color: 'text-amber-600', bg: 'bg-gradient-to-br from-amber-500 to-yellow-600', border: 'border-amber-200' },
 ];
 
 const stats = [
@@ -94,6 +96,10 @@ export function HeroBookingWizard() {
     const handleServiceSelect = (id: string) => {
         if (id === 'logement') {
             navigate('/logements');
+            return;
+        }
+        if (id === 'demenagement') {
+            navigate('/demenagement');
             return;
         }
         setSelectedService(id as ServiceType);

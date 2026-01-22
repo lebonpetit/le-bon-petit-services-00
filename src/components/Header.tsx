@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut, Sparkles } from "lucide-react";
+import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut, Sparkles, Truck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,14 +12,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Services grouped for dropdown
+const servicesMenu = [
+  { name: "Gestion d'ordure", href: "/poubelles", icon: Trash2 },
+  { name: "Livraison de gaz", href: "/gaz", icon: Flame },
+  { name: "Expédition de colis", href: "/colis", icon: Package },
+  { name: "Ramassage lessive", href: "/lessive", icon: Shirt },
+  { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
+];
+
+// Main navigation items
 const navigation = [
+  { name: "Accueil", href: "/", icon: Home },
+  { name: "Logement", href: "/logements", icon: Building2 },
+  { name: "Déménagement", href: "/demenagement", icon: Truck },
+];
+
+// All navigation for mobile
+const allNavigation = [
   { name: "Accueil", href: "/", icon: Home },
   { name: "Gestion d'ordure", href: "/poubelles", icon: Trash2 },
   { name: "Livraison de gaz", href: "/gaz", icon: Flame },
   { name: "Expédition de colis", href: "/colis", icon: Package },
   { name: "Ramassage lessive", href: "/lessive", icon: Shirt },
-  { name: "Nettoyage & Assainissement", href: "/nettoyage", icon: Sparkles },
+  { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
   { name: "Logement", href: "/logements", icon: Building2 },
+  { name: "Déménagement", href: "/demenagement", icon: Truck },
 ];
 
 export function Header() {
@@ -33,6 +51,11 @@ export function Header() {
       return location.pathname === '/';
     }
     return location.pathname.startsWith(href);
+  };
+
+  // Check if any service is active
+  const isServiceActive = () => {
+    return servicesMenu.some(item => location.pathname.startsWith(item.href));
   };
 
   const getDashboardLink = () => {
@@ -74,20 +97,52 @@ export function Header() {
       <div className="h-1 ndop-border" />
 
       <nav className="container mx-auto px-4 lg:px-8">
-        <div className="flex h-20 lg:h-28 items-center justify-between">
+        <div className="flex h-16 lg:h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img
               src="/logo.jpg"
               alt="Le Bon Petit Logo"
-              className="h-16 lg:h-24 w-auto rounded-xl object-cover shadow-soft group-hover:shadow-card transition-shadow duration-300"
+              className="h-12 lg:h-16 w-auto rounded-xl object-cover shadow-soft group-hover:shadow-card transition-shadow duration-300"
             />
           </Link>
 
           {/* Desktop Navigation */}
           {!user && (
             <div className="hidden lg:flex items-center gap-1">
-              {navigation.map((item) => {
+              {/* Accueil */}
+              <Link
+                to="/"
+                className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 ${isActive('/') && location.pathname === '/'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-primary'
+                  }`}
+              >
+                Accueil
+              </Link>
+
+              {/* Services Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-all duration-200 ${isServiceActive() ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
+                    Nos Services
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-56">
+                  {servicesMenu.map((item) => (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.href} className="flex items-center gap-3 cursor-pointer">
+                        <item.icon className="h-4 w-4 text-primary" />
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Logement & Déménagement */}
+              {navigation.filter(item => item.name !== 'Accueil').map((item) => {
                 const active = isActive(item.href);
                 return (
                   <Link
@@ -99,11 +154,6 @@ export function Header() {
                       }`}
                   >
                     {item.name}
-                    {/* Active underline indicator */}
-                    <span
-                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-primary rounded-full transition-all duration-300 ${active ? 'w-3/4 opacity-100' : 'w-0 opacity-0'
-                        }`}
-                    />
                   </Link>
                 );
               })}
@@ -164,7 +214,7 @@ export function Header() {
           <div className="lg:hidden absolute top-[calc(100%+1px)] left-0 w-full bg-background/95 backdrop-blur-md border-b border-border shadow-lg animate-slide-up py-4">
             <div className="flex flex-col gap-2">
               {!user &&
-                navigation.map((item) => {
+                allNavigation.map((item) => {
                   const active = isActive(item.href);
                   return (
                     <Link

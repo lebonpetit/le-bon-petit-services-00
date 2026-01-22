@@ -9,6 +9,7 @@ import {
     Sparkles,
     Home,
     Shirt,
+    Truck,
     CheckCircle2,
     Phone
 } from 'lucide-react';
@@ -75,9 +76,20 @@ export default function Tarifs() {
             icon: Home,
             color: 'bg-orange-500',
             plans: [
-                { name: "Studios", price: "À partir de 50 000", unit: "FCFA/mois", features: ["Meublé et équipé", "Quartiers sécurisés"] },
-                { name: "Appartements", price: "À partir de 100 000", unit: "FCFA/mois", features: ["2-3 chambres", "Eau & électricité"] },
+                { name: "Studios", price: "À partir de 15 000", unit: "FCFA/jour", features: ["Meublé et équipé", "Quartiers sécurisés"] },
+                { name: "Appartements", price: "À partir de 25 000", unit: "FCFA/jour", features: ["2-3 chambres", "Eau & électricité"] },
                 { name: "Villas", price: "Sur demande", unit: "", features: ["Haut standing", "Personnalisé"] },
+            ]
+        },
+        {
+            id: 'demenagement',
+            title: "Déménagement & Aménagement",
+            icon: Truck,
+            color: 'bg-amber-500',
+            plans: [
+                { name: "Transport simple", price: "À partir de 10 000", unit: "FCFA", features: ["Petit volume", "Courte distance"] },
+                { name: "Déménagement standard", price: "À partir de 50 000", unit: "FCFA", features: ["Équipe 2-3 personnes", "Appartement"] },
+                { name: "Déménagement complet", price: "Sur devis", unit: "", features: ["Emballage + Transport", "Installation"] },
             ]
         },
     ];

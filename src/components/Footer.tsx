@@ -41,17 +41,19 @@ export function Footer() {
             <div className="text-left">
               <h3 className="font-heading font-semibold text-foreground text-sm lg:text-base mb-2 lg:mb-4">Nos Services</h3>
               <ul className="space-y-1 lg:space-y-2">
-                {["Gestion d'ordure", "Expédition de colis", "Livraison de gaz", "Lessive", "Nettoyage", "Logement"].map((service) => (
-                  <li key={service}>
-                    <a href={
-                      service === "Expédition de colis" ? "/colis" :
-                        service === "Livraison de gaz" ? "/gaz" :
-                          service === "Gestion d'ordure" ? "/poubelles" :
-                            service === "Logement" ? "/logements" :
-                              `/${service.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
-                    } className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
-                      {service}
-                    </a>
+                {[
+                  { name: "Gestion d'ordure", path: "/poubelles" },
+                  { name: "Expédition de colis", path: "/colis" },
+                  { name: "Livraison de gaz", path: "/gaz" },
+                  { name: "Lessive", path: "/lessive" },
+                  { name: "Nettoyage", path: "/nettoyage" },
+                  { name: "Logement", path: "/logements" },
+                  { name: "Déménagement", path: "/demenagement" }
+                ].map((service) => (
+                  <li key={service.name}>
+                    <Link to={service.path} className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+                      {service.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -62,11 +64,17 @@ export function Footer() {
           <div className="text-left">
             <h3 className="font-heading font-semibold text-foreground text-sm lg:text-base mb-2 lg:mb-4">Liens Utiles</h3>
             <ul className="space-y-1 lg:space-y-2">
-              {["À propos", "Tarifs", "FAQ", "CGU", "Confidentialité"].map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
-                    {link}
-                  </a>
+              {[
+                { name: "À propos", path: "/a-propos" },
+                { name: "Tarifs", path: "/tarifs" },
+                { name: "FAQ", path: "/faq" },
+                { name: "CGU", path: "/cgu" },
+                { name: "Confidentialité", path: "/confidentialite" }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link to={link.path} className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -78,15 +86,15 @@ export function Footer() {
             <ul className="space-y-1 lg:space-y-3">
               <li className="flex items-center justify-start gap-2 lg:gap-3 text-xs lg:text-sm text-muted-foreground">
                 <Phone className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
-                <span>{platform.contact_phone}</span>
+                <span>+237 690 547 084</span>
               </li>
               <li className="flex items-center justify-start gap-2 lg:gap-3 text-xs lg:text-sm text-muted-foreground">
                 <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
-                <span>{platform.contact_email}</span>
+                <span>contact@lebonpetit237.com</span>
               </li>
               <li className="flex items-center justify-start gap-2 lg:gap-3 text-xs lg:text-sm text-muted-foreground">
                 <MapPin className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
-                <span>{platform.address}</span>
+                <span>Douala, Cameroun</span>
               </li>
             </ul>
           </div>
