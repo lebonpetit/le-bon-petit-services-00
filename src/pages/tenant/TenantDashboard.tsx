@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase, Listing } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Home, MapPin, Phone, Eye, Calendar } from 'lucide-react';
+import { SEO } from '@/components/SEO';
 
 const quartiersDouala = [
     "Tous les quartiers",
@@ -83,6 +84,7 @@ export default function TenantDashboard() {
             subtitle="Trouvez le logement de vos rêves"
             navItems={tenantNavItems}
         >
+            <SEO title="Espace Locataire | Le Bon Petit" />
             {/* Search Filters */}
             <Card className="mb-6 shadow-soft">
                 <CardHeader className="pb-4">

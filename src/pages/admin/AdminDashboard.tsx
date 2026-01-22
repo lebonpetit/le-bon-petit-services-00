@@ -19,6 +19,7 @@ import {
     CreditCard, Clock, AlertTriangle, TrendingUp, RefreshCw, Calendar,
     MessageCircle, ExternalLink, ToggleLeft, Save, Home, Settings
 } from 'lucide-react';
+import { SEO } from '@/components/SEO';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
@@ -626,6 +627,7 @@ export default function AdminDashboard() {
             subtitle="Gérez la plateforme Le Bon Petit"
             navItems={adminNavItems}
         >
+            <SEO title="Administration | Le Bon Petit" />
             {/* Refresh Button */}
             <div className="flex justify-end mb-4">
                 <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}>

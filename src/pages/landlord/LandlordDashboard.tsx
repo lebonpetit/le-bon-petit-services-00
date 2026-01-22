@@ -9,6 +9,7 @@ import { supabase, Listing } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Home, MapPin, Eye, Edit, Trash2, Building2, TrendingUp } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { SEO } from '@/components/SEO';
 
 export default function LandlordDashboard() {
     const { user } = useAuth();
@@ -115,6 +116,7 @@ export default function LandlordDashboard() {
             subtitle="Gérez vos logements en toute simplicité"
             navItems={landlordNavItems}
         >
+            <SEO title="Espace Bailleur | Le Bon Petit" />
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <Card className="bg-gradient-to-br from-african-green/10 to-african-green/5">

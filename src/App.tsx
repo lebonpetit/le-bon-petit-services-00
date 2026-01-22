@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { SEO } from "./components/SEO";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -117,29 +118,29 @@ const App = () => (
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<><SEO /><Index /></>} />
 
                 {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register/tenant" element={<RegisterTenant />} />
-                <Route path="/register/landlord" element={<RegisterLandlord />} />
+                <Route path="/login" element={<><SEO title="Connexion" /><Login /></>} />
+                <Route path="/register/tenant" element={<><SEO title="Inscription Locataire" description="Créez votre compte locataire pour accéder à nos services." /><RegisterTenant /></>} />
+                <Route path="/register/landlord" element={<><SEO title="Inscription Bailleur" description="Devenez partenaire et publiez vos annonces immobilières." /><RegisterLandlord /></>} />
                 <Route path="/pending-payment" element={<PendingPayment />} />
                 <Route path="/account-blocked" element={<AccountBlocked />} />
                 <Route path="/dashboard" element={<RoleBasedRedirect />} />
 
                 {/* Service Forms (no auth required) */}
-                <Route path="/colis" element={<Colis />} />
-                <Route path="/gaz" element={<Gaz />} />
-                <Route path="/lessive" element={<Lessive />} />
-                <Route path="/poubelles" element={<Poubelles />} />
-                <Route path="/nettoyage" element={<Nettoyage />} />
+                <Route path="/colis" element={<><SEO title="Expédition de Colis" description="Service d'envoi de colis national et international rapide et sécurisé." /><Colis /></>} />
+                <Route path="/gaz" element={<><SEO title="Livraison de Gaz" description="Commandez votre bouteille de gaz en ligne et faites-vous livrer à domicile à Douala." /><Gaz /></>} />
+                <Route path="/lessive" element={<><SEO title="Service de Lessive" description="Ramassage et livraison de votre lessive à domicile. Pressing de qualité à Douala." /><Lessive /></>} />
+                <Route path="/poubelles" element={<><SEO title="Gestion des Ordures" description="Service de collecte et gestion des ordures ménagères à Douala." /><Poubelles /></>} />
+                <Route path="/nettoyage" element={<><SEO title="Nettoyage & Entretien" description="Service de nettoyage professionnel pour particuliers et entreprises." /><Nettoyage /></>} />
 
                 {/* Logements - Public apartment rental section (furnished) */}
-                <Route path="/logements" element={<Logements />} />
+                <Route path="/logements" element={<><SEO title="Logements Meublés" description="Trouvez des appartements et studios meublés à louer à Douala." /><Logements /></>} />
                 <Route path="/appartements/:id" element={<ApartmentDetail />} />
 
                 {/* Habitations - Public housing rental section (unfurnished) */}
-                <Route path="/habitations" element={<Habitations />} />
+                <Route path="/habitations" element={<><SEO title="Logements Non-Meublés" description="Location d'appartements et maisons non-meublés à Douala." /><Habitations /></>} />
                 <Route path="/habitations/:id" element={<HabitationDetail />} />
 
                 {/* Tenant Routes */}
@@ -147,6 +148,7 @@ const App = () => (
                   path="/tenant/dashboard"
                   element={
                     <ProtectedRoute allowedRoles={['tenant']}>
+                      <SEO title="Espace Locataire" />
                       <TenantDashboard />
                     </ProtectedRoute>
                   }

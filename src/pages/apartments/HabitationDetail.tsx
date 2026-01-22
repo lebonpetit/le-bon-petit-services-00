@@ -29,6 +29,7 @@ import {
     CheckCircle,
     XCircle,
 } from 'lucide-react';
+import { SEO } from '@/components/SEO';
 
 const budgetRanges = [
     { value: "0-50000", label: "Moins de 50 000 FCFA" },
@@ -184,6 +185,12 @@ export default function HabitationDetail() {
 
     return (
         <Layout>
+            <SEO
+                title={listing.title}
+                description={listing.description?.slice(0, 160) || `Logement non-meublé à louer à ${listing.quartier}, Douala`}
+                image={listing.photos?.[0]}
+                type="article"
+            />
             <div className="toghu-pattern min-h-screen">
                 <div className="container mx-auto px-4 py-8 max-w-5xl">
                     <div className="mb-6">

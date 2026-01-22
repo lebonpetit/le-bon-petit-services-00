@@ -11,6 +11,7 @@ import { ArrowLeft, MapPin, Phone, MessageCircle, Eye, Calendar, Home, ChevronLe
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { SEO } from '@/components/SEO';
 
 export default function ListingDetail() {
     const { id } = useParams<{ id: string }>();
@@ -145,6 +146,12 @@ export default function ListingDetail() {
 
     return (
         <Layout>
+            <SEO
+                title={listing.title}
+                description={listing.description?.slice(0, 160) || `Logement à louer à ${listing.quartier}, Douala`}
+                image={listing.photos?.[0]}
+                type="article"
+            />
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 <div className="mb-6">
                     <Link to="/tenant/dashboard" className="inline-flex items-center text-muted-foreground hover:text-foreground">

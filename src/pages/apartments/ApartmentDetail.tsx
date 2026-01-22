@@ -24,6 +24,7 @@ import {
     MessageCircle,
     Phone,
 } from 'lucide-react';
+import { SEO } from '@/components/SEO';
 
 const equipments = [
     { icon: Wifi, label: 'Wi-Fi' },
@@ -130,6 +131,12 @@ export default function ApartmentDetail() {
 
     return (
         <Layout>
+            <SEO
+                title={listing.title}
+                description={listing.description?.slice(0, 160) || `Appartement meublé à louer à ${listing.quartier}, Douala`}
+                image={listing.photos?.[0]}
+                type="article"
+            />
             <div className="african-pattern min-h-screen">
                 <div className="container mx-auto px-4 py-8 max-w-5xl">
                     <div className="mb-6">
