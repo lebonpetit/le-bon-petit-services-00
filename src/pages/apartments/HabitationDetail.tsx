@@ -483,7 +483,7 @@ export default function HabitationDetail() {
             </div>
 
             <WhatsAppButton
-                phoneNumber={listing.owner?.phone || '+237690000000'}
+                phoneNumber={listing.owner?.phone || '+237690547084'}
                 message={`Bonjour, je souhaite visiter le logement "${listing.title}"`}
             />
         </Layout>

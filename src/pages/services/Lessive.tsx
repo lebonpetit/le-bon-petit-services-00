@@ -583,8 +583,8 @@ export default function Lessive() {
                             </div>
                             <div>
                                 <h3 className="font-bold text-xl mb-1">WhatsApp Direct</h3>
-                                <p className="text-muted-foreground mb-3">+237 690 000 000</p>
-                                <a href="https://wa.me/237690000000" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold hover:underline">Ouvrir le chat →</a>
+                                <p className="text-muted-foreground mb-3">+237 690 547 084</p>
+                                <a href="https://wa.me/237690547084" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold hover:underline">Ouvrir le chat →</a>
                             </div>
                         </CardContent>
                     </Card>
@@ -643,7 +643,7 @@ export default function Lessive() {
                         <div className="p-4 border-t bg-secondary/30">
                             <div className="bg-card rounded-xl p-4 shadow-sm border border-green-200">
                                 <p className="text-xs text-muted-foreground mb-1 font-semibold uppercase">Une question ?</p>
-                                <p className="font-bold text-african-earth">+237 690 000 000</p>
+                                <p className="font-bold text-african-earth">+237 690 547 084</p>
                             </div>
                         </div>
                     </div>
@@ -669,7 +669,7 @@ export default function Lessive() {
                 </main>
 
                 <div className="fixed bottom-6 right-6 z-50">
-                    <WhatsAppButton phoneNumber="237690000000" message="Bonjour, je souhaite programmer une lessive." />
+                    <WhatsAppButton phoneNumber="237690547084" message="Bonjour, je souhaite programmer une lessive." />
                 </div>
             </div>
         </Layout>

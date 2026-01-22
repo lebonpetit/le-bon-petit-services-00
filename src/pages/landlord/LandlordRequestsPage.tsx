@@ -131,7 +131,7 @@ export default function LandlordRequests() {
 
                 <div className="grid lg:grid-cols-2 gap-6">
                     {/* Requests List */}
-                    <Card className="lg:h-[calc(100vh-16rem)] flex flex-col">
+                    <Card className={`lg:h-[calc(100vh-16rem)] flex flex-col ${selectedRequest ? 'hidden lg:flex' : 'flex'}`}>
                         <CardHeader className="pb-3 border-b">
                             <CardTitle className="text-lg">Demandes de réservation & visites</CardTitle>
                             <CardDescription>
@@ -186,37 +186,49 @@ export default function LandlordRequests() {
                     </Card>
 
                     {/* Request Detail */}
-                    <Card className="lg:h-[calc(100vh-16rem)] flex flex-col">
+                    <Card className={`lg:h-[calc(100vh-16rem)] flex flex-col ${!selectedRequest ? 'hidden lg:flex' : 'flex'}`}>
                         {selectedRequest ? (
                             <>
-                                <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
-                                    <div>
-                                        <CardTitle className="text-lg">Détails de la demande</CardTitle>
-                                        <CardDescription>ID: {selectedRequest.id.split('-')[0]}</CardDescription>
+                                <CardHeader className="pb-3 border-b flex flex-row items-center justify-between sticky top-0 bg-card z-10">
+                                    <div className="flex items-center gap-3">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="lg:hidden -ml-2 px-2"
+                                            onClick={() => setSelectedRequest(null)}
+                                        >
+                                            <ArrowRight className="h-5 w-5 rotate-180" />
+                                        </Button>
+                                        <div>
+                                            <CardTitle className="text-lg">Détails</CardTitle>
+                                            <CardDescription>ID: {selectedRequest.id.split('-')[0]}</CardDescription>
+                                        </div>
                                     </div>
-                                    <Button
-                                        variant={selectedRequest.status === 'new' ? 'cta' : 'outline'}
-                                        size="sm"
-                                        onClick={() => handleUpdateStatus(
-                                            selectedRequest.id,
-                                            selectedRequest.status === 'new' ? 'processed' : 'new'
-                                        )}
-                                    >
-                                        {selectedRequest.status === 'new' ? (
-                                            <><CheckCircle2 className="h-4 w-4 mr-2" /> Conclu</>
-                                        ) : (
-                                            'Marquer comme nouveau'
-                                        )}
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        className="ml-2"
-                                        onClick={() => handleUpdateStatus(selectedRequest.id, 'cancelled')}
-                                    >
-                                        <XCircle className="h-4 w-4 mr-2" />
-                                        Non conclue
-                                    </Button>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant={selectedRequest.status === 'new' ? 'cta' : 'outline'}
+                                            size="sm"
+                                            onClick={() => handleUpdateStatus(
+                                                selectedRequest.id,
+                                                selectedRequest.status === 'new' ? 'processed' : 'new'
+                                            )}
+                                        >
+                                            {selectedRequest.status === 'new' ? (
+                                                <><CheckCircle2 className="h-4 w-4 mr-2" /> Conclu</>
+                                            ) : (
+                                                'Marquer comme nouveau'
+                                            )}
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            className="ml-2"
+                                            onClick={() => handleUpdateStatus(selectedRequest.id, 'cancelled')}
+                                        >
+                                            <XCircle className="h-4 w-4 mr-2" />
+                                            Non conclue
+                                        </Button>
+                                    </div>
                                 </CardHeader>
                                 <CardContent className="p-6 overflow-y-auto flex-1 space-y-8">
                                     {/* Listing Info */}

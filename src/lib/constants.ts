@@ -89,7 +89,7 @@ export const LAUNDRY_TYPES = [
     "Autre"
 ];
 
-export const CLEANING_SERVICES = [
+export const NETTOYAGE_PRO_SERVICES = [
     { id: "domicile", label: "Nettoyage de domicile" },
     { id: "bureau", label: "Nettoyage de bureaux" },
     { id: "canapes", label: "Canapés & Chaises" },
@@ -97,8 +97,15 @@ export const CLEANING_SERVICES = [
     { id: "matelas", label: "Matelas" },
     { id: "vehicule", label: "Nettoyage véhicule" },
     { id: "espaces_ouverts", label: "Espaces ouverts" },
-    { id: "antiparasitaire", label: "Antiparasitaire" },
     { id: "evenement", label: "Événementiel" }
+];
+
+export const SANITATION_SERVICES = [
+    { id: "deratisation", label: "Dératisation (Rats/Souris)" },
+    { id: "desinsectisation", label: "Désinsectisation (Insectes)" },
+    { id: "fumigation", label: "Fumigation" },
+    { id: "desinfection", label: "Désinfection (Virus/Bactéries)" },
+    { id: "traitement_bois", label: "Traitement du bois" }
 ];
 
 export const WASTE_TYPES = [
@@ -115,3 +122,10 @@ export const WASTE_FREQUENCIES = [
     { id: "quotidien", label: "Quotidien" },
     { id: "ponctuel", label: "Ponctuel (Une fois)" }
 ];
+
+export const HOUSING_TYPES = ["Villa", "Appartement", "Studio", "Duplex", "Maison", "Autre"];
+export const CAR_TYPES = ["Berline", "4x4", "SUV", "Pick-up", "Bus", "Camion", "Moto"];
+export const FURNITURE_MATERIALS = ["Tissu", "Cuir", "Velours", "Daim", "Autre"];
+export const MATTRESS_SIZES = ["1 Place (90x190)", "2 Places (140x190)", "Queen Size (160x200)", "King Size (180x200)", "Berceau"];
+export const INTERVENTION_LOCATIONS = ["Habitation", "Bureau", "Restaurant", "Hôtel", "École", "Hôpital", "Commerce", "Espace ouvert", "Entrepôt"];
+export const EVENT_SPACES = ["Espace fermé (Salle)", "Espace ouvert (Jardin, Stade...)", "Mixte"];

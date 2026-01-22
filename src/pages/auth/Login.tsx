@@ -41,8 +41,8 @@ export default function Login() {
                     title: "Connexion réussie",
                     description: "Bienvenue sur Le Bon Petit !",
                 });
-                // Redirect to /logements which handles role-based redirection
-                navigate('/logements', { replace: true });
+                // Redirect to /dashboard which handles role-based redirection
+                navigate('/dashboard', { replace: true });
             }
         } catch (error) {
             toast({

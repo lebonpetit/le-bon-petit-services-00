@@ -57,7 +57,7 @@ type Section = 'accueil' | 'appartements' | 'reserver' | 'proprietaires' | 'serv
 
 const navigation: { id: Section; name: string; icon: any }[] = [
     { id: 'accueil', name: 'Accueil', icon: Home },
-    { id: 'appartements', name: 'Nos appartements', icon: Building2 },
+    { id: 'appartements', name: 'Nos logements', icon: Building2 },
     { id: 'reserver', name: 'Réserver', icon: CalendarCheck },
     { id: 'proprietaires', name: 'Propriétaires', icon: Users },
     { id: 'services', name: 'Services annexes', icon: Briefcase },
@@ -146,6 +146,7 @@ export default function Logements() {
         quartier: 'all',
         budget: 'all',
         typeBien: 'all',
+        furnished: 'all', // 'all', 'true', 'false'
     });
 
     // Form States
@@ -206,6 +207,11 @@ export default function Logements() {
             result = result.filter(l => l.type_logement === filters.typeBien);
         }
 
+        if (filters.furnished !== 'all') {
+            const isFurnished = filters.furnished === 'true';
+            result = result.filter(l => l.furnished === isFurnished);
+        }
+
         if (filters.budget !== 'all') {
             const [min, max] = filters.budget.split('-').map(Number);
             if (max) {
@@ -226,7 +232,6 @@ export default function Logements() {
                 .from('listings')
                 .select('*')
                 .eq('available', true)
-                .eq('furnished', true) // Only furnished for this page
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -340,7 +345,7 @@ export default function Logements() {
                                 <Building2 className="w-6 h-6" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="font-heading font-bold text-xl tracking-tight leading-none text-african-yellow text-center">Logements meublés</span>
+                                <span className="font-heading font-bold text-xl tracking-tight leading-none text-african-yellow text-center">Logement</span>
                                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">Haut de gamme</span>
                             </div>
                         </Link>
@@ -373,7 +378,7 @@ export default function Logements() {
                             <p className="text-xs text-muted-foreground">
                                 Besoin d'aide pour trouver ?
                             </p>
-                            <Button variant="link" className="text-african-yellow p-0 h-auto text-xs font-bold mt-1" onClick={() => scrollToSection('contact')}>
+                            <Button variant="link" className="text-african-yellow p-0 h-auto text-xs font-bold mt-1" onClick={() => navigateToSection('contact')}>
                                 Contactez le support
                             </Button>
                         </div>
@@ -387,7 +392,7 @@ export default function Logements() {
                         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
                             <Menu className="h-6 w-6" />
                         </Button>
-                        <span className="font-heading font-bold text-lg">Logements meublés</span>
+                        <span className="font-heading font-bold text-lg">Logement</span>
                         <div className="w-10" /> {/* Spacer */}
                     </header>
 
@@ -423,7 +428,7 @@ export default function Logements() {
                                             <Button
                                                 size="xl"
                                                 className="bg-african-yellow text-primary-foreground hover:bg-white hover:text-african-yellow border-none shadow-[0_0_20px_rgba(255,193,3,0.3)] transition-all duration-300"
-                                                onClick={() => scrollToSection('appartements')}
+                                                onClick={() => navigateToSection('appartements')}
                                             >
                                                 <Home className="mr-2 h-5 w-5" />
                                                 Explorer les résidences
@@ -432,7 +437,7 @@ export default function Logements() {
                                                 size="xl"
                                                 variant="outline"
                                                 className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-md"
-                                                onClick={() => scrollToSection('reserver')}
+                                                onClick={() => navigateToSection('reserver')}
                                             >
                                                 Réserver maintenant
                                             </Button>
@@ -479,7 +484,7 @@ export default function Logements() {
                                     </div>
                                     <div className="flex gap-2">
                                         <Button
-                                            variant={showFilters ? "african-yellow" : "outline"}
+                                            variant={showFilters ? "cta" : "outline"}
                                             onClick={() => setShowFilters(!showFilters)}
                                             className="flex items-center gap-2"
                                         >
@@ -493,7 +498,18 @@ export default function Logements() {
                                 {showFilters && (
                                     <Card className="border-african-yellow/20 bg-african-yellow/5 overflow-hidden animate-in slide-in-from-top-4 duration-300">
                                         <CardContent className="p-6">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                                                <div className="space-y-2">
+                                                    <Label>Type</Label>
+                                                    <Select value={filters.furnished} onValueChange={(v) => setFilters({ ...filters, furnished: v })}>
+                                                        <SelectTrigger className="bg-background border-african-yellow/20"><SelectValue placeholder="Tous" /></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="all">Tous les logements</SelectItem>
+                                                            <SelectItem value="true">Meublé</SelectItem>
+                                                            <SelectItem value="false">Non meublé</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
                                                 <div className="space-y-2">
                                                     <Label>Ville</Label>
                                                     <Select value={filters.city} onValueChange={(v) => setFilters({ ...filters, city: v })}>
@@ -523,7 +539,7 @@ export default function Logements() {
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Type de logement</Label>
+                                                    <Label>Type de bien</Label>
                                                     <Select value={filters.typeBien} onValueChange={(v) => setFilters({ ...filters, typeBien: v })}>
                                                         <SelectTrigger className="bg-background border-african-yellow/20"><SelectValue placeholder="Tous" /></SelectTrigger>
                                                         <SelectContent>
@@ -533,7 +549,7 @@ export default function Logements() {
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Prix / Nuit</Label>
+                                                    <Label>Prix</Label>
                                                     <Select value={filters.budget} onValueChange={(v) => setFilters({ ...filters, budget: v })}>
                                                         <SelectTrigger className="bg-background border-african-yellow/20"><SelectValue placeholder="Tous les prix" /></SelectTrigger>
                                                         <SelectContent>
@@ -628,7 +644,7 @@ export default function Logements() {
                                         <Button
                                             variant="link"
                                             className="mt-4 text-african-yellow"
-                                            onClick={() => setFilters({ city: 'all', quartier: 'all', typeBien: 'all', budget: 'all' })}
+                                            onClick={() => setFilters({ city: 'all', quartier: 'all', typeBien: 'all', budget: 'all', furnished: 'all' })}
                                         >
                                             Réinitialiser les filtres
                                         </Button>
@@ -872,7 +888,7 @@ export default function Logements() {
                                             </p>
                                         </div>
                                         <div className="space-y-4">
-                                            <a href="https://wa.me/237690000000" className="flex items-center gap-4 p-4 bg-green-50 rounded-2xl border border-green-100 hover:shadow-md transition-all">
+                                            <a href="https://wa.me/237690547084" className="flex items-center gap-4 p-4 bg-green-50 rounded-2xl border border-green-100 hover:shadow-md transition-all">
                                                 <div className="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center">
                                                     <MessageCircle className="w-6 h-6" />
                                                 </div>
@@ -881,13 +897,13 @@ export default function Logements() {
                                                     <p className="text-green-700">Réponse immédiate</p>
                                                 </div>
                                             </a>
-                                            <a href="tel:+237690000000" className="flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:shadow-md transition-all">
+                                            <a href="tel:+237690547084" className="flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:shadow-md transition-all">
                                                 <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center">
                                                     <Phone className="w-6 h-6" />
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-blue-900">Appel Direct</p>
-                                                    <p className="text-blue-700">+237 690 000 000</p>
+                                                    <p className="text-blue-700">+237 690 547 084</p>
                                                 </div>
                                             </a>
                                         </div>
@@ -912,7 +928,7 @@ export default function Logements() {
             </div>
 
             <WhatsAppButton
-                phoneNumber="+237690000000"
+                phoneNumber="+237690547084"
                 message="Bonjour, je suis intéressé par un appartement."
             />
         </Layout>

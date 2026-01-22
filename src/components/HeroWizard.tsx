@@ -17,12 +17,15 @@ import {
     Users,
     Clock,
     Shield,
-    MapPin
+    MapPin,
+    X,
+    Send,
+    Bug
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { GAS_BRANDS, GAS_SIZES, PARCEL_TYPES, INT_DESTINATIONS, CITIES, LAUNDRY_TYPES, CLEANING_SERVICES, WASTE_TYPES, WASTE_FREQUENCIES } from "@/lib/constants";
+import { GAS_BRANDS, GAS_SIZES, PARCEL_TYPES, INT_DESTINATIONS, CITIES, LAUNDRY_TYPES, NETTOYAGE_PRO_SERVICES, SANITATION_SERVICES, WASTE_TYPES, WASTE_FREQUENCIES, HOUSING_TYPES, CAR_TYPES, FURNITURE_MATERIALS, MATTRESS_SIZES, INTERVENTION_LOCATIONS, EVENT_SPACES } from "@/lib/constants";
 import {
     Select,
     SelectContent,
@@ -36,11 +39,11 @@ import { Badge } from "@/components/ui/badge";
 type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement' | null;
 
 const services = [
+    { id: 'poubelles', label: "Gestion d'ordure", icon: Trash2, color: 'text-green-500', bg: 'bg-gradient-to-br from-green-500 to-emerald-500', border: 'border-green-200' },
     { id: 'gaz', label: 'Livraison de gaz', icon: Flame, color: 'text-orange-500', bg: 'bg-gradient-to-br from-orange-500 to-red-500', border: 'border-orange-200' },
     { id: 'colis', label: 'Expédition de colis', icon: Package, color: 'text-blue-500', bg: 'bg-gradient-to-br from-blue-500 to-indigo-500', border: 'border-blue-200' },
     { id: 'lessive', label: 'Ramassage lessive', icon: Shirt, color: 'text-violet-500', bg: 'bg-gradient-to-br from-violet-500 to-purple-500', border: 'border-violet-200' },
-    { id: 'nettoyage', label: 'Nettoyage pro', icon: Sparkles, color: 'text-teal-500', bg: 'bg-gradient-to-br from-teal-500 to-green-500', border: 'border-teal-200' },
-    { id: 'poubelles', label: 'Vidage de poubelles', icon: Trash2, color: 'text-green-500', bg: 'bg-gradient-to-br from-green-500 to-emerald-500', border: 'border-green-200' },
+    { id: 'nettoyage', label: 'Nettoyage & Assainissement', icon: Sparkles, color: 'text-teal-500', bg: 'bg-gradient-to-br from-teal-500 to-green-500', border: 'border-teal-200' },
     { id: 'logement', label: 'Logements meublés', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
 ];
 
@@ -56,6 +59,15 @@ export function HeroBookingWizard() {
     const [subStep, setSubStep] = useState(1);
     const [selectedService, setSelectedService] = useState<ServiceType>(null);
     const [loading, setLoading] = useState(false);
+    const [showOrderModal, setShowOrderModal] = useState(false);
+    const [orderLoading, setOrderLoading] = useState(false);
+    const [orderForm, setOrderForm] = useState({
+        nom: '',
+        telephone: '',
+        service: '',
+        description: '',
+        adresse: '',
+    });
     const { toast } = useToast();
     const navigate = useNavigate();
 
@@ -66,6 +78,8 @@ export function HeroBookingWizard() {
         destinationType: 'national',
         parcelType: '',
         laundryType: '',
+        laundryType: '',
+        cleaningCategory: '',
         cleaningType: '',
         wasteType: '',
         wasteFrequency: '',
@@ -113,8 +127,12 @@ export function HeroBookingWizard() {
                 }
             }
             if (selectedService === 'nettoyage') {
-                if (subStep === 1 && !formData.cleaningType) {
-                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de nettoyage." });
+                if (subStep === 1 && !formData.cleaningCategory) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir une catégorie." });
+                    return;
+                }
+                if (subStep === 2 && !formData.cleaningType) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de prestation." });
                     return;
                 }
             }
@@ -133,7 +151,7 @@ export function HeroBookingWizard() {
             const maxSubSteps = (service: ServiceType) => {
                 if (service === 'colis') return 3;
                 if (service === 'lessive') return 2;
-                if (service === 'nettoyage') return 2;
+                if (service === 'nettoyage') return 3;
                 if (service === 'poubelles') return 2;
                 return 1;
             };
@@ -193,16 +211,68 @@ export function HeroBookingWizard() {
             destinationType: 'national',
             parcelType: '',
             laundryType: '',
+            laundryType: '',
+            cleaningCategory: '',
             cleaningType: '',
             wasteType: '',
             wasteFrequency: '',
             urgency: 'standard',
+            propertyType: '',
+            nbRooms: '',
+            surface: '',
+            material: '',
+            itemCount: '1',
+            hasStains: 'non',
+            locationType: '',
+            infestedZones: '',
+            address: '',
+            carType: '',
+            eventType: '',
+            eventSpace: '',
             destinationAddress: '',
             pickupAddress: '',
             deliveryAddress: '',
             contactName: '',
             contactPhone: ''
         });
+    };
+
+    const handleOrderSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!orderForm.nom || !orderForm.telephone || !orderForm.service || !orderForm.description) {
+            toast({ variant: "destructive", title: "Champs requis", description: "Veuillez remplir tous les champs obligatoires." });
+            return;
+        }
+
+        setOrderLoading(true);
+        try {
+            const { error } = await supabase.from('requests').insert({
+                service_type: 'commande_generale',
+                payload: {
+                    type: 'commande_generale',
+                    nom: orderForm.nom,
+                    telephone: orderForm.telephone,
+                    service_demande: orderForm.service,
+                    description: orderForm.description,
+                    adresse: orderForm.adresse,
+                },
+                contact_name: orderForm.nom,
+                contact_phone: orderForm.telephone,
+                status: 'new',
+            });
+
+            if (error) throw error;
+
+            toast({ title: "Commande envoyée ! 🎉", description: "Nous vous contacterons très rapidement." });
+            setShowOrderModal(false);
+            setOrderForm({ nom: '', telephone: '', service: '', description: '', adresse: '' });
+        } catch (error: any) {
+            console.error('Order submission error:', error);
+            toast({ variant: "destructive", title: "Erreur", description: "Impossible d'envoyer la commande." });
+        } finally {
+            setOrderLoading(false);
+        }
     };
 
     return (
@@ -225,14 +295,24 @@ export function HeroBookingWizard() {
 
                     {/* Left Column: Hero Content */}
                     <div className="order-2 lg:order-1 space-y-8 text-center lg:text-left">
-                        {/* Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-african-green/10 border border-african-green/20">
-                            <div className="flex gap-1">
-                                <div className="w-2 h-2 rounded-full bg-african-green animate-pulse" />
-                                <div className="w-2 h-2 rounded-full bg-african-yellow animate-pulse" style={{ animationDelay: '0.2s' }} />
-                                <div className="w-2 h-2 rounded-full bg-african-red animate-pulse" style={{ animationDelay: '0.4s' }} />
-                            </div>
-                            <span className="text-sm font-medium text-african-green">Services à domicile • Douala</span>
+                        {/* CTA Buttons */}
+                        <div className="inline-flex flex-wrap items-center gap-3">
+                            <Button
+                                variant="cta"
+                                size="sm"
+                                className="rounded-full shadow-lg"
+                                onClick={() => setShowOrderModal(true)}
+                            >
+                                Commandez maintenant
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full border-african-green/30 text-african-green hover:bg-african-green/10"
+                                onClick={() => window.open(`https://wa.me/237690547084?text=${encodeURIComponent('Bonjour, je souhaite obtenir un devis gratuit.')}`, '_blank')}
+                            >
+                                Obtenir un devis gratuitement
+                            </Button>
                         </div>
 
                         {/* Main Title */}
@@ -256,9 +336,44 @@ export function HeroBookingWizard() {
                                 </span>
                             </h1>
                             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                                Gaz, colis, lessive, nettoyage ou logement meublé — <strong className="text-foreground">Le Bon Petit</strong> s'occupe de tout.
+                                Poubelle, gaz, colis, lessive, nettoyage ou recherche de logement — <strong className="text-foreground">Le Bon Petit</strong> s'occupe de tout.
                                 Un service camerounais moderne, fiable et à votre portée.
                             </p>
+                        </div>
+
+                        {/* Action Question Section */}
+                        <div className="space-y-4 max-w-xl mx-auto lg:mx-0">
+                            <h3 className="text-lg font-heading font-bold text-foreground text-center lg:text-left">
+                                Que voulez-vous faire aujourd'hui ?
+                            </h3>
+                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                                {[
+                                    { label: 'Jeter ?', emoji: '🗑️', service: 'poubelles', color: 'from-green-500 to-emerald-500' },
+                                    { label: 'Nettoyer ?', emoji: '✨', service: 'nettoyage', color: 'from-teal-500 to-cyan-500' },
+                                    { label: 'Livrer ?', emoji: '📦', service: 'colis', color: 'from-blue-500 to-indigo-500' },
+                                    { label: 'Louer ?', emoji: '🏠', service: 'logement', color: 'from-rose-500 to-pink-500' },
+                                    { label: 'Laver ?', emoji: '👕', service: 'lessive', color: 'from-violet-500 to-purple-500' },
+                                ].map((action) => (
+                                    <button
+                                        key={action.label}
+                                        onClick={() => {
+                                            if (action.service === 'logement') {
+                                                navigate('/logements');
+                                            } else {
+                                                handleServiceSelect(action.service);
+                                                document.getElementById('service-selection')?.scrollIntoView({ behavior: 'smooth' });
+                                            }
+                                        }}
+                                        className="group relative px-5 py-3 rounded-2xl bg-background/80 border-2 border-border/50 hover:border-transparent active:scale-95 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl overflow-hidden"
+                                    >
+                                        <div className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                                        <span className="relative flex items-center gap-2 font-bold text-foreground group-hover:text-white transition-colors duration-300">
+                                            <span className="text-xl group-hover:animate-bounce">{action.emoji}</span>
+                                            {action.label}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         {/* Features Grid */}
@@ -306,7 +421,7 @@ export function HeroBookingWizard() {
                             {/* Glow effect behind card */}
                             <div className="absolute inset-0 bg-gradient-to-br from-african-green/20 via-primary/20 to-african-yellow/20 rounded-[2.5rem] blur-2xl transform scale-95" />
 
-                            <div className="relative bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-[2rem] p-6 md:p-8 overflow-hidden">
+                            <div id="service-selection" className="relative bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-[2rem] p-6 md:p-8 overflow-hidden">
                                 {/* Card header decoration */}
                                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-african-green via-primary to-african-yellow" />
 
@@ -368,14 +483,19 @@ export function HeroBookingWizard() {
                                     {step > 0 && step < 3 && (
                                         <div className="animate-fade-in flex flex-col h-full">
                                             <div className="flex items-center justify-between mb-6">
-                                                <Button variant="ghost" size="sm" onClick={() => {
-                                                    if (subStep > 1) {
-                                                        setSubStep(subStep - 1);
-                                                    } else {
-                                                        setStep(step - 1);
-                                                    }
-                                                }} className="rounded-full hover:bg-secondary -ml-2">
-                                                    <ChevronLeft className="w-5 h-5 mr-1" /> Retour
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        if (subStep > 1) {
+                                                            setSubStep(subStep - 1);
+                                                        } else {
+                                                            setStep(step - 1);
+                                                        }
+                                                    }}
+                                                    className="rounded-full shadow-md border border-border bg-white hover:bg-gray-100 text-foreground font-bold px-4"
+                                                >
+                                                    <ChevronLeft className="w-5 h-5 mr-1" /> REVENIR
                                                 </Button>
                                                 <div className="flex items-center gap-2">
                                                     {[1, 2].map((s) => (
@@ -385,7 +505,7 @@ export function HeroBookingWizard() {
                                             </div>
 
                                             <h2 className="text-xl font-bold text-foreground mb-6">
-                                                {step === 1 ? (selectedService === 'gaz' ? '🔥 Quelle bouteille ?' : '📝 Décrivez votre besoin') : '📍 Vos coordonnées'}
+                                                {step === 1 ? (selectedService === 'gaz' ? '🔥 Quelle bouteille ?' : (selectedService === 'nettoyage' && subStep === 1) ? '✨ Quel type de prestation ?' : '📝 Décrivez votre besoin') : '📍 Vos coordonnées'}
                                             </h2>
 
                                             <div className="space-y-4 flex-grow">
@@ -595,10 +715,42 @@ export function HeroBookingWizard() {
                                                         {selectedService === 'nettoyage' && (
                                                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                                                                 {subStep === 1 && (
+                                                                    <div className="grid grid-cols-2 gap-4">
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setFormData({ ...formData, cleaningCategory: 'nettoyage' });
+                                                                                setSubStep(2);
+                                                                            }}
+                                                                            className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-teal-200 bg-teal-50/50 hover:bg-teal-100 hover:border-teal-400 hover:shadow-lg transition-all duration-300 group"
+                                                                        >
+                                                                            <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                                                                <Sparkles className="w-8 h-8 text-teal-600" />
+                                                                            </div>
+                                                                            <span className="font-bold text-teal-900 text-center">Nettoyage Pro</span>
+                                                                        </button>
+
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setFormData({ ...formData, cleaningCategory: 'assainissement' });
+                                                                                setSubStep(2);
+                                                                            }}
+                                                                            className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-green-200 bg-green-50/50 hover:bg-green-100 hover:border-green-400 hover:shadow-lg transition-all duration-300 group"
+                                                                        >
+                                                                            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                                                                <Bug className="w-8 h-8 text-green-600" />
+                                                                            </div>
+                                                                            <span className="font-bold text-green-900 text-center">Assainissement</span>
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+
+                                                                {subStep === 2 && (
                                                                     <div className="space-y-4">
-                                                                        <Label className="text-base font-bold">Que devons-nous nettoyer ?</Label>
+                                                                        <Label className="text-base font-bold">
+                                                                            {formData.cleaningCategory === 'nettoyage' ? 'Que devons-nous nettoyer ?' : 'Quel traitement faut-il ?'}
+                                                                        </Label>
                                                                         <div className="grid grid-cols-2 gap-2">
-                                                                            {CLEANING_SERVICES.map((service) => (
+                                                                            {(formData.cleaningCategory === 'nettoyage' ? NETTOYAGE_PRO_SERVICES : SANITATION_SERVICES).map((service) => (
                                                                                 <div
                                                                                     key={service.id}
                                                                                     onClick={() => setFormData({ ...formData, cleaningType: service.id })}
@@ -611,13 +763,13 @@ export function HeroBookingWizard() {
                                                                     </div>
                                                                 )}
 
-                                                                {subStep === 2 && (
+                                                                {subStep === 3 && (
                                                                     <div className="space-y-4">
                                                                         <div className="space-y-2">
-                                                                            <Label className="font-bold">Détails (Surface, pièces, etc.)</Label>
+                                                                            <Label className="font-bold">Détails (Surface, instruction particulière...)</Label>
                                                                             <Textarea
                                                                                 className="min-h-[120px] resize-none"
-                                                                                placeholder="Précisez la surface, le nombre de pièces ou toute instruction particulière..."
+                                                                                placeholder="Précisez la surface, le nombre de pièces ou toute instruction..."
                                                                                 value={formData.details}
                                                                                 onChange={(e) => setFormData({ ...formData, details: e.target.value })}
                                                                             />
@@ -761,6 +913,115 @@ export function HeroBookingWizard() {
                     <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" />
                 </svg>
             </div>
+
+            {/* Modal Commande Générale */}
+            {showOrderModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowOrderModal(false)} />
+                    <div className="relative bg-card rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-african-green to-primary p-6 text-white">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-heading font-bold text-2xl">Commande Rapide</h3>
+                                    <p className="text-white/80 text-sm">Décrivez votre besoin, on s'occupe du reste</p>
+                                </div>
+                                <button onClick={() => setShowOrderModal(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Form */}
+                        <form onSubmit={handleOrderSubmit} className="p-6 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="order-nom">Nom complet *</Label>
+                                    <Input
+                                        id="order-nom"
+                                        placeholder="Votre nom"
+                                        value={orderForm.nom}
+                                        onChange={(e) => setOrderForm({ ...orderForm, nom: e.target.value })}
+                                        className="h-12"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="order-tel">Téléphone *</Label>
+                                    <Input
+                                        id="order-tel"
+                                        type="tel"
+                                        placeholder="690 547 084"
+                                        value={orderForm.telephone}
+                                        onChange={(e) => setOrderForm({ ...orderForm, telephone: e.target.value })}
+                                        className="h-12"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="order-service">Service souhaité *</Label>
+                                <Select value={orderForm.service} onValueChange={(v) => setOrderForm({ ...orderForm, service: v })}>
+                                    <SelectTrigger className="h-12">
+                                        <SelectValue placeholder="Choisir un service" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="gestion_ordure">Gestion d'ordure</SelectItem>
+                                        <SelectItem value="livraison_gaz">Livraison de gaz</SelectItem>
+                                        <SelectItem value="expedition_colis">Expédition de colis</SelectItem>
+                                        <SelectItem value="ramassage_lessive">Ramassage lessive</SelectItem>
+                                        <SelectItem value="nettoyage">Nettoyage professionnel</SelectItem>
+                                        <SelectItem value="logement">Recherche de logement</SelectItem>
+                                        <SelectItem value="autre">Autre service</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="order-adresse">Adresse / Quartier</Label>
+                                <Input
+                                    id="order-adresse"
+                                    placeholder="Ex: Bonamoussadi, Douala"
+                                    value={orderForm.adresse}
+                                    onChange={(e) => setOrderForm({ ...orderForm, adresse: e.target.value })}
+                                    className="h-12"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="order-desc">Description de votre demande *</Label>
+                                <Textarea
+                                    id="order-desc"
+                                    placeholder="Décrivez votre besoin en détail..."
+                                    value={orderForm.description}
+                                    onChange={(e) => setOrderForm({ ...orderForm, description: e.target.value })}
+                                    className="min-h-[100px] resize-none"
+                                    required
+                                />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={orderLoading}
+                                className="w-full h-14 bg-gradient-to-r from-african-green to-primary hover:opacity-90 text-white font-bold text-lg rounded-xl shadow-lg"
+                            >
+                                {orderLoading ? (
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        Envoi en cours...
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        <Send className="w-5 h-5" />
+                                        Envoyer ma commande
+                                    </span>
+                                )}
+                            </Button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </section >
     );
 }

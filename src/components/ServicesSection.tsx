@@ -6,6 +6,14 @@ import { Link } from "react-router-dom";
 
 const servicesData = [
   {
+    id: "poubelles",
+    title: "Gestion d'ordure",
+    description: "Service de ramassage régulier d'ordure de tout type pour particulier, entreprise, hôtel, marché, restaurant, hôpitaux, espace ouvert, après évènement, etc... Nous collectons, vous respirez.",
+    image: "/service-poubelles.png",
+    href: "/poubelles",
+    color: "green" as const,
+  },
+  {
     id: "colis",
     title: "Expédition de Colis",
     description: "Envoyez vos colis partout au Cameroun en toute sécurité. Tarifs compétitifs et suivi en temps réel.",
@@ -16,7 +24,7 @@ const servicesData = [
   {
     id: "gaz",
     title: "Livraison de Gaz",
-    description: "Commandez vos bouteilles de gaz et recevez-les directement chez vous. Toutes marques disponibles.",
+    description: "Commandez vos bouteilles de gaz et recevez-les directement chez vous. Toutes marques disponibles. Le gaz arrive, vous cuisinez.",
     image: "/service-gaz.png",
     href: "/gaz",
     color: "red" as const,
@@ -24,23 +32,15 @@ const servicesData = [
   {
     id: "lessive",
     title: "Ramassage Lessive",
-    description: "On récupère, on lave, on livre. Vêtements propres et bien repassés sans effort de votre part.",
+    description: "Sans effort de votre part. Vous gagnez du temps.",
     image: "/service-lessive.png",
     href: "/lessive",
     color: "yellow" as const,
   },
   {
-    id: "poubelles",
-    title: "Vidage de Poubelles",
-    description: "Service de ramassage régulier pour particuliers, entreprises, hôtels et restaurants.",
-    image: "/service-poubelles.png",
-    href: "/poubelles",
-    color: "green" as const,
-  },
-  {
     id: "logements",
-    title: "Logements meublés",
-    description: "Trouvez le logement meublé idéal ou publiez votre bien. Mise en relation directe propriétaire-locataire.",
+    title: "Recherche de logement",
+    description: "Trouvez votre logement ou publiez votre bien. Meublé ou non meublé, nous vous accompagnons.",
     image: "/service-logement.png",
     href: "/logements",
     color: "yellow" as const,
@@ -49,7 +49,7 @@ const servicesData = [
   {
     id: "nettoyage",
     title: "Nettoyage & Hygiène",
-    description: "Bureaux, domiciles, canapés, tapis, matelas. Dératisation, désinsectisation, fumigation et désinfection.",
+    description: "Nettoyage domiciles, bureaux, entreprises, hôtels, restaurants, snacks, boîtes de nuit, espaces ouverts, avant et après évènement, voiture, école.",
     image: "/service-nettoyage.png",
     href: "/nettoyage",
     color: "green" as const,
@@ -104,6 +104,59 @@ export function ServicesSection() {
               <ServiceCard {...service} />
             </div>
           ))}
+        </div>
+
+        {/* Pour qui travaillons-nous ? */}
+        <div className="mt-16 lg:mt-24">
+          <div className="text-center mb-12">
+            <h3 className="font-heading font-bold text-2xl md:text-3xl text-foreground mb-3">
+              POUR QUI TRAVAILLONS-NOUS ?
+            </h3>
+            <p className="text-muted-foreground text-lg">
+              Pensé pour vous, quel que soit votre besoin
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                title: "Particuliers",
+                subtitle: "Votre maison, votre confort",
+                emoji: "🏠",
+                gradient: "from-blue-500 to-indigo-500"
+              },
+              {
+                title: "Entreprises",
+                subtitle: "Votre image, notre mission",
+                emoji: "🏢",
+                gradient: "from-african-green to-teal-500"
+              },
+              {
+                title: "Établissements",
+                subtitle: "Propreté, sécurité, conformité",
+                emoji: "🏥",
+                gradient: "from-african-yellow to-orange-500"
+              },
+              {
+                title: "Événementiel",
+                subtitle: "Avant. Pendant. Après.",
+                emoji: "🎉",
+                gradient: "from-african-red to-rose-500"
+              },
+            ].map((item, index) => (
+              <div
+                key={item.title}
+                className="group relative p-6 rounded-2xl bg-card border border-border hover:border-transparent hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                <div className="relative z-10 text-center">
+                  <div className="text-4xl mb-4 group-hover:animate-bounce">{item.emoji}</div>
+                  <h4 className="font-heading font-bold text-lg text-foreground mb-2">{item.title}</h4>
+                  <p className="text-muted-foreground text-sm">{item.subtitle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Bottom CTA */}

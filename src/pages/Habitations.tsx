@@ -909,13 +909,13 @@ export default function Habitations() {
                 <div className="space-y-6">
                     <Card>
                         <CardContent className="p-6 space-y-4">
-                            <a href="tel:+237690000000" className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">
+                            <a href="tel:+237690547084" className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">
                                 <div className="w-12 h-12 rounded-full bg-african-earth/10 flex items-center justify-center">
                                     <Phone className="h-5 w-5 text-african-earth" />
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Téléphone</p>
-                                    <p className="font-medium">+237 690 000 000</p>
+                                    <p className="font-medium">+237 690 547 084</p>
                                 </div>
                             </a>
                             <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
@@ -924,7 +924,7 @@ export default function Habitations() {
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">WhatsApp</p>
-                                    <p className="font-medium">+237 690 000 000</p>
+                                    <p className="font-medium">+237 690 547 084</p>
                                 </div>
                             </div>
                             <a href="mailto:contact@lebonpetit.cm" className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">
@@ -1116,7 +1116,7 @@ export default function Habitations() {
                 </main>
             </div>
             <WhatsAppButton
-                phoneNumber="+237690000000"
+                phoneNumber="+237690547084"
                 message="Bonjour, je cherche un logement non meublé"
             />
         </Layout>

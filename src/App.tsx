@@ -125,6 +125,7 @@ const App = () => (
                 <Route path="/register/landlord" element={<RegisterLandlord />} />
                 <Route path="/pending-payment" element={<PendingPayment />} />
                 <Route path="/account-blocked" element={<AccountBlocked />} />
+                <Route path="/dashboard" element={<RoleBasedRedirect />} />
 
                 {/* Service Forms (no auth required) */}
                 <Route path="/colis" element={<Colis />} />

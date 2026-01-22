@@ -14,13 +14,12 @@ import {
 
 const navigation = [
   { name: "Accueil", href: "/", icon: Home },
-  { name: "Expédition de colis", href: "/colis", icon: Package },
+  { name: "Gestion d'ordure", href: "/poubelles", icon: Trash2 },
   { name: "Livraison de gaz", href: "/gaz", icon: Flame },
-  { name: "Lessive", href: "/lessive", icon: Shirt },
-  { name: "Vidage de poubelles", href: "/poubelles", icon: Trash2 },
-  { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
-  { name: "Logements meublés", href: "/logements", icon: Building2 },
-  { name: "Habitations", href: "/habitations", icon: Home },
+  { name: "Expédition de colis", href: "/colis", icon: Package },
+  { name: "Ramassage lessive", href: "/lessive", icon: Shirt },
+  { name: "Nettoyage & Assainissement", href: "/nettoyage", icon: Sparkles },
+  { name: "Logement", href: "/logements", icon: Building2 },
 ];
 
 export function Header() {

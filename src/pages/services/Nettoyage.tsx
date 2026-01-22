@@ -895,12 +895,12 @@ export default function Nettoyage() {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Téléphone</p>
-                                <p className="font-semibold text-lg">+237 690 000 000</p>
+                                <p className="font-semibold text-lg">+237 690 547 084</p>
                             </div>
                         </div>
 
                         <a
-                            href="https://wa.me/237690000000?text=Bonjour%2C%20je%20souhaite%20demander%20un%20devis%20pour%20un%20service%20de%20nettoyage."
+                            href="https://wa.me/237690547084?text=Bonjour%2C%20je%20souhaite%20demander%20un%20devis%20pour%20un%20service%20de%20nettoyage."
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-4 p-4 rounded-xl bg-[#25D366]/5 hover:bg-[#25D366]/10 transition-colors border border-[#25D366]/20 group"
@@ -1082,7 +1082,7 @@ export default function Nettoyage() {
             </div>
 
             <WhatsAppButton
-                phoneNumber="+237690000000"
+                phoneNumber="+237690547084"
                 message="Bonjour, je souhaite demander un devis pour un service de nettoyage."
                 label="Demander un devis"
             />

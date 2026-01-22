@@ -35,7 +35,7 @@ export default function AccountBlocked() {
                                     </a>
                                 </Button>
                                 <Button variant="cta" className="flex-1" asChild>
-                                    <a href="https://wa.me/237XXXXXXXX" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://wa.me/237690547084" target="_blank" rel="noopener noreferrer">
                                         <MessageCircle className="h-4 w-4 mr-2" />
                                         WhatsApp
                                     </a>

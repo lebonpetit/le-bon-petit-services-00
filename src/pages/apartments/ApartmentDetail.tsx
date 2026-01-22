@@ -301,7 +301,7 @@ export default function ApartmentDetail() {
             </div>
 
             <WhatsAppButton
-                phoneNumber={listing.owner?.phone || '+237690000000'}
+                phoneNumber={listing.owner?.phone || '+237690547084'}
                 message={`Bonjour, je souhaite réserver l'appartement "${listing.title}"`}
             />
         </Layout>

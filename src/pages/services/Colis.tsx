@@ -778,7 +778,7 @@ export default function Colis() {
                                 <h3 className="font-bold text-xl mb-1">WhatsApp Live</h3>
                                 <p className="text-muted-foreground mb-3">Réponse instantanée 7j/7</p>
                                 <a
-                                    href="https://wa.me/237690000000"
+                                    href="https://wa.me/237690547084"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-[#25D366] font-bold hover:underline flex items-center gap-1"
@@ -794,7 +794,7 @@ export default function Colis() {
                             <CardContent className="p-6">
                                 <Phone className="h-8 w-8 text-african-earth mb-4" />
                                 <h4 className="font-bold mb-1">Téléphone</h4>
-                                <p className="text-muted-foreground">+237 690 000 000</p>
+                                <p className="text-muted-foreground">+237 690 547 084</p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -902,7 +902,7 @@ export default function Colis() {
                         <div className="p-4 border-t bg-secondary/30">
                             <div className="bg-card rounded-xl p-4 shadow-sm border border-african-yellow/20">
                                 <p className="text-xs text-muted-foreground mb-2 font-semibold uppercase">Besoin d'aide ?</p>
-                                <p className="font-bold text-african-earth">+237 690 000 000</p>
+                                <p className="font-bold text-african-earth">+237 690 547 084</p>
                                 <p className="text-xs text-muted-foreground">Lun-Dim: 8h-20h</p>
                             </div>
                         </div>
@@ -934,7 +934,7 @@ export default function Colis() {
                 {/* Fixed WhatsApp Button */}
                 <div className="fixed bottom-6 right-6 z-50">
                     <WhatsAppButton
-                        phoneNumber="237690000000"
+                        phoneNumber="237690547084"
                         message="Bonjour, je souhaite envoyer un colis."
                     />
                 </div>

@@ -17,7 +17,7 @@ import {
     Users, Building2, Package, Flame, Shirt, Trash2, Sparkles,
     CheckCircle, XCircle, Eye, Search, Trash, Phone, Mail, MapPin,
     CreditCard, Clock, AlertTriangle, TrendingUp, RefreshCw, Calendar,
-    MessageCircle, ExternalLink, ToggleLeft, Save
+    MessageCircle, ExternalLink, ToggleLeft, Save, Home, Settings
 } from 'lucide-react';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
@@ -90,6 +90,7 @@ export default function AdminDashboard() {
     const [landlords, setLandlords] = useState<(User & { listingsCount?: number })[]>([]);
     const [listings, setListings] = useState<Listing[]>([]);
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
+    const [requestTab, setRequestTab] = useState('all');
     const [stats, setStats] = useState({
         totalTenants: 0,
         activeTenants: 0,
@@ -467,13 +468,17 @@ export default function AdminDashboard() {
         return matchesSearch && matchesService && matchesStatus && matchesLandlord;
     });
 
+    const myRequests = filteredRequests.filter(r => r.landlord_id === user?.id);
+    // const otherRequests = filteredRequests.filter(r => r.landlord_id !== user?.id); // Unused for now
+    const requestsToDisplay = requestTab === 'mine' ? myRequests : filteredRequests;
+
     const pathToTab = (pathname: string) => {
         if (pathname === '/admin/landlords') return 'landlords';
         if (pathname === '/admin/listings') return 'listings';
         if (pathname === '/admin/requests') return 'requests';
         if (pathname === '/admin/settings') return 'settings';
         if (pathname === '/admin/tenants') return 'tenants';
-        return 'tenants';
+        return 'overview';
     };
 
     const tabToPath = (tab: string) => {
@@ -482,8 +487,9 @@ export default function AdminDashboard() {
             case 'listings': return '/admin/listings';
             case 'requests': return '/admin/requests';
             case 'settings': return '/admin/settings';
-            case 'tenants':
-            default: return '/admin/tenants';
+            case 'tenants': return '/admin/tenants';
+            case 'overview':
+            default: return '/admin/dashboard';
         }
     };
 
@@ -628,132 +634,151 @@ export default function AdminDashboard() {
                 </Button>
             </div>
 
-            {/* Stats Overview */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <Card className="bg-gradient-to-br from-african-green/10 to-african-green/5">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-african-green/20 flex items-center justify-center">
-                                <Users className="h-5 w-5 text-african-green" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Locataires</p>
-                                <p className="font-heading text-xl font-bold">{stats.totalTenants}</p>
-                                <p className="text-xs text-african-green">{stats.activeTenants} actifs</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                                <Building2 className="h-5 w-5 text-primary" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Bailleurs</p>
-                                <p className="font-heading text-xl font-bold">{stats.totalLandlords}</p>
-                                <p className="text-xs text-muted-foreground">{stats.activeListings} logements actifs</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-african-yellow/10 to-african-yellow/5">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-african-yellow/20 flex items-center justify-center">
-                                <Clock className="h-5 w-5 text-african-yellow" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">En attente</p>
-                                <p className="font-heading text-xl font-bold">{stats.pendingTenants}</p>
-                                <p className="text-xs text-african-yellow">paiements</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-african-red/10 to-african-red/5">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-african-red/20 flex items-center justify-center">
-                                <AlertTriangle className="h-5 w-5 text-african-red" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-muted-foreground">Demandes</p>
-                                <p className="font-heading text-xl font-bold">{stats.totalRequests}</p>
-                                <p className="text-xs text-african-red">{stats.newRequests} nouvelles</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
 
-            {/* Pending Tenants Alert */}
-            {stats.pendingTenants > 0 && (
-                <Card className="mb-6 border-african-yellow bg-african-yellow/10">
-                    <CardContent className="pt-6">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-african-yellow/20 flex items-center justify-center flex-shrink-0">
-                                <CreditCard className="h-6 w-6 text-african-yellow" />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="font-heading text-lg font-semibold text-foreground mb-1">
-                                    {stats.pendingTenants} locataire(s) en attente de validation
-                                </h3>
-                                <p className="text-sm text-muted-foreground mb-3">
-                                    Ces locataires attendent que vous validiez leur paiement pour activer leur compte.
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                    {tenants.filter(t => t.status === 'pending').slice(0, 5).map(tenant => (
-                                        <div key={tenant.id} className="flex items-center gap-2 p-2 bg-background rounded-lg border">
-                                            <div>
-                                                <p className="text-sm font-medium">{tenant.name}</p>
-                                                <p className="text-xs text-muted-foreground">{tenant.phone}</p>
-                                            </div>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="text-african-green border-african-green hover:bg-african-green hover:text-white"
-                                                onClick={() => updateUserStatus(tenant.id, 'active', 'tenant')}
-                                            >
-                                                <CheckCircle className="h-4 w-4 mr-1" />
-                                                Valider
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+
+
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="tenants" className="relative">
-                        Locataires
-                        {stats.pendingTenants > 0 && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-african-red text-white text-xs rounded-full flex items-center justify-center">
-                                {stats.pendingTenants}
-                            </span>
-                        )}
-                    </TabsTrigger>
-                    <TabsTrigger value="landlords">Bailleurs</TabsTrigger>
-                    <TabsTrigger value="listings">Logements</TabsTrigger>
-                    <TabsTrigger value="requests" className="relative">
-                        Demandes
-                        {stats.newRequests > 0 && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-african-red text-white text-xs rounded-full flex items-center justify-center">
-                                {stats.newRequests}
-                            </span>
-                        )}
-                    </TabsTrigger>
-                    <TabsTrigger value="settings">Paramètres</TabsTrigger>
-                </TabsList>
+                <TabsContent value="overview">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto mb-8">
+                        <TabsTrigger value="tenants" className="relative h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <Users className="h-6 w-6" />
+                            <span>Locataires</span>
+                            {stats.pendingTenants > 0 && (
+                                <span className="absolute top-2 right-2 w-5 h-5 bg-african-red text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                                    {stats.pendingTenants}
+                                </span>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger value="landlords" className="h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <Building2 className="h-6 w-6" />
+                            <span>Bailleurs</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="listings" className="h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <Home className="h-6 w-6" />
+                            <span>Logements</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="requests" className="relative h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <Package className="h-6 w-6" />
+                            <span>Demandes</span>
+                            {stats.newRequests > 0 && (
+                                <span className="absolute top-2 right-2 w-5 h-5 bg-african-red text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                                    {stats.newRequests}
+                                </span>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger value="settings" className="h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <Settings className="h-6 w-6" />
+                            <span>Paramètres</span>
+                        </TabsTrigger>
+                    </TabsList>
+                    {/* Stats Overview */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <Card className="bg-gradient-to-br from-african-green/10 to-african-green/5 cursor-pointer hover:bg-african-green/10 transition-colors" onClick={() => handleTabChange('tenants')}>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-african-green/20 flex items-center justify-center">
+                                        <Users className="h-5 w-5 text-african-green" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">Locataires</p>
+                                        <p className="font-heading text-xl font-bold">{stats.totalTenants}</p>
+                                        <p className="text-xs text-muted-foreground">{stats.activeTenants} actifs</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors" onClick={() => handleTabChange('landlords')}>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                                        <Building2 className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">Bailleurs</p>
+                                        <p className="font-heading text-xl font-bold">{stats.totalLandlords}</p>
+                                        <p className="text-xs text-muted-foreground">{stats.activeListings} logements actifs</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-gradient-to-br from-african-yellow/10 to-african-yellow/5 cursor-pointer hover:bg-african-yellow/10 transition-colors" onClick={() => handleTabChange('tenants')}>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-african-yellow/20 flex items-center justify-center">
+                                        <Clock className="h-5 w-5 text-african-yellow" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">En attente</p>
+                                        <p className="font-heading text-xl font-bold">{stats.pendingTenants}</p>
+                                        <p className="text-xs text-african-yellow">paiements</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-gradient-to-br from-african-red/10 to-african-red/5 cursor-pointer hover:bg-african-red/10 transition-colors" onClick={() => handleTabChange('requests')}>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-african-red/20 flex items-center justify-center">
+                                        <AlertTriangle className="h-5 w-5 text-african-red" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">Demandes</p>
+                                        <p className="font-heading text-xl font-bold">{stats.totalRequests}</p>
+                                        <p className="text-xs text-african-red">{stats.newRequests} nouvelles</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Pending Tenants Alert */}
+                    {stats.pendingTenants > 0 && (
+                        <Card className="mb-6 border-african-yellow bg-african-yellow/10">
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-african-yellow/20 flex items-center justify-center flex-shrink-0">
+                                        <CreditCard className="h-6 w-6 text-african-yellow" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-heading text-lg font-semibold text-foreground mb-1">
+                                            {stats.pendingTenants} locataire(s) en attente de validation
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground mb-3">
+                                            Ces locataires attendent que vous validiez leur paiement pour activer leur compte.
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {tenants.filter(t => t.status === 'pending').slice(0, 5).map(tenant => (
+                                                <div key={tenant.id} className="flex items-center gap-2 p-2 bg-background rounded-lg border">
+                                                    <div>
+                                                        <p className="text-sm font-medium">{tenant.name}</p>
+                                                        <p className="text-xs text-muted-foreground">{tenant.phone}</p>
+                                                    </div>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="text-african-green border-african-green hover:bg-african-green hover:text-white"
+                                                        onClick={() => updateUserStatus(tenant.id, 'active', 'tenant')}
+                                                    >
+                                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                                        Valider
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </TabsContent>
 
                 {/* Tenants Tab */}
                 <TabsContent value="tenants">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
                     <Card>
                         <CardHeader>
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -867,6 +892,9 @@ export default function AdminDashboard() {
 
                 {/* Landlords Tab */}
                 <TabsContent value="landlords">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
                     <Card>
                         <CardHeader>
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -970,6 +998,9 @@ export default function AdminDashboard() {
 
                 {/* Listings Tab */}
                 <TabsContent value="listings">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
                     <Card>
                         <CardHeader>
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -989,81 +1020,83 @@ export default function AdminDashboard() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Titre</TableHead>
-                                        <TableHead>Quartier</TableHead>
-                                        <TableHead>Prix</TableHead>
-                                        <TableHead>Vues</TableHead>
-                                        <TableHead>Propriétaire</TableHead>
-                                        <TableHead>Statut</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredListings.map((listing) => (
-                                        <TableRow key={listing.id}>
-                                            <TableCell className="font-medium max-w-[200px] truncate">{listing.title}</TableCell>
-                                            <TableCell>
-                                                <span className="flex items-center gap-1">
-                                                    <MapPin className="h-3 w-3 text-muted-foreground" />
-                                                    {listing.quartier}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell>{listing.price?.toLocaleString()} FCFA</TableCell>
-                                            <TableCell>
-                                                <span className="flex items-center gap-1">
-                                                    <Eye className="h-4 w-4" />
-                                                    {listing.views}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell>{listing.owner?.name}</TableCell>
-                                            <TableCell>
-                                                <Badge variant={listing.available ? 'default' : 'secondary'}>
-                                                    {listing.available ? 'Actif' : 'Inactif'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-2">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() => toggleListingAvailability(listing.id, !listing.available)}
-                                                    >
-                                                        <ToggleLeft className="h-4 w-4 mr-1" />
-                                                        {listing.available ? 'Désactiver' : 'Activer'}
-                                                    </Button>
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button size="sm" variant="outline" className="text-destructive">
-                                                                <Trash className="h-4 w-4" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Supprimer ce logement ?</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    Cette action est irréversible. Le logement "{listing.title}" sera définitivement supprimé.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                                                <AlertDialogAction
-                                                                    onClick={() => deleteListing(listing.id)}
-                                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                >
-                                                                    Supprimer
-                                                                </AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </div>
-                                            </TableCell>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Titre</TableHead>
+                                            <TableHead className="hidden md:table-cell">Quartier</TableHead>
+                                            <TableHead>Prix</TableHead>
+                                            <TableHead className="hidden md:table-cell">Vues</TableHead>
+                                            <TableHead className="hidden md:table-cell">Propriétaire</TableHead>
+                                            <TableHead>Statut</TableHead>
+                                            <TableHead>Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredListings.map((listing) => (
+                                            <TableRow key={listing.id}>
+                                                <TableCell className="font-medium max-w-[150px] truncate">{listing.title}</TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    <span className="flex items-center gap-1">
+                                                        <MapPin className="h-3 w-3 text-muted-foreground" />
+                                                        {listing.quartier}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>{listing.price?.toLocaleString()} FCFA</TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    <span className="flex items-center gap-1">
+                                                        <Eye className="h-4 w-4" />
+                                                        {listing.views}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">{listing.owner?.name}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={listing.available ? 'default' : 'secondary'}>
+                                                        {listing.available ? 'Actif' : 'Inactif'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => toggleListingAvailability(listing.id, !listing.available)}
+                                                        >
+                                                            <ToggleLeft className="h-4 w-4 mr-1" />
+                                                            {listing.available ? 'Désactiver' : 'Activer'}
+                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button size="sm" variant="outline" className="text-destructive">
+                                                                    <Trash className="h-4 w-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Supprimer ce logement ?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Cette action est irréversible. Le logement "{listing.title}" sera définitivement supprimé.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() => deleteListing(listing.id)}
+                                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                    >
+                                                                        Supprimer
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
                             {filteredListings.length === 0 && (
                                 <p className="text-center text-muted-foreground py-8">Aucun logement trouvé</p>
                             )}
@@ -1073,14 +1106,25 @@ export default function AdminDashboard() {
 
                 {/* Requests Tab */}
                 <TabsContent value="requests">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
                     <Card>
                         <CardHeader>
                             <div className="flex flex-col gap-4">
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Package className="h-5 w-5" />
-                                        Demandes de Services ({filteredRequests.length})
-                                    </CardTitle>
+                                    <div className="flex flex-col gap-2">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Package className="h-5 w-5" />
+                                            Demandes de Services ({requestsToDisplay.length})
+                                        </CardTitle>
+                                        <Tabs value={requestTab} onValueChange={setRequestTab} className="w-full md:w-auto">
+                                            <TabsList>
+                                                <TabsTrigger value="all">Toutes les demandes</TabsTrigger>
+                                                <TabsTrigger value="mine">Sur mes demandes</TabsTrigger>
+                                            </TabsList>
+                                        </Tabs>
+                                    </div>
                                     <div className="relative w-full md:w-64">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -1132,102 +1176,110 @@ export default function AdminDashboard() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Service</TableHead>
-                                        <TableHead>Client</TableHead>
-                                        <TableHead>Téléphone</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Statut</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredRequests.map((request) => (
-                                        <TableRow key={request.id}>
-                                            <TableCell>
-                                                <Badge className={getServiceColor(request.service_type)}>
-                                                    <span className="flex items-center gap-1">
-                                                        {getServiceIcon(request.service_type)}
-                                                        {serviceTypeLabels[request.service_type] || request.service_type}
-                                                    </span>
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="font-medium">{request.contact_name}</TableCell>
-                                            <TableCell>
-                                                <a
-                                                    href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-african-green hover:underline flex items-center gap-1"
-                                                >
-                                                    <MessageCircle className="h-3 w-3" />
-                                                    {request.contact_phone}
-                                                </a>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-col text-sm">
-                                                    <span className="flex items-center gap-1">
-                                                        <Calendar className="h-3 w-3 text-muted-foreground" />
-                                                        {new Date(request.created_at).toLocaleDateString('fr-FR')}
-                                                    </span>
-                                                    <span className="flex items-center gap-1 text-xs text-muted-foreground ml-4">
-                                                        <Clock className="h-3 w-3" />
-                                                        {new Date(request.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={request.status === 'new' ? 'destructive' : request.status === 'cancelled' ? 'secondary' : 'default'}>
-                                                    {request.status === 'new' ? 'Nouveau' : request.status === 'cancelled' ? 'Non conclue' : 'Traité'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-2">
-                                                    <RequestDetailsDialog request={request} />
-                                                    {request.status === 'new' && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            className="text-african-green"
-                                                            onClick={() => updateRequestStatus(request.id, 'processed')}
-                                                        >
-                                                            <CheckCircle className="h-4 w-4 mr-1" />
-                                                            Traiter
-                                                        </Button>
-                                                    )}
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button size="sm" variant="outline" className="text-destructive">
-                                                                <Trash className="h-4 w-4" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                                                <AlertDialogAction
-                                                                    onClick={() => deleteRequest(request.id)}
-                                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                >
-                                                                    Supprimer
-                                                                </AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </div>
-                                            </TableCell>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Service</TableHead>
+                                            <TableHead>Client</TableHead>
+                                            <TableHead className="hidden md:table-cell">Téléphone</TableHead>
+                                            <TableHead className="hidden md:table-cell">Date</TableHead>
+                                            <TableHead>Statut</TableHead>
+                                            <TableHead>Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            {filteredRequests.length === 0 && (
+                                    </TableHeader>
+                                    <TableBody>
+                                        {requestsToDisplay.map((request) => (
+                                            <TableRow key={request.id}>
+                                                <TableCell>
+                                                    <Badge className={getServiceColor(request.service_type)}>
+                                                        <span className="flex items-center gap-1">
+                                                            {getServiceIcon(request.service_type)}
+                                                            <span className="hidden lg:inline">{serviceTypeLabels[request.service_type] || request.service_type}</span>
+                                                            <span className="lg:hidden">{serviceTypeLabels[request.service_type]?.slice(0, 3) || request.service_type.slice(0, 3)}</span>
+                                                        </span>
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="font-medium">
+                                                    <div className="flex flex-col">
+                                                        <span>{request.contact_name}</span>
+                                                        <span className="text-xs text-muted-foreground md:hidden">{request.contact_phone}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    <a
+                                                        href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-african-green hover:underline flex items-center gap-1"
+                                                    >
+                                                        <MessageCircle className="h-3 w-3" />
+                                                        {request.contact_phone}
+                                                    </a>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    <div className="flex flex-col text-sm">
+                                                        <span className="flex items-center gap-1">
+                                                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                                                            {new Date(request.created_at).toLocaleDateString('fr-FR')}
+                                                        </span>
+                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground ml-4">
+                                                            <Clock className="h-3 w-3" />
+                                                            {new Date(request.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={request.status === 'new' ? 'destructive' : request.status === 'cancelled' ? 'secondary' : 'default'}>
+                                                        {request.status === 'new' ? 'Nouv' : request.status === 'cancelled' ? 'Annul' : 'Fait'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex gap-2">
+                                                        <RequestDetailsDialog request={request} />
+                                                        {request.status === 'new' && (
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                                className="text-african-green"
+                                                                onClick={() => updateRequestStatus(request.id, 'processed')}
+                                                            >
+                                                                <CheckCircle className="h-4 w-4 mr-1" />
+                                                                Traiter
+                                                            </Button>
+                                                        )}
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button size="sm" variant="outline" className="text-destructive">
+                                                                    <Trash className="h-4 w-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() => deleteRequest(request.id)}
+                                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                    >
+                                                                        Supprimer
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            {requestsToDisplay.length === 0 && (
                                 <p className="text-center text-muted-foreground py-8">Aucune demande trouvée</p>
                             )}
                         </CardContent>
@@ -1236,6 +1288,9 @@ export default function AdminDashboard() {
 
                 {/* Settings Tab */}
                 <TabsContent value="settings">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
                     <div className="grid gap-6">
                         {/* Platform Info */}
                         <Card>
@@ -1313,7 +1368,7 @@ export default function AdminDashboard() {
                                         { id: 'colis', name: 'Expédition de Colis', icon: Package },
                                         { id: 'gaz', name: 'Livraison de Gaz', icon: Flame },
                                         { id: 'lessive', name: 'Ramassage Lessive', icon: Shirt },
-                                        { id: 'poubelles', name: 'Vidage de Poubelles', icon: Trash2 },
+                                        { id: 'poubelles', name: "Gestion d'ordure", icon: Trash2 },
                                         { id: 'nettoyage', name: 'Nettoyage & Antiparasitaire', icon: Sparkles },
                                     ].map((service) => (
                                         <div key={service.id} className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">

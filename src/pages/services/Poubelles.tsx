@@ -618,12 +618,12 @@ export default function Poubelles() {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Téléphone</p>
-                                <p className="font-semibold text-lg">+237 690 000 000</p>
+                                <p className="font-semibold text-lg">+237 690 547 084</p>
                             </div>
                         </div>
 
                         <a
-                            href="https://wa.me/237690000000"
+                            href="https://wa.me/237690547084"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-4 p-4 rounded-xl bg-[#25D366]/5 hover:bg-[#25D366]/10 transition-colors border border-[#25D366]/20 group"
@@ -805,7 +805,7 @@ export default function Poubelles() {
             </div>
 
             <WhatsAppButton
-                phoneNumber="+237690000000"
+                phoneNumber="+237690547084"
                 message="Bonjour, je souhaite programmer une collecte d'ordures."
             />
         </Layout>
