@@ -893,8 +893,8 @@ export default function Logements() {
                                                     <MessageCircle className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-green-900">WhatsApp</p>
-                                                    <p className="text-green-700">Réponse immédiate</p>
+                                                    <p className="font-bold text-foreground">WhatsApp</p>
+                                                    <p className="text-primary">Réponse immédiate</p>
                                                 </div>
                                             </a>
                                             <a href="tel:+237690547084" className="flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:shadow-md transition-all">

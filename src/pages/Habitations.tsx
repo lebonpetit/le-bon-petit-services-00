@@ -927,13 +927,13 @@ export default function Habitations() {
                                     <p className="font-medium">+237 690 547 084</p>
                                 </div>
                             </div>
-                            <a href="mailto:contact@lebonpetit.cm" className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">
+                            <a href="mailto:contact@lebonpetit237.com" className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">
                                 <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                                     <Mail className="h-5 w-5 text-accent" />
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Email</p>
-                                    <p className="font-medium">contact@lebonpetit.cm</p>
+                                    <p className="font-medium">contact@lebonpetit237.com</p>
                                 </div>
                             </a>
                             <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors">

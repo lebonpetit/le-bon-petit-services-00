@@ -280,7 +280,7 @@ export default function Colis() {
                         <Badge className="bg-white/20 hover:bg-white/30 text-white border-none py-1.5 px-4 backdrop-blur-md mb-2">
                             🌍 Leader de la logistique au Cameroun
                         </Badge>
-                        <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+                        <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight dark:text-white">
                             Envoyez vos colis partout au <span className="text-african-yellow">Cameroun</span> et à l'international
                         </h1>
                         <p className="text-lg md:text-xl text-white/90 max-w-xl font-light leading-relaxed">
@@ -307,10 +307,10 @@ export default function Colis() {
                 </div>
                 {/* Decorative curve */}
                 <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[50%] scale-x-110 translate-y-8 z-30" />
-            </section>
+            </section >
 
             {/* Qui sommes-nous */}
-            <section className="relative py-8">
+            < section className="relative py-8" >
                 <div className="grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
                     <div className="order-2 md:order-1 relative rounded-3xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500 group">
                         <img src={colisDeliveryImage} alt="Livreur Le Bon Petit remettant un colis" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700" />
@@ -321,7 +321,7 @@ export default function Colis() {
                         </div>
                     </div>
                     <div className="order-1 md:order-2 space-y-6">
-                        <h2 className="font-heading text-3xl md:text-4xl font-bold text-african-earth">
+                        <h2 className="font-heading text-3xl md:text-4xl font-bold text-african-earth dark:text-white">
                             L'excellence logistique, simplifiée
                         </h2>
                         <p className="text-muted-foreground text-xl leading-relaxed">
@@ -341,10 +341,10 @@ export default function Colis() {
                         </ul>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Pourquoi nous choisir */}
-            <section>
+            < section >
                 <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {avantages.map((item, index) => (
                         <Card key={index} className="group hover:-translate-y-2 transition-all duration-300 border shadow-soft hover:shadow-xl bg-card">
@@ -352,15 +352,15 @@ export default function Colis() {
                                 <div className="w-16 h-16 mx-auto rounded-2xl bg-african-yellow/20 flex items-center justify-center mb-4 group-hover:bg-african-yellow group-hover:text-black transition-colors duration-300">
                                     <item.icon className="h-8 w-8 text-african-earth group-hover:text-black transition-colors duration-300" />
                                 </div>
-                                <p className="font-bold text-gray-800">{item.text}</p>
+                                <p className="font-bold text-foreground">{item.text}</p>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
-            </section>
+            </section >
 
             {/* CTA Rapide */}
-            <div className="rounded-3xl bg-african-earth p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
+            < div className="rounded-3xl bg-african-earth p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl" >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 <div className="relative z-10 space-y-6">
                     <h3 className="font-heading text-3xl font-bold">Prêt à expédier ?</h3>
@@ -375,15 +375,15 @@ export default function Colis() {
                         Commencer l'envoi
                     </Button>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 
     const renderEnvoyer = () => (
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-african-yellow text-black hover:bg-african-yellow/80">Expédition</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Envoyer un colis</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Envoyer un colis</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Suivez les étapes ci-dessous pour programmer votre envoi en toute simplicité.</p>
             </div>
 
@@ -435,7 +435,7 @@ export default function Colis() {
                             {/* Expéditeur */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 text-african-earth font-bold text-lg border-b pb-2">
-                                    <Send className="h-5 w-5" /> Expéditeur
+                                    <Send className="h-5 w-5" /> <span className="dark:text-white">Expéditeur</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="space-y-1">
@@ -456,7 +456,7 @@ export default function Colis() {
                             {/* Destinataire */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 text-african-earth font-bold text-lg border-b pb-2">
-                                    <MapPin className="h-5 w-5" /> Destinataire
+                                    <MapPin className="h-5 w-5" /> <span className="dark:text-white">Destinataire</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="space-y-1">
@@ -534,7 +534,7 @@ export default function Colis() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-blue-600 hover:bg-blue-700">Réseau</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Nos Destinations</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Nos Destinations</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Une couverture nationale complète et des connexions internationales.</p>
             </div>
 
@@ -543,20 +543,20 @@ export default function Colis() {
                 <Card className="overflow-hidden border-2 border-green-100 hover:border-green-300 transition-colors shadow-lg">
                     <div className="bg-green-50 p-6 flex items-center justify-between border-b border-green-100">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 bg-green-100 rounded-lg text-green-700">
+                            <div className="p-3 bg-primary/10 rounded-lg text-primary">
                                 <Truck className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-green-800">Cameroun</h3>
-                                <p className="text-green-600 text-sm">Réseau national express</p>
+                                <h3 className="text-xl font-bold text-foreground">Cameroun</h3>
+                                <p className="text-primary text-sm">Réseau national express</p>
                             </div>
                         </div>
-                        <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50">J+1 à J+3</Badge>
+                        <Badge variant="outline" className="border-primary/30 text-primary bg-primary/10">J+1 à J+3</Badge>
                     </div>
                     <CardContent className="p-6">
                         <div className="flex flex-wrap gap-2">
                             {destinationsNationales.map((ville, idx) => (
-                                <Badge key={idx} variant="secondary" className="px-3 py-1 bg-green-50 text-green-700 hover:bg-green-100 uppercase tracking-wide text-xs border border-green-100">
+                                <Badge key={idx} variant="secondary" className="px-3 py-1 bg-primary/10 text-primary hover:bg-primary/20 uppercase tracking-wide text-xs border border-primary/20">
                                     {ville}
                                 </Badge>
                             ))}
@@ -581,7 +581,7 @@ export default function Colis() {
                     <CardContent className="p-6 space-y-6">
                         {destinationsInternationales.map((zone, idx) => (
                             <div key={idx}>
-                                <h4 className="font-bold text-sm text-blue-900 mb-3 flex items-center gap-2">
+                                <h4 className="font-bold text-sm text-blue-900 mb-3 flex items-center gap-2 dark:text-blue-300">
                                     <Globe className="h-3 w-3" /> {zone.zone}
                                 </h4>
                                 <div className="flex flex-wrap gap-2">
@@ -600,7 +600,7 @@ export default function Colis() {
             <div className="bg-african-yellow/10 rounded-2xl p-8 text-center borderBorder-african-yellow/20">
                 <h4 className="font-heading text-xl font-bold mb-2">Une destination spécifique ?</h4>
                 <p className="text-muted-foreground mb-6">Nous pouvons probablement livrer là où vous en avez besoin. Contactez-nous pour une étude personnalisée.</p>
-                <Button variant="outline" className="border-african-earth text-african-earth hover:bg-african-earth hover:text-white" onClick={() => navigateToSection('contact')}>
+                <Button variant="outline" className="border-african-earth text-african-earth hover:bg-african-earth hover:text-white dark:text-white dark:border-white" onClick={() => navigateToSection('contact')}>
                     Contacter le service client
                 </Button>
             </div>
@@ -611,7 +611,7 @@ export default function Colis() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-green-600 hover:bg-green-700">Prix Transparents</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Tarifs & Délais</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Tarifs & Délais</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Des solutions adaptées à toutes les urgences et tous les budgets.</p>
             </div>
 
@@ -632,7 +632,7 @@ export default function Colis() {
                         </CardHeader>
                         <CardContent>
                             <div className="flex items-baseline gap-1 mt-2">
-                                <span className="text-3xl font-extrabold text-african-earth">{tarif.prix.replace('À partir de ', '')}</span>
+                                <span className="text-3xl font-extrabold text-african-earth dark:text-white">{tarif.prix.replace('À partir de ', '')}</span>
                                 <span className="text-sm text-muted-foreground font-normal">/ min</span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">À partir de</p>
@@ -659,7 +659,7 @@ export default function Colis() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-purple-600 hover:bg-purple-700">Business</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Solutions Entreprises</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Solutions Entreprises</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Logistique externalisée pour E-commerçants et Sociétés.</p>
             </div>
 
@@ -713,29 +713,29 @@ export default function Colis() {
         <div className="max-w-4xl mx-auto space-y-12 animate-fade-in text-center">
             <div className="space-y-4">
                 <Badge className="bg-gray-600">Qui sommes-nous</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Notre Mission</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Notre Mission</h2>
             </div>
 
             <div className="bg-card border-none shadow-2xl rounded-3xl overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-3 bg-african-yellow" />
                 <CardContent className="p-10 md:p-16 space-y-8">
                     <Package className="h-20 w-20 mx-auto text-african-yellow mb-6 animate-pulse-glow" />
-                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed font-heading italic text-gray-700">
+                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed font-heading italic text-gray-700 dark:text-foreground">
                         "Connecter les familles, soutenir les entreprises et simplifier la vie quotidienne grâce à une logistique fiable et humaine."
                     </blockquote>
                     <div className="w-24 h-1 bg-african-earth/20 mx-auto rounded-full" />
 
                     <div className="grid md:grid-cols-3 gap-8 pt-4">
                         <div className="space-y-2">
-                            <h5 className="font-bold text-lg">Camerounais</h5>
+                            <h5 className="font-bold text-lg dark:text-white">Camerounais</h5>
                             <p className="text-muted-foreground text-sm">Une entreprise locale qui connaît le terrain.</p>
                         </div>
                         <div className="space-y-2">
-                            <h5 className="font-bold text-lg">Digital</h5>
+                            <h5 className="font-bold text-lg dark:text-white">Digital</h5>
                             <p className="text-muted-foreground text-sm">Technologie moderne pour un suivi précis.</p>
                         </div>
                         <div className="space-y-2">
-                            <h5 className="font-bold text-lg">Humain</h5>
+                            <h5 className="font-bold text-lg dark:text-white">Humain</h5>
                             <p className="text-muted-foreground text-sm">Un service client toujours à l'écoute.</p>
                         </div>
                     </div>
@@ -763,7 +763,7 @@ export default function Colis() {
         <div className="max-w-6xl mx-auto animate-fade-in space-y-12">
             <div className="text-center space-y-4">
                 <Badge className="bg-african-earth">Support</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Contactez-nous</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Contactez-nous</h2>
                 <p className="text-muted-foreground text-lg">Une question ? Une réclamation ? Nous sommes là pour vous.</p>
             </div>
 
@@ -775,7 +775,7 @@ export default function Colis() {
                                 <MessageCircle className="h-8 w-8" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-xl mb-1">WhatsApp Live</h3>
+                                <h3 className="font-bold text-xl mb-1 dark:text-white">WhatsApp Live</h3>
                                 <p className="text-muted-foreground mb-3">Réponse instantanée 7j/7</p>
                                 <a
                                     href="https://wa.me/237690547084"
@@ -793,15 +793,15 @@ export default function Colis() {
                         <Card>
                             <CardContent className="p-6">
                                 <Phone className="h-8 w-8 text-african-earth mb-4" />
-                                <h4 className="font-bold mb-1">Téléphone</h4>
-                                <p className="text-muted-foreground">+237 690 547 084</p>
+                                <h4 className="font-bold mb-1 dark:text-white">Téléphone</h4>
+                                <p className="text-muted-foreground dark:text-white">+237 690 547 084</p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardContent className="p-6">
                                 <Mail className="h-8 w-8 text-african-earth mb-4" />
                                 <h4 className="font-bold mb-1">Email</h4>
-                                <p className="text-muted-foreground">colis@lebonpetit.cm</p>
+                                <p className="text-muted-foreground">colis@lebonpetit237.com</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -869,8 +869,8 @@ export default function Colis() {
                 >
                     <div className="flex flex-col h-full">
                         <div className="p-6 border-b flex items-center justify-between">
-                            <span className="font-heading text-2xl font-bold text-african-earth">
-                                Colis
+                            <span className="font-heading text-2xl font-bold text-african-earth dark:text-white">
+                                Expédition de colis
                             </span>
                             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
                                 <X className="h-6 w-6" />
@@ -902,7 +902,7 @@ export default function Colis() {
                         <div className="p-4 border-t bg-secondary/30">
                             <div className="bg-card rounded-xl p-4 shadow-sm border border-african-yellow/20">
                                 <p className="text-xs text-muted-foreground mb-2 font-semibold uppercase">Besoin d'aide ?</p>
-                                <p className="font-bold text-african-earth">+237 690 547 084</p>
+                                <p className="font-bold text-african-earth dark:text-white">+237 690 547 084</p>
                                 <p className="text-xs text-muted-foreground">Lun-Dim: 8h-20h</p>
                             </div>
                         </div>

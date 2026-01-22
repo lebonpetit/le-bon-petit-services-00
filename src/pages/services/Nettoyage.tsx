@@ -754,7 +754,7 @@ export default function Nettoyage() {
                         <CardContent className="p-6">
                             <div className="flex justify-between items-center">
                                 <h3 className="font-heading text-xl font-bold">{item.service}</h3>
-                                <Badge variant="secondary" className={`text-lg px-4 py-2 ${item.type === 'fixed' ? 'bg-african-green/10 text-african-green' : 'bg-african-earth/10 text-african-earth'}`}>
+                                <Badge variant="secondary" className={`text-lg px-4 py-2 dark:text-white ${item.type === 'fixed' ? 'bg-african-green/10 text-african-green' : 'bg-african-earth/10 text-african-earth'}`}>
                                     {item.prix}
                                 </Badge>
                             </div>
@@ -920,7 +920,7 @@ export default function Nettoyage() {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Email</p>
-                                <p className="font-semibold text-lg">nettoyage@lebonpetit.cm</p>
+                                <p className="font-semibold text-lg">nettoyage@lebonpetit237.com</p>
                             </div>
                         </div>
 

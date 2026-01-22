@@ -64,6 +64,13 @@ const HabitationDetail = lazy(() => import("./pages/apartments/HabitationDetail"
 // Admin Pages - lazy loaded
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
+// Static Info Pages - lazy loaded
+const APropos = lazy(() => import("./pages/APropos"));
+const Tarifs = lazy(() => import("./pages/Tarifs"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const CGU = lazy(() => import("./pages/CGU"));
+const Confidentialite = lazy(() => import("./pages/Confidentialite"));
+
 // Protected Route Component - keep sync for fast auth checks
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -134,6 +141,13 @@ const App = () => (
                 <Route path="/lessive" element={<><SEO title="Service de Lessive" description="Ramassage et livraison de votre lessive à domicile. Pressing de qualité à Douala." /><Lessive /></>} />
                 <Route path="/poubelles" element={<><SEO title="Gestion des Ordures" description="Service de collecte et gestion des ordures ménagères à Douala." /><Poubelles /></>} />
                 <Route path="/nettoyage" element={<><SEO title="Nettoyage & Entretien" description="Service de nettoyage professionnel pour particuliers et entreprises." /><Nettoyage /></>} />
+
+                {/* Static Info Pages */}
+                <Route path="/a-propos" element={<><SEO title="À Propos" description="Découvrez Le Bon Petit, startup camerounaise de services de proximité." /><APropos /></>} />
+                <Route path="/tarifs" element={<><SEO title="Tarifs" description="Consultez nos tarifs transparents pour tous nos services." /><Tarifs /></>} />
+                <Route path="/faq" element={<><SEO title="FAQ" description="Questions fréquentes sur nos services." /><FAQ /></>} />
+                <Route path="/cgu" element={<><SEO title="Conditions Générales d'Utilisation" /><CGU /></>} />
+                <Route path="/confidentialite" element={<><SEO title="Politique de Confidentialité" /><Confidentialite /></>} />
 
                 {/* Logements - Public apartment rental section (furnished) */}
                 <Route path="/logements" element={<><SEO title="Logements Meublés" description="Trouvez des appartements et studios meublés à louer à Douala." /><Logements /></>} />

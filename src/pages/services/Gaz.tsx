@@ -343,7 +343,7 @@ export default function Gaz() {
                                 <div className="w-16 h-16 mx-auto rounded-2xl bg-african-red/10 flex items-center justify-center mb-4 group-hover:bg-african-red group-hover:text-white transition-colors duration-300">
                                     <item.icon className="h-8 w-8 text-african-red group-hover:text-white transition-colors duration-300" />
                                 </div>
-                                <p className="font-bold text-gray-800">{item.text}</p>
+                                <p className="font-bold text-foreground">{item.text}</p>
                             </CardContent>
                         </Card>
                     ))}
@@ -356,7 +356,7 @@ export default function Gaz() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-african-red text-white hover:bg-african-red/90">Commande Express</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Commander votre gaz</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Commander votre gaz</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Suivez les étapes simples pour ne plus jamais être à court de gaz.</p>
             </div>
 
@@ -496,7 +496,7 @@ export default function Gaz() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-african-yellow text-black hover:bg-african-yellow/80">Catalogue</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Nos Bouteilles</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Nos Bouteilles</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Toutes les marques, toutes les tailles.</p>
             </div>
 
@@ -513,7 +513,7 @@ export default function Gaz() {
                             <div className="w-32 h-32 mx-auto rounded-full bg-african-red/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-african-red/10 transition-all duration-500">
                                 <Package className="h-16 w-16 text-african-red" />
                             </div>
-                            <h3 className="text-3xl font-extrabold text-african-earth mb-2">{bouteille.taille}</h3>
+                            <h3 className="text-3xl font-extrabold text-african-earth mb-2 dark:text-white">{bouteille.taille}</h3>
                             <Badge variant="secondary" className="mb-4">{bouteille.usage}</Badge>
                             <p className="text-muted-foreground mb-6">{bouteille.description}</p>
 
@@ -536,22 +536,22 @@ export default function Gaz() {
                 <Card className="bg-green-50 border-green-200">
                     <CardContent className="p-6 text-center space-y-2">
                         <ShieldCheck className="h-8 w-8 mx-auto text-green-600" />
-                        <h3 className="font-bold">Sécurité Certifiée</h3>
-                        <p className="text-sm text-muted-foreground">Bouteilles testées et conformes.</p>
+                        <h3 className="font-bold dark:text-black">Sécurité Certifiée</h3>
+                        <p className="text-sm text-muted-foreground dark:text-black">Bouteilles testées et conformes.</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-blue-50 border-blue-200">
                     <CardContent className="p-6 text-center space-y-2">
                         <Award className="h-8 w-8 mx-auto text-blue-600" />
-                        <h3 className="font-bold">Qualité Garantie</h3>
-                        <p className="text-sm text-muted-foreground">Poids exact, flamme bleue.</p>
+                        <h3 className="font-bold dark:text-black">Qualité Garantie</h3>
+                        <p className="text-sm text-muted-foreground dark:text-black">Poids exact, flamme bleue.</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-orange-50 border-orange-200">
                     <CardContent className="p-6 text-center space-y-2">
                         <Users className="h-8 w-8 mx-auto text-orange-600" />
-                        <h3 className="font-bold">Toutes Marques</h3>
-                        <p className="text-sm text-muted-foreground">SCTM, CAMGAZ, TRADEX, TOTAL...</p>
+                        <h3 className="font-bold dark:text-black">Toutes Marques</h3>
+                        <p className="text-sm text-muted-foreground dark:text-black">SCTM, CAMGAZ, TRADEX, TOTAL...</p>
                     </CardContent>
                 </Card>
             </div>
@@ -562,7 +562,7 @@ export default function Gaz() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-purple-600 hover:bg-purple-700">Professionnels</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Solutions Entreprises</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Solutions Entreprises</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Restaurateurs, Hôteliers : ne laissez jamais votre gaz s'épuiser en plein service.</p>
             </div>
 
@@ -602,10 +602,10 @@ export default function Gaz() {
             </div>
 
             <div className="text-center max-w-3xl mx-auto bg-card border rounded-xl p-8 shadow-sm">
-                <h4 className="font-bold text-lg mb-4">Secteurs que nous servons</h4>
+                <h4 className="font-bold text-lg mb-4 dark:text-white">Secteurs que nous servons</h4>
                 <div className="flex flex-wrap justify-center gap-3">
                     {ciblesPro.map((cible, idx) => (
-                        <Badge key={idx} variant="outline" className="px-4 py-2 text-base border-african-red/20 text-african-earth">
+                        <Badge key={idx} variant="outline" className="px-4 py-2 text-base border-african-red/20 text-african-earth dark:text-white">
                             {cible}
                         </Badge>
                     ))}
@@ -618,7 +618,7 @@ export default function Gaz() {
         <div className="space-y-12 animate-fade-in max-w-6xl mx-auto">
             <div className="text-center space-y-4">
                 <Badge className="bg-blue-600 hover:bg-blue-700">Tranquillité</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Abonnements</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Abonnements</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Automatisez vos commandes et profitez de tarifs préférentiels.</p>
             </div>
 
@@ -645,7 +645,7 @@ export default function Gaz() {
                                     ))}
                                 </ul>
                                 <div className="text-center pt-4 border-t mt-auto">
-                                    <div className="text-lg font-bold text-african-earth mb-4">{formule.prix}</div>
+                                    <div className="text-lg font-bold text-african-earth mb-4 dark:text-white">{formule.prix}</div>
                                     <Button
                                         className="w-full bg-african-earth text-white hover:bg-african-red"
                                         onClick={() => navigateToSection('contact')}
@@ -665,14 +665,14 @@ export default function Gaz() {
         <div className="max-w-4xl mx-auto space-y-12 animate-fade-in text-center">
             <div className="space-y-4">
                 <Badge className="bg-gray-600">Qui sommes-nous</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Notre Ambition</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Notre Ambition</h2>
             </div>
 
             <div className="bg-card border-none shadow-2xl rounded-3xl overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-3 bg-african-red" />
                 <CardContent className="p-10 md:p-16 space-y-8">
                     <Flame className="h-20 w-20 mx-auto text-african-red mb-6 animate-pulse-glow" />
-                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed font-heading italic text-gray-700">
+                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed font-heading italic text-gray-700 dark:text-foreground">
                         "Rendre le gaz domestique accessible partout, tout le temps, sans effort. Parce que cuisiner pour sa famille ne devrait jamais être interrompu."
                     </blockquote>
                     <div className="w-24 h-1 bg-african-earth/20 mx-auto rounded-full" />
@@ -718,7 +718,7 @@ export default function Gaz() {
         <div className="max-w-6xl mx-auto animate-fade-in space-y-12">
             <div className="text-center space-y-4">
                 <Badge className="bg-african-earth">Support Client</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Contactez-nous</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Contactez-nous</h2>
                 <p className="text-muted-foreground text-lg">Nous sommes à votre écoute 7j/7.</p>
             </div>
 
@@ -749,14 +749,14 @@ export default function Gaz() {
                             <CardContent className="p-6">
                                 <Phone className="h-8 w-8 text-african-earth mb-4" />
                                 <h4 className="font-bold mb-1">Service Client</h4>
-                                <p className="text-muted-foreground">+237 690 547 084</p>
+                                <p className="text-muted-foreground dark:text-white">+237 690 547 084</p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardContent className="p-6">
                                 <Mail className="h-8 w-8 text-african-earth mb-4" />
                                 <h4 className="font-bold mb-1">Email</h4>
-                                <p className="text-muted-foreground">gaz@lebonpetit.cm</p>
+                                <p className="text-muted-foreground">gaz@lebonpetit237.com</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -824,8 +824,8 @@ export default function Gaz() {
                 >
                     <div className="flex flex-col h-full">
                         <div className="p-6 border-b flex items-center justify-between">
-                            <span className="font-heading text-2xl font-bold text-african-red">
-                                Gaz Rapide
+                            <span className="font-heading text-2xl font-bold text-african-red dark:text-white">
+                                Livraison de gaz
                             </span>
                             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
                                 <X className="h-6 w-6" />
@@ -841,7 +841,7 @@ export default function Gaz() {
                                         setSidebarOpen(false);
                                     }}
                                     className={`
-                                        w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium
+                                        w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-left
                                         ${activeSection === item.id
                                             ? 'bg-african-red text-white shadow-md'
                                             : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -857,7 +857,7 @@ export default function Gaz() {
                         <div className="p-4 border-t bg-secondary/30">
                             <div className="bg-card rounded-xl p-4 shadow-sm border border-african-red/20">
                                 <p className="text-xs text-muted-foreground mb-2 font-semibold uppercase">Urgence Gaz ?</p>
-                                <p className="font-bold text-african-earth">+237 690 547 084</p>
+                                <p className="font-bold text-african-earth dark:text-white">+237 690 547 084</p>
                                 <p className="text-xs text-muted-foreground">Livraison &lt; 30min</p>
                             </div>
                         </div>

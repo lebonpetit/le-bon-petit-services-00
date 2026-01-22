@@ -1,5 +1,5 @@
 # robots.txt for Le Bon Petit
-# https://lebonpetit.cm
+# https://lebonpetit237.com
 
 # Allow all search engines to crawl the site
 User-agent: *

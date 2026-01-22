@@ -282,12 +282,12 @@ export default function Lessive() {
                         <img src={africanLessiveArt} alt="Femme africaine faisant la lessive" className="w-full h-96 object-cover hover:scale-105 transition-transform duration-700" />
                         <div className="absolute bottom-6 left-6 right-6">
                             <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border-l-4 border-emerald-500">
-                                <p className="text-green-900 font-medium italic">"L'art de la lessive africaine"</p>
+                                <p className="text-foreground font-medium italic">"L'art de la lessive africaine"</p>
                             </div>
                         </div>
                     </div>
                     <div className="order-1 md:order-2 space-y-6">
-                        <h2 className="font-heading text-3xl md:text-4xl font-bold text-green-600">
+                        <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary">
                             L'Art du Linge au Cameroun
                         </h2>
                         <p className="text-muted-foreground text-xl leading-relaxed">
@@ -316,7 +316,7 @@ export default function Lessive() {
                                 <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 flex items-center justify-center mb-4 group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
                                     <item.icon className="h-8 w-8 text-green-600 group-hover:text-white transition-colors duration-300" />
                                 </div>
-                                <p className="font-bold text-gray-800">{item.text}</p>
+                                <p className="font-bold text-foreground">{item.text}</p>
                             </CardContent>
                         </Card>
                     ))}
@@ -329,7 +329,7 @@ export default function Lessive() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-green-600 text-white">Service Express</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Programmer une lessive</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Programmer une lessive</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Remplissez le formulaire et nous arrivons.</p>
             </div>
 
@@ -414,7 +414,7 @@ export default function Lessive() {
         <div className="space-y-12 animate-fade-in">
             <div className="text-center space-y-4">
                 <Badge className="bg-emerald-500 hover:bg-emerald-600">Expertise</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Nos Services</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Nos Services</h2>
                 <p className="text-muted-foreground text-lg">Du simple lavage au traitement délicat.</p>
             </div>
 
@@ -474,7 +474,7 @@ export default function Lessive() {
         <div className="space-y-12 animate-fade-in max-w-6xl mx-auto">
             <div className="text-center space-y-4">
                 <Badge className="bg-emerald-500">Économies</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Nos Abonnements</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Nos Abonnements</h2>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
@@ -492,7 +492,7 @@ export default function Lessive() {
                                 <p className="text-sm text-muted-foreground">{f.description}</p>
                             </CardHeader>
                             <CardContent className="flex-1 flex flex-col space-y-6">
-                                <div className="text-3xl font-bold text-center text-green-700">{f.prix}</div>
+                                <div className="text-3xl font-bold text-center text-primary">{f.prix}</div>
                                 <ul className="space-y-3 flex-1">
                                     {f.avantages.map((a, j) => (
                                         <li key={j} className="flex items-center gap-2 text-sm">
@@ -515,7 +515,7 @@ export default function Lessive() {
         <div className="space-y-12 animate-fade-in text-center">
             <div className="space-y-4">
                 <Badge className="bg-teal-600">Pro</Badge>
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Solutions Entreprises</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Solutions Entreprises</h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Confiez-nous la gestion du linge de votre établissement.</p>
             </div>
 
@@ -548,7 +548,7 @@ export default function Lessive() {
 
     const renderAPropos = () => (
         <div className="max-w-4xl mx-auto text-center space-y-12 animate-fade-in">
-            <h2 className="font-heading text-4xl font-bold text-african-earth">Notre Philosophie</h2>
+            <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Notre Philosophie</h2>
             <div className="grid md:grid-cols-3 gap-8">
                 <div className="p-6 bg-card rounded-xl shadow-sm">
                     <Clock className="h-10 w-10 text-green-600 mx-auto mb-4" />
@@ -572,7 +572,7 @@ export default function Lessive() {
     const renderContact = () => (
         <div className="max-w-6xl mx-auto animate-fade-in space-y-12">
             <div className="text-center">
-                <h2 className="font-heading text-4xl font-bold text-african-earth">Contactez-nous</h2>
+                <h2 className="font-heading text-4xl font-bold text-african-earth dark:text-white">Contactez-nous</h2>
             </div>
             <div className="grid lg:grid-cols-2 gap-8">
                 <div className="space-y-6">
@@ -623,7 +623,7 @@ export default function Lessive() {
                 <aside className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card/95 backdrop-blur border-r shadow-2xl lg:shadow-none transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                     <div className="flex flex-col h-full">
                         <div className="p-6 border-b flex items-center justify-between">
-                            <span className="font-heading text-2xl font-bold text-green-700">
+                            <span className="font-heading text-2xl font-bold text-primary">
                                 Pressing Plus
                             </span>
                             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}><X /></Button>
@@ -642,8 +642,8 @@ export default function Lessive() {
                         </nav>
                         <div className="p-4 border-t bg-secondary/30">
                             <div className="bg-card rounded-xl p-4 shadow-sm border border-green-200">
-                                <p className="text-xs text-muted-foreground mb-1 font-semibold uppercase">Une question ?</p>
-                                <p className="font-bold text-african-earth">+237 690 547 084</p>
+                                <p className="text-xs text-muted-foreground dark:text-white mb-1 font-semibold uppercase">Une question ?</p>
+                                <p className="font-bold text-african-earth dark:text-white">+237 690 547 084</p>
                             </div>
                         </div>
                     </div>

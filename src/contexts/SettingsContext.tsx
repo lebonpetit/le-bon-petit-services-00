@@ -22,7 +22,7 @@ interface SettingsContextType {
 const defaultPlatformSettings: PlatformSettings = {
     company_name: 'Le Bon Petit',
     contact_phone: '+237 6XX XXX XXX',
-    contact_email: 'contact@lebonpetit.cm',
+    contact_email: 'contact@lebonpetit237.com',
     whatsapp: '+237 6XX XXX XXX',
     address: 'Douala, Cameroun',
 };

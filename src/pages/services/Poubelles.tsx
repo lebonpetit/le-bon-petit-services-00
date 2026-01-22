@@ -295,7 +295,7 @@ export default function Poubelles() {
                     <p className="text-muted-foreground text-lg leading-relaxed">
                         Nous sommes une startup camerounaise spécialisée dans la précollecte et la gestion responsable des déchets ménagers, commerciaux et institutionnels.
                     </p>
-                    <p className="text-xl font-semibold text-african-earth">
+                    <p className="text-xl font-semibold text-african-earth dark:text-white">
                         Notre mission : contribuer durablement à la salubrité, à la santé publique et à la protection de l'environnement.
                     </p>
                 </div>
@@ -572,7 +572,7 @@ export default function Poubelles() {
                     <div className="w-20 h-20 mx-auto rounded-3xl bg-african-green/10 flex items-center justify-center">
                         <Leaf className="h-10 w-10 text-african-green" />
                     </div>
-                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed text-gray-700 dark:text-gray-300 italic">
+                    <blockquote className="text-2xl md:text-3xl font-light leading-relaxed text-foreground italic">
                         "Nous croyons qu'un environnement propre est un pilier essentiel de la santé publique et du développement durable."
                     </blockquote>
                     <div className="flex items-center justify-center gap-4">
@@ -643,7 +643,7 @@ export default function Poubelles() {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Email</p>
-                                <p className="font-semibold text-lg">contact@lebonpetit.cm</p>
+                                <p className="font-semibold text-lg">contact@lebonpetit237.com</p>
                             </div>
                         </div>
 
@@ -732,11 +732,10 @@ export default function Poubelles() {
           `}
                 >
                     <div className="p-6 border-b">
-                        <h2 className="font-heading text-xl font-bold text-african-green flex items-center gap-2">
+                        <h2 className="font-heading text-xl font-bold text-african-green flex items-center gap-2 dark:text-white">
                             <Trash2 className="h-6 w-6" />
-                            Poubelles
+                            Gestion d'ordure
                         </h2>
-                        <p className="text-xs text-muted-foreground mt-1">Précollecte & Salubrité</p>
                     </div>
                     <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
                         {navigation.map((item) => {
@@ -767,7 +766,7 @@ export default function Poubelles() {
 
                     <div className="p-4 border-t">
                         <div className="bg-african-earth/10 p-4 rounded-lg">
-                            <p className="font-bold text-african-earth text-sm mb-1">Besoin d'aide ?</p>
+                            <p className="font-bold text-african-earth text-sm mb-1 dark:text-white">Besoin d'aide ?</p>
                             <p className="text-xs text-muted-foreground mb-3">Contactez notre support client disponible 7j/7.</p>
                             <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => navigateToSection('contact')}>
                                 Nous contacter

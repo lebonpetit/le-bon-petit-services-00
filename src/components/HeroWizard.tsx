@@ -295,7 +295,7 @@ export function HeroBookingWizard() {
             <div className="hidden lg:block absolute bottom-40 left-20 w-16 h-16 bg-african-green/20 rounded-full animate-float blur-xl" style={{ animationDelay: '1s' }} />
             <div className="hidden lg:block absolute top-1/2 right-1/4 w-12 h-12 bg-african-red/20 rounded-full animate-float blur-xl" style={{ animationDelay: '2s' }} />
 
-            <div className="container mx-auto px-4 lg:px-8 relative z-10 flex-1 flex items-center py-12 lg:py-0">
+            <div className="container mx-auto px-4 lg:px-8 relative z-10 flex-1 flex items-center py-12 lg:py-20">
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full">
 
                     {/* Left Column: Hero Content */}
@@ -744,7 +744,7 @@ export function HeroBookingWizard() {
                                                                             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                                                                                 <Bug className="w-8 h-8 text-green-600" />
                                                                             </div>
-                                                                            <span className="font-bold text-green-900 text-center">Assainissement</span>
+                                                                            <span className="font-bold text-foreground text-center">Assainissement</span>
                                                                         </button>
                                                                     </div>
                                                                 )}
