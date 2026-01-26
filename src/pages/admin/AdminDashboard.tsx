@@ -75,6 +75,26 @@ const fieldLabels: Record<string, string> = {
     ville: 'Ville',
     rooms: 'Nombre de pièces',
     searchType: 'Type de recherche',
+    listing_title: 'Logement sélectionné',
+    listing_link: 'Lien du logement',
+    dateDebut: 'Date d\'arrivée',
+    dateFin: 'Date de départ',
+    personnes: 'Nombre de voyageurs',
+    email: 'Email',
+    landlord_id: 'Propriétaire',
+};
+
+// Traductions des valeurs de type de demande
+const typeValueLabels: Record<string, string> = {
+    reservation_appartement: 'Réservation d\'appartement',
+    proposition_proprietaire: 'Proposition de propriétaire',
+    contact_appartement: 'Contact appartement',
+    demande_gaz: 'Commande de gaz',
+    demande_colis: 'Envoi de colis',
+    demande_lessive: 'Service de lessive',
+    demande_poubelles: 'Collecte de poubelles',
+    demande_nettoyage: 'Service de nettoyage',
+    demande_demenagement: 'Déménagement',
 };
 
 // Labels pour les services de nettoyage
@@ -496,7 +516,32 @@ export default function AdminDashboard() {
             if (value.length === 0) return '-';
             return value.map(v => nettoyageLabels[v] || v).join(', ');
         }
-        return String(value);
+        const strValue = String(value);
+
+        // Translate type values
+        if (key === 'type' && typeValueLabels[strValue]) {
+            return typeValueLabels[strValue];
+        }
+
+        // Handle landlord_id - just show that it's assigned
+        if (key === 'landlord_id') {
+            return 'Assigné à un propriétaire';
+        }
+
+        // Format dates nicely
+        if ((key.toLowerCase().includes('date') || key === 'dateDebut' || key === 'dateFin') && strValue.match(/^\d{4}-\d{2}-\d{2}/)) {
+            try {
+                return new Date(strValue).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            } catch {
+                return strValue;
+            }
+        }
+
+        return strValue;
     };
 
     // Filter functions
@@ -573,23 +618,26 @@ export default function AdminDashboard() {
     // Component for displaying request details
     const RequestDetailsDialog = ({ request }: { request: ServiceRequest }) => {
         const payload = request.payload as Record<string, unknown>;
+        // Admin can only manipulate requests destined for admin (no landlord_id)
+        const isAdminRequest = !request.landlord_id;
 
         return (
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4 mr-1" />
-                        Détails
+                    <Button size="sm" variant="outline" className="text-xs sm:text-sm">
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                        <span className="hidden sm:inline">Détails</span>
+                        <span className="sm:hidden">Voir</span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Badge className={getServiceColor(request.service_type)}>
+                <DialogContent className="w-[95vw] max-w-lg max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+                    <DialogHeader className="space-y-2">
+                        <DialogTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-left">
+                            <Badge className={`${getServiceColor(request.service_type)} w-fit`}>
                                 {getServiceIcon(request.service_type)}
                                 <span className="ml-1">{serviceTypeLabels[request.service_type] || request.service_type}</span>
                             </Badge>
-                            <span className="text-muted-foreground text-sm font-normal">
+                            <span className="text-muted-foreground text-xs sm:text-sm font-normal">
                                 {new Date(request.created_at).toLocaleDateString('fr-FR', {
                                     day: 'numeric',
                                     month: 'long',
@@ -599,25 +647,28 @@ export default function AdminDashboard() {
                                 })}
                             </span>
                         </DialogTitle>
-                        <DialogDescription>
-                            Détails de la demande de {request.contact_name}
+                        <DialogDescription className="text-left">
+                            Demande de <span className="font-semibold">{request.contact_name}</span>
+                            {!isAdminRequest && (
+                                <Badge variant="outline" className="ml-2 text-xs">Destinée au propriétaire</Badge>
+                            )}
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 mt-4">
                         {/* Contact Info */}
-                        <div className="bg-secondary/50 rounded-lg p-4 space-y-2">
+                        <div className="bg-secondary/50 rounded-lg p-3 sm:p-4 space-y-3">
                             <h4 className="font-semibold text-sm flex items-center gap-2">
                                 <Users className="h-4 w-4" />
                                 Informations de contact
                             </h4>
-                            <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                 <div>
-                                    <span className="text-muted-foreground">Nom complet:</span>
+                                    <span className="text-muted-foreground text-xs">Nom complet</span>
                                     <p className="font-medium">{request.contact_name}</p>
                                 </div>
                                 <div>
-                                    <span className="text-muted-foreground">Téléphone:</span>
+                                    <span className="text-muted-foreground text-xs">Téléphone</span>
                                     <p className="font-medium">
                                         <a
                                             href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}`}
@@ -636,21 +687,35 @@ export default function AdminDashboard() {
                         {/* Request Details */}
                         <div className="space-y-3">
                             <h4 className="font-semibold text-sm">Détails de la demande</h4>
-                            <div className="grid gap-2">
+                            <div className="grid gap-1">
                                 {Object.entries(payload).map(([key, value]) => {
                                     // Skip empty values and contact info already shown
                                     if (key === 'nom' || key === 'prenom' || key === 'whatsapp') return null;
                                     const formattedValue = formatPayloadValue(key, value);
                                     if (formattedValue === '-') return null;
 
+                                    // Special handling for links
+                                    const isLink = key === 'listing_link' && typeof value === 'string' && value.startsWith('http');
+
                                     return (
-                                        <div key={key} className="flex justify-between py-2 border-b border-border last:border-0">
-                                            <span className="text-muted-foreground text-sm">
+                                        <div key={key} className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-border last:border-0 gap-1">
+                                            <span className="text-muted-foreground text-xs sm:text-sm">
                                                 {fieldLabels[key] || key}
                                             </span>
-                                            <span className="font-medium text-sm text-right max-w-[60%]">
-                                                {formattedValue}
-                                            </span>
+                                            {isLink ? (
+                                                <a
+                                                    href={value as string}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-primary hover:underline text-xs sm:text-sm font-medium truncate max-w-full sm:max-w-[60%]"
+                                                >
+                                                    Voir le logement →
+                                                </a>
+                                            ) : (
+                                                <span className="font-medium text-xs sm:text-sm sm:text-right break-words max-w-full sm:max-w-[60%]">
+                                                    {formattedValue}
+                                                </span>
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -658,30 +723,30 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-                    <DialogFooter className="mt-4">
-                        <div className="flex gap-2 w-full">
-                            <a
-                                href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}?text=Bonjour ${request.contact_name}, concernant votre demande de ${serviceTypeLabels[request.service_type] || request.service_type}...`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1"
+                    <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
+                        <a
+                            href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}?text=Bonjour ${request.contact_name}, concernant votre demande de ${serviceTypeLabels[request.service_type] || request.service_type}...`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full sm:flex-1"
+                        >
+                            <Button variant="outline" className="w-full text-african-green border-african-green hover:bg-african-green hover:text-white">
+                                <MessageCircle className="h-4 w-4 mr-2" />
+                                <span className="hidden sm:inline">Contacter sur WhatsApp</span>
+                                <span className="sm:hidden">WhatsApp</span>
+                            </Button>
+                        </a>
+                        {/* Only show action button for admin-destined requests */}
+                        {isAdminRequest && request.status === 'new' && (
+                            <Button
+                                variant="cta"
+                                onClick={() => updateRequestStatus(request.id, 'processed')}
+                                className="w-full sm:flex-1"
                             >
-                                <Button variant="outline" className="w-full text-african-green border-african-green hover:bg-african-green hover:text-white">
-                                    <MessageCircle className="h-4 w-4 mr-2" />
-                                    Contacter sur WhatsApp
-                                </Button>
-                            </a>
-                            {request.status === 'new' && (
-                                <Button
-                                    variant="cta"
-                                    onClick={() => updateRequestStatus(request.id, 'processed')}
-                                    className="flex-1"
-                                >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    Marquer comme traité
-                                </Button>
-                            )}
-                        </div>
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Marquer comme traité
+                            </Button>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
