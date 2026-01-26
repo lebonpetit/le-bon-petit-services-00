@@ -26,7 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { GAS_BRANDS, GAS_SIZES, PARCEL_TYPES, INT_DESTINATIONS, CITIES, LAUNDRY_TYPES, NETTOYAGE_PRO_SERVICES, SANITATION_SERVICES, WASTE_TYPES, WASTE_FREQUENCIES, HOUSING_TYPES, CAR_TYPES, FURNITURE_MATERIALS, MATTRESS_SIZES, INTERVENTION_LOCATIONS, EVENT_SPACES } from "@/lib/constants";
+import { GAS_BRANDS, GAS_SIZES, PARCEL_TYPES, INT_DESTINATIONS, CITIES, LAUNDRY_TYPES, NETTOYAGE_PRO_SERVICES, SANITATION_SERVICES, WASTE_TYPES, WASTE_FREQUENCIES, HOUSING_TYPES, CAR_TYPES, FURNITURE_MATERIALS, MATTRESS_SIZES, INTERVENTION_LOCATIONS, EVENT_SPACES, TYPES_LOGEMENT, BUDGET_RANGES, MOVE_SIZES, WORK_TYPES } from "@/lib/constants";
 import {
     Select,
     SelectContent,
@@ -37,7 +37,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 
-type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logement' | 'demenagement' | null;
+type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logements' | 'demenagement' | null;
 
 const services = [
     { id: 'poubelles', label: "Gestion d'ordure", icon: Trash2, color: 'text-green-500', bg: 'bg-gradient-to-br from-green-500 to-emerald-500', border: 'border-green-200' },
@@ -45,8 +45,8 @@ const services = [
     { id: 'colis', label: 'Expédition de colis', icon: Package, color: 'text-blue-500', bg: 'bg-gradient-to-br from-blue-500 to-indigo-500', border: 'border-blue-200' },
     { id: 'lessive', label: 'Ramassage lessive', icon: Shirt, color: 'text-violet-500', bg: 'bg-gradient-to-br from-violet-500 to-purple-500', border: 'border-violet-200' },
     { id: 'nettoyage', label: 'Nettoyage & Assainissement', icon: Sparkles, color: 'text-teal-500', bg: 'bg-gradient-to-br from-teal-500 to-green-500', border: 'border-teal-200' },
-    { id: 'logement', label: 'Logements meublés', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
-    { id: 'demenagement', label: 'Déménagement', icon: Truck, color: 'text-amber-600', bg: 'bg-gradient-to-br from-amber-500 to-yellow-600', border: 'border-amber-200' },
+    { id: 'logements', label: 'Recherche de logements', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
+    { id: 'demenagement', label: 'Déménagement & Aménagement', icon: Truck, color: 'text-amber-600', bg: 'bg-gradient-to-br from-amber-500 to-yellow-600', border: 'border-amber-200' },
 ];
 
 const stats = [
@@ -76,13 +76,15 @@ export function HeroBookingWizard() {
     const [formData, setFormData] = useState({
         details: '',
         quantity: '1',
-        bottleType: '',
+        quantity: '1',
+        bottleBrand: '',
+        bottleSize: '12.5kg',
         destinationType: 'national',
         parcelType: '',
         laundryType: '',
         laundryType: '',
         cleaningCategory: '',
-        cleaningType: '',
+        cleaningTypes: [] as string[],
         wasteType: '',
         wasteFrequency: '',
         urgency: 'standard',
@@ -91,17 +93,20 @@ export function HeroBookingWizard() {
         deliveryAddress: '',
         contactName: '',
         contactPhone: '',
+        // Logement fields
+        logementSearchType: '',
+        logementTypes: [] as string[],
+        logementCity: '',
+        logementBudget: '',
+        // Demenagement fields
+        demenagementType: '',
+        moveSize: '',
+        moveFromCity: '',
+        moveToCity: '',
+        workTypes: [] as string[],
     });
 
     const handleServiceSelect = (id: string) => {
-        if (id === 'logement') {
-            navigate('/logements');
-            return;
-        }
-        if (id === 'demenagement') {
-            navigate('/demenagement');
-            return;
-        }
         setSelectedService(id as ServiceType);
         setStep(1);
     };
@@ -109,8 +114,8 @@ export function HeroBookingWizard() {
     const handleNext = () => {
         if (step === 1) {
             // Validation for the active service
-            if (selectedService === 'gaz' && !formData.bottleType) {
-                toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de bouteille." });
+            if (selectedService === 'gaz' && !formData.bottleBrand) {
+                toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir la marque de la bouteille." });
                 return;
             }
             if (selectedService === 'colis') {
@@ -137,8 +142,8 @@ export function HeroBookingWizard() {
                     toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir une catégorie." });
                     return;
                 }
-                if (subStep === 2 && !formData.cleaningType) {
-                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de prestation." });
+                if (subStep === 2 && formData.cleaningTypes.length === 0) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir au moins une prestation." });
                     return;
                 }
             }
@@ -152,6 +157,43 @@ export function HeroBookingWizard() {
                     return;
                 }
             }
+            if (selectedService === 'logements') {
+                if (subStep === 1 && !formData.logementSearchType) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez indiquer si vous cherchez ou proposez un logement." });
+                    return;
+                }
+                if (subStep === 2 && formData.logementTypes.length === 0) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir au moins un type de logement." });
+                    return;
+                }
+                if (subStep === 3 && formData.logementSearchType === 'cherche' && (!formData.logementCity || !formData.logementBudget)) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez indiquer la ville et le budget." });
+                    return;
+                }
+            }
+            if (selectedService === 'demenagement') {
+                if (subStep === 1 && !formData.demenagementType) {
+                    toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir le type de besoin." });
+                    return;
+                }
+                if (subStep === 2) {
+                    if (formData.demenagementType === 'demenagement') {
+                        if (!formData.moveSize) {
+                            toast({ variant: "destructive", title: "Oups", description: "Veuillez indiquer la taille du bien." });
+                            return;
+                        }
+                        if (!formData.moveFromCity || !formData.moveToCity) {
+                            toast({ variant: "destructive", title: "Oups", description: "Veuillez indiquer les villes de départ et d'arrivée." });
+                            return;
+                        }
+                    } else if (formData.demenagementType === 'amenagement') {
+                        if (formData.workTypes.length === 0) {
+                            toast({ variant: "destructive", title: "Oups", description: "Veuillez choisir au moins un type de travaux." });
+                            return;
+                        }
+                    }
+                }
+            }
 
             // Navigation within Step 1
             const maxSubSteps = (service: ServiceType) => {
@@ -159,6 +201,8 @@ export function HeroBookingWizard() {
                 if (service === 'lessive') return 2;
                 if (service === 'nettoyage') return 3;
                 if (service === 'poubelles') return 2;
+                if (service === 'logements') return 3;
+                if (service === 'demenagement') return 2;
                 return 1;
             };
 
@@ -180,10 +224,24 @@ export function HeroBookingWizard() {
 
         setLoading(true);
         try {
-            const payload: any = { ...formData, source: 'wizard_homepage_premium' };
+            const payload: any = {
+                ...formData,
+                bottleType: formData.bottleBrand ? `${formData.bottleBrand} ${formData.bottleSize}` : '',
+                cleaningType: formData.cleaningTypes.join(', '),
+                logementType: formData.logementTypes.join(', '),
+                moveDetails: formData.demenagementType === 'demenagement'
+                    ? `Déménagement: ${formData.moveSize} de ${formData.moveFromCity} à ${formData.moveToCity}`
+                    : `Aménagement: ${formData.workTypes.join(', ')}`,
+                source: 'wizard_homepage_premium'
+            };
+
+            // Map demenagement to nettoyage to satisfy DB constraint if needed, or specific service if available.
+            // Based on order form logic, 'nettoyage' is used as a fallback for 'autre'.
+            // 'logement' should be 'logements'.
+            const dbServiceType = selectedService === 'demenagement' ? 'nettoyage' : selectedService;
 
             const { error } = await supabase.from('requests').insert({
-                service_type: selectedService,
+                service_type: dbServiceType,
                 payload: payload,
                 contact_name: formData.contactName,
                 contact_phone: formData.contactPhone,
@@ -213,33 +271,30 @@ export function HeroBookingWizard() {
         setFormData({
             details: '',
             quantity: '1',
-            bottleType: '',
+            bottleBrand: '',
+            bottleSize: '12.5kg',
             destinationType: 'national',
             parcelType: '',
             laundryType: '',
-            laundryType: '',
             cleaningCategory: '',
-            cleaningType: '',
+            cleaningTypes: [],
             wasteType: '',
             wasteFrequency: '',
             urgency: 'standard',
-            propertyType: '',
-            nbRooms: '',
-            surface: '',
-            material: '',
-            itemCount: '1',
-            hasStains: 'non',
-            locationType: '',
-            infestedZones: '',
-            address: '',
-            carType: '',
-            eventType: '',
-            eventSpace: '',
             destinationAddress: '',
             pickupAddress: '',
             deliveryAddress: '',
             contactName: '',
-            contactPhone: ''
+            contactPhone: '',
+            logementType: '',
+            logementTypes: [],
+            logementCity: '',
+            logementBudget: '',
+            demenagementType: '',
+            moveSize: '',
+            moveFromCity: '',
+            moveToCity: '',
+            workTypes: [],
         });
     };
 
@@ -252,8 +307,6 @@ export function HeroBookingWizard() {
         }
 
         // Map 'autre' to a valid service type (using 'nettoyage' as generic service fallback)
-        // and 'gestion_ordure' etc to strict ServiceType if they don't match exactly.
-        // Since we updated Select values to match ServiceType, we just handle 'autre'.
         const validServiceType = orderForm.service === 'autre' ? 'nettoyage' : orderForm.service;
 
         setOrderLoading(true);
@@ -264,7 +317,7 @@ export function HeroBookingWizard() {
                     type: 'commande_generale',
                     nom: orderForm.nom,
                     telephone: orderForm.telephone,
-                    service_demande: orderForm.service, // Keeps 'autre' if selected
+                    service_demande: orderForm.service,
                     description: orderForm.description,
                     adresse: orderForm.adresse,
                 },
@@ -301,17 +354,17 @@ export function HeroBookingWizard() {
             <div className="hidden lg:block absolute bottom-40 left-20 w-16 h-16 bg-african-green/20 rounded-full animate-float blur-xl" style={{ animationDelay: '1s' }} />
             <div className="hidden lg:block absolute top-1/2 right-1/4 w-12 h-12 bg-african-red/20 rounded-full animate-float blur-xl" style={{ animationDelay: '2s' }} />
 
-            <div className="container mx-auto px-4 lg:px-8 relative z-10 flex-1 flex items-center py-12 lg:py-20">
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full">
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8 relative z-10 flex-1 flex items-center py-8 sm:py-12 lg:py-20">
+                <div className="grid lg:grid-cols-2 gap-6 sm:gap-12 lg:gap-20 items-center w-full">
 
                     {/* Left Column: Hero Content */}
-                    <div className="order-2 lg:order-1 space-y-8 text-center lg:text-left">
+                    <div className="order-2 lg:order-1 space-y-4 sm:space-y-8 text-center lg:text-left">
                         {/* CTA Buttons */}
-                        <div className="inline-flex flex-wrap items-center gap-3">
+                        <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3">
                             <Button
                                 variant="cta"
                                 size="sm"
-                                className="rounded-full shadow-lg"
+                                className="rounded-full shadow-lg text-xs sm:text-sm"
                                 onClick={() => setShowOrderModal(true)}
                             >
                                 Commandez maintenant
@@ -319,7 +372,7 @@ export function HeroBookingWizard() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="rounded-full border-african-green/30 text-african-green hover:bg-african-green/10"
+                                className="rounded-full border-african-green/30 text-african-green hover:bg-african-green/10 text-xs sm:text-sm"
                                 onClick={() => window.open(`https://wa.me/237690547084?text=${encodeURIComponent('Bonjour, je souhaite obtenir un devis gratuit.')}`, '_blank')}
                             >
                                 Obtenir un devis gratuitement
@@ -328,7 +381,7 @@ export function HeroBookingWizard() {
 
                         {/* Main Title */}
                         <div className="space-y-4">
-                            <h1 className="font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
+                            <h1 className="font-heading font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
                                 Votre quotidien,{" "}
                                 <span className="relative">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-african-green via-primary to-african-yellow">
@@ -346,7 +399,7 @@ export function HeroBookingWizard() {
                                     </svg>
                                 </span>
                             </h1>
-                            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                            <p className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed px-2 sm:px-0">
                                 Poubelle, gaz, colis, lessive, nettoyage ou recherche de logement — <strong className="text-foreground">Le Bon Petit</strong> s'occupe de tout.
                                 Un service camerounais moderne, fiable et à votre portée.
                             </p>
@@ -354,32 +407,29 @@ export function HeroBookingWizard() {
 
                         {/* Action Question Section */}
                         <div className="space-y-4 max-w-xl mx-auto lg:mx-0">
-                            <h3 className="text-lg font-heading font-bold text-foreground text-center lg:text-left">
+                            <h3 className="text-sm sm:text-lg font-heading font-bold text-foreground text-center lg:text-left">
                                 Que voulez-vous faire aujourd'hui ?
                             </h3>
-                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3">
                                 {[
                                     { label: 'Jeter ?', emoji: '🗑️', service: 'poubelles', color: 'from-green-500 to-emerald-500' },
                                     { label: 'Nettoyer ?', emoji: '✨', service: 'nettoyage', color: 'from-teal-500 to-cyan-500' },
                                     { label: 'Livrer ?', emoji: '📦', service: 'colis', color: 'from-blue-500 to-indigo-500' },
-                                    { label: 'Louer ?', emoji: '🏠', service: 'logement', color: 'from-rose-500 to-pink-500' },
+                                    { label: 'Louer ?', emoji: '🏠', service: 'logements', color: 'from-rose-500 to-pink-500' },
                                     { label: 'Laver ?', emoji: '👕', service: 'lessive', color: 'from-violet-500 to-purple-500' },
+                                    { label: 'Déménager ?', emoji: '🚚', service: 'demenagement', color: 'from-amber-500 to-yellow-600' },
                                 ].map((action) => (
                                     <button
                                         key={action.label}
                                         onClick={() => {
-                                            if (action.service === 'logement') {
-                                                navigate('/logements');
-                                            } else {
-                                                handleServiceSelect(action.service);
-                                                document.getElementById('service-selection')?.scrollIntoView({ behavior: 'smooth' });
-                                            }
+                                            handleServiceSelect(action.service);
+                                            document.getElementById('service-selection')?.scrollIntoView({ behavior: 'smooth' });
                                         }}
-                                        className="group relative px-5 py-3 rounded-2xl bg-background/80 border-2 border-border/50 hover:border-transparent active:scale-95 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl overflow-hidden"
+                                        className="group relative px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl bg-background/80 border-2 border-border/50 hover:border-transparent active:scale-95 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl overflow-hidden"
                                     >
                                         <div className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                                        <span className="relative flex items-center gap-2 font-bold text-foreground group-hover:text-white transition-colors duration-300">
-                                            <span className="text-xl group-hover:animate-bounce">{action.emoji}</span>
+                                        <span className="relative flex items-center gap-1 sm:gap-2 font-bold text-xs sm:text-base text-foreground group-hover:text-white transition-colors duration-300">
+                                            <span className="text-base sm:text-xl group-hover:animate-bounce">{action.emoji}</span>
                                             {action.label}
                                         </span>
                                     </button>
@@ -388,30 +438,30 @@ export function HeroBookingWizard() {
                         </div>
 
                         {/* Features Grid */}
-                        <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto lg:mx-0">
-                            <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
-                                <div className="w-10 h-10 rounded-full bg-african-green/10 flex items-center justify-center">
-                                    <CheckCircle2 className="h-5 w-5 text-african-green" />
+                        <div className="grid grid-cols-2 gap-2 sm:gap-4 max-w-lg mx-auto lg:mx-0">
+                            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-african-green/10 flex items-center justify-center shrink-0">
+                                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-african-green" />
                                 </div>
-                                <span className="text-sm font-medium">Service rapide</span>
+                                <span className="text-xs sm:text-sm font-medium">Service rapide</span>
                             </div>
-                            <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
-                                <div className="w-10 h-10 rounded-full bg-african-yellow/10 flex items-center justify-center">
-                                    <Star className="h-5 w-5 text-african-yellow" />
+                            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-african-yellow/10 flex items-center justify-center shrink-0">
+                                    <Star className="h-4 w-4 sm:h-5 sm:w-5 text-african-yellow" />
                                 </div>
-                                <span className="text-sm font-medium">Prix transparents</span>
+                                <span className="text-xs sm:text-sm font-medium">Prix transparents</span>
                             </div>
-                            <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
-                                <div className="w-10 h-10 rounded-full bg-african-red/10 flex items-center justify-center">
-                                    <Shield className="h-5 w-5 text-african-red" />
+                            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-african-red/10 flex items-center justify-center shrink-0">
+                                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-african-red" />
                                 </div>
-                                <span className="text-sm font-medium">100% fiable</span>
+                                <span className="text-xs sm:text-sm font-medium">100% fiable</span>
                             </div>
-                            <div className="flex items-center gap-3 p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
-                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <MapPin className="h-5 w-5 text-primary" />
+                            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                                 </div>
-                                <span className="text-sm font-medium">Partout à Douala</span>
+                                <span className="text-xs sm:text-sm font-medium">Partout à Douala</span>
                             </div>
                         </div>
 
@@ -432,7 +482,7 @@ export function HeroBookingWizard() {
                             {/* Glow effect behind card */}
                             <div className="absolute inset-0 bg-gradient-to-br from-african-green/20 via-primary/20 to-african-yellow/20 rounded-[2.5rem] blur-2xl transform scale-95" />
 
-                            <div id="service-selection" className="relative bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-[2rem] p-6 md:p-8 overflow-hidden">
+                            <div id="service-selection" className="relative bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 md:p-8 overflow-hidden">
                                 {/* Card header decoration */}
                                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-african-green via-primary to-african-yellow" />
 
@@ -444,7 +494,7 @@ export function HeroBookingWizard() {
                                                     <Sparkles className="w-4 h-4" />
                                                     Commandez en 2 min
                                                 </div>
-                                                <h2 className="font-heading font-bold text-2xl md:text-3xl text-foreground">
+                                                <h2 className="font-heading font-bold text-xl sm:text-2xl md:text-3xl text-foreground">
                                                     {new Date().getHours() >= 18 ? "Bonsoir ! 👋" : "Bonjour ! 👋"}
                                                 </h2>
                                                 <p className="text-muted-foreground">
@@ -452,17 +502,17 @@ export function HeroBookingWizard() {
                                                 </p>
                                             </div>
 
-                                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                                                 {services.map((service) => (
                                                     <button
                                                         key={service.id}
                                                         onClick={() => handleServiceSelect(service.id)}
-                                                        className="group flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-border/50 bg-background/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+                                                        className="group flex flex-col items-center justify-center p-2 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-border/50 bg-background/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
                                                     >
-                                                        <div className={`w-14 h-14 rounded-2xl ${service.bg} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                                                            <service.icon className="w-7 h-7 text-white" />
+                                                        <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl ${service.bg} flex items-center justify-center mb-2 sm:mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                                            <service.icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                                                         </div>
-                                                        <span className="text-xs font-bold text-foreground text-center leading-tight">{service.label}</span>
+                                                        <span className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">{service.label}</span>
                                                     </button>
                                                 ))}
                                             </div>
@@ -504,7 +554,7 @@ export function HeroBookingWizard() {
                                                             setStep(step - 1);
                                                         }
                                                     }}
-                                                    className="rounded-full shadow-md border border-border bg-white hover:bg-gray-100 text-foreground font-bold px-4"
+                                                    className="rounded-full shadow-md border border-border bg-white hover:bg-gray-100 text-foreground dark:text-black font-bold px-4"
                                                 >
                                                     <ChevronLeft className="w-5 h-5 mr-1" /> REVENIR
                                                 </Button>
@@ -528,11 +578,8 @@ export function HeroBookingWizard() {
                                                                     <div className="space-y-2">
                                                                         <Label>Marque de la bouteille</Label>
                                                                         <Select
-                                                                            value={formData.bottleType.split(' ')[0]}
-                                                                            onValueChange={(v) => {
-                                                                                const currentSize = formData.bottleType.split(' ')[1] || '12.5kg';
-                                                                                setFormData({ ...formData, bottleType: `${v} ${currentSize}` });
-                                                                            }}
+                                                                            value={formData.bottleBrand}
+                                                                            onValueChange={(v) => setFormData({ ...formData, bottleBrand: v })}
                                                                         >
                                                                             <SelectTrigger className="h-12">
                                                                                 <SelectValue placeholder="Choisir une marque..." />
@@ -549,12 +596,11 @@ export function HeroBookingWizard() {
                                                                         <Label>Taille de la bouteille</Label>
                                                                         <div className="grid grid-cols-2 gap-2">
                                                                             {GAS_SIZES.map((size) => {
-                                                                                const brand = formData.bottleType.split(' ')[0] || 'SCTM';
-                                                                                const isSelected = formData.bottleType.includes(size.id);
+                                                                                const isSelected = formData.bottleSize === size.id;
                                                                                 return (
                                                                                     <div
                                                                                         key={size.id}
-                                                                                        onClick={() => setFormData({ ...formData, bottleType: `${brand} ${size.id}` })}
+                                                                                        onClick={() => setFormData({ ...formData, bottleSize: size.id })}
                                                                                         className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
                                                                                     >
                                                                                         <span className={`block font-bold text-sm ${isSelected ? 'text-primary' : ''}`}>{size.id}</span>
@@ -761,15 +807,24 @@ export function HeroBookingWizard() {
                                                                             {formData.cleaningCategory === 'nettoyage' ? 'Que devons-nous nettoyer ?' : 'Quel traitement faut-il ?'}
                                                                         </Label>
                                                                         <div className="grid grid-cols-2 gap-2">
-                                                                            {(formData.cleaningCategory === 'nettoyage' ? NETTOYAGE_PRO_SERVICES : SANITATION_SERVICES).map((service) => (
-                                                                                <div
-                                                                                    key={service.id}
-                                                                                    onClick={() => setFormData({ ...formData, cleaningType: service.id })}
-                                                                                    className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${formData.cleaningType === service.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
-                                                                                >
-                                                                                    <span className={`block font-bold text-xs ${formData.cleaningType === service.id ? 'text-primary' : ''}`}>{service.label}</span>
-                                                                                </div>
-                                                                            ))}
+                                                                            {(formData.cleaningCategory === 'nettoyage' ? NETTOYAGE_PRO_SERVICES : SANITATION_SERVICES).map((service) => {
+                                                                                const isSelected = formData.cleaningTypes.includes(service.id);
+                                                                                return (
+                                                                                    <div
+                                                                                        key={service.id}
+                                                                                        onClick={() => {
+                                                                                            const current = formData.cleaningTypes;
+                                                                                            const newTypes = current.includes(service.id)
+                                                                                                ? current.filter(id => id !== service.id)
+                                                                                                : [...current, service.id];
+                                                                                            setFormData({ ...formData, cleaningTypes: newTypes });
+                                                                                        }}
+                                                                                        className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                    >
+                                                                                        <span className={`block font-bold text-xs ${isSelected ? 'text-primary' : ''}`}>{service.label}</span>
+                                                                                    </div>
+                                                                                );
+                                                                            })}
                                                                         </div>
                                                                     </div>
                                                                 )}
@@ -836,7 +891,236 @@ export function HeroBookingWizard() {
                                                                 )}
                                                             </div>
                                                         )}
-                                                        {selectedService !== 'gaz' && selectedService !== 'colis' && selectedService !== 'lessive' && selectedService !== 'nettoyage' && selectedService !== 'poubelles' && (
+                                                        {selectedService === 'logements' && (
+                                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                                {subStep === 1 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Que recherchez-vous ?</Label>
+                                                                        <div className="grid grid-cols-1 gap-3">
+                                                                            <div
+                                                                                onClick={() => setFormData({ ...formData, logementSearchType: 'cherche' })}
+                                                                                className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-3 transition-all ${formData.logementSearchType === 'cherche' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                            >
+                                                                                <span className="text-2xl">🏠</span>
+                                                                                <div>
+                                                                                    <span className={`block font-bold ${formData.logementSearchType === 'cherche' ? 'text-primary' : ''}`}>Je cherche un logement</span>
+                                                                                    <span className="text-xs text-muted-foreground">Appartement, studio, maison...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div
+                                                                                onClick={() => setFormData({ ...formData, logementSearchType: 'propose' })}
+                                                                                className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-3 transition-all ${formData.logementSearchType === 'propose' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                            >
+                                                                                <span className="text-2xl">🔑</span>
+                                                                                <div>
+                                                                                    <span className={`block font-bold ${formData.logementSearchType === 'propose' ? 'text-primary' : ''}`}>Je propose un logement</span>
+                                                                                    <span className="text-xs text-muted-foreground">Publier mon bien à louer</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                {subStep === 2 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Type de logement</Label>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {TYPES_LOGEMENT.map((type) => {
+                                                                                const isSelected = formData.logementTypes.includes(type);
+                                                                                return (
+                                                                                    <div
+                                                                                        key={type}
+                                                                                        onClick={() => {
+                                                                                            const current = formData.logementTypes;
+                                                                                            const newTypes = current.includes(type)
+                                                                                                ? current.filter(t => t !== type)
+                                                                                                : [...current, type];
+                                                                                            setFormData({ ...formData, logementTypes: newTypes });
+                                                                                        }}
+                                                                                        className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                    >
+                                                                                        <span className={`block font-bold text-xs ${isSelected ? 'text-primary' : ''}`}>{type}</span>
+                                                                                    </div>
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                {subStep === 3 && (
+                                                                    <div className="space-y-4">
+                                                                        {formData.logementSearchType === 'cherche' ? (
+                                                                            <>
+                                                                                <div className="space-y-2">
+                                                                                    <Label className="font-bold">Dans quelle ville ?</Label>
+                                                                                    <Select
+                                                                                        value={formData.logementCity}
+                                                                                        onValueChange={(v) => setFormData({ ...formData, logementCity: v })}
+                                                                                    >
+                                                                                        <SelectTrigger className="h-12">
+                                                                                            <SelectValue placeholder="Choisir une ville..." />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {CITIES.map(city => (
+                                                                                                <SelectItem key={city} value={city}>{city}</SelectItem>
+                                                                                            ))}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+                                                                                <div className="space-y-2">
+                                                                                    <Label className="font-bold">Budget mensuel</Label>
+                                                                                    <Select
+                                                                                        value={formData.logementBudget}
+                                                                                        onValueChange={(v) => setFormData({ ...formData, logementBudget: v })}
+                                                                                    >
+                                                                                        <SelectTrigger className="h-12">
+                                                                                            <SelectValue placeholder="Votre budget..." />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {BUDGET_RANGES.map(range => (
+                                                                                                <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                                                                                            ))}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+                                                                            </>
+                                                                        ) : (
+                                                                            <div className="space-y-2">
+                                                                                <Label className="font-bold">Détails de votre bien</Label>
+                                                                                <Textarea
+                                                                                    className="min-h-[100px] resize-none"
+                                                                                    placeholder="Décrivez votre bien (emplacement, équipements, loyer souhaité...)"
+                                                                                    value={formData.details}
+                                                                                    onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                                                                />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {selectedService === 'demenagement' && (
+                                                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                                {subStep === 1 && (
+                                                                    <div className="space-y-4">
+                                                                        <Label className="text-base font-bold">Quel est votre besoin ?</Label>
+                                                                        <div className="grid grid-cols-1 gap-3">
+                                                                            <div
+                                                                                onClick={() => setFormData({ ...formData, demenagementType: 'demenagement' })}
+                                                                                className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-3 transition-all ${formData.demenagementType === 'demenagement' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                            >
+                                                                                <span className="text-2xl">🚛</span>
+                                                                                <div>
+                                                                                    <span className={`block font-bold ${formData.demenagementType === 'demenagement' ? 'text-primary' : ''}`}>Je déménage</span>
+                                                                                    <span className="text-xs text-muted-foreground">Transport et manutention</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div
+                                                                                onClick={() => setFormData({ ...formData, demenagementType: 'amenagement' })}
+                                                                                className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-3 transition-all ${formData.demenagementType === 'amenagement' ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                            >
+                                                                                <span className="text-2xl">🛠️</span>
+                                                                                <div>
+                                                                                    <span className={`block font-bold ${formData.demenagementType === 'amenagement' ? 'text-primary' : ''}`}>Aménagement / Travaux</span>
+                                                                                    <span className="text-xs text-muted-foreground">Bricolage, montage, peinture...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                {subStep === 2 && (
+                                                                    <div className="space-y-4">
+                                                                        {formData.demenagementType === 'demenagement' ? (
+                                                                            <>
+                                                                                <div className="space-y-2">
+                                                                                    <Label className="font-bold">Taille du bien</Label>
+                                                                                    <Select
+                                                                                        value={formData.moveSize}
+                                                                                        onValueChange={(v) => setFormData({ ...formData, moveSize: v })}
+                                                                                    >
+                                                                                        <SelectTrigger className="h-12">
+                                                                                            <SelectValue placeholder="Choisir la taille..." />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {MOVE_SIZES.map(size => (
+                                                                                                <SelectItem key={size} value={size}>{size}</SelectItem>
+                                                                                            ))}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+                                                                                <div className="grid grid-cols-2 gap-4">
+                                                                                    <div className="space-y-2">
+                                                                                        <Label className="font-bold">Ville de départ</Label>
+                                                                                        <Select
+                                                                                            value={formData.moveFromCity}
+                                                                                            onValueChange={(v) => setFormData({ ...formData, moveFromCity: v })}
+                                                                                        >
+                                                                                            <SelectTrigger className="h-12">
+                                                                                                <SelectValue placeholder="Ville..." />
+                                                                                            </SelectTrigger>
+                                                                                            <SelectContent>
+                                                                                                {CITIES.map(city => (
+                                                                                                    <SelectItem key={city} value={city}>{city}</SelectItem>
+                                                                                                ))}
+                                                                                            </SelectContent>
+                                                                                        </Select>
+                                                                                    </div>
+                                                                                    <div className="space-y-2">
+                                                                                        <Label className="font-bold">Ville d'arrivée</Label>
+                                                                                        <Select
+                                                                                            value={formData.moveToCity}
+                                                                                            onValueChange={(v) => setFormData({ ...formData, moveToCity: v })}
+                                                                                        >
+                                                                                            <SelectTrigger className="h-12">
+                                                                                                <SelectValue placeholder="Ville..." />
+                                                                                            </SelectTrigger>
+                                                                                            <SelectContent>
+                                                                                                {CITIES.map(city => (
+                                                                                                    <SelectItem key={city} value={city}>{city}</SelectItem>
+                                                                                                ))}
+                                                                                            </SelectContent>
+                                                                                        </Select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </>
+                                                                        ) : (
+                                                                            <div className="space-y-4">
+                                                                                <Label className="text-base font-bold">Type de travaux (Choix multiples)</Label>
+                                                                                <div className="grid grid-cols-2 gap-2">
+                                                                                    {WORK_TYPES.map((type) => {
+                                                                                        const isSelected = formData.workTypes.includes(type);
+                                                                                        return (
+                                                                                            <div
+                                                                                                key={type}
+                                                                                                onClick={() => {
+                                                                                                    const current = formData.workTypes;
+                                                                                                    const newTypes = current.includes(type)
+                                                                                                        ? current.filter(t => t !== type)
+                                                                                                        : [...current, type];
+                                                                                                    setFormData({ ...formData, workTypes: newTypes });
+                                                                                                }}
+                                                                                                className={`cursor-pointer p-3 rounded-xl border-2 text-center transition-all ${isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/50'}`}
+                                                                                            >
+                                                                                                <span className={`block font-bold text-xs ${isSelected ? 'text-primary' : ''}`}>{type}</span>
+                                                                                            </div>
+                                                                                        );
+                                                                                    })}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                        <div className="space-y-2 pt-2">
+                                                                            <Label className="font-bold">Précisions (Étage, dates, etc.)</Label>
+                                                                            <Textarea
+                                                                                className="min-h-[80px] resize-none"
+                                                                                placeholder="Précisez la date souhaitée, s'il y a un ascenseur..."
+                                                                                value={formData.details}
+                                                                                onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        {selectedService !== 'gaz' && selectedService !== 'colis' && selectedService !== 'lessive' && selectedService !== 'nettoyage' && selectedService !== 'poubelles' && selectedService !== 'logements' && selectedService !== 'demenagement' && (
                                                             <div className="space-y-2">
                                                                 <Label>Détails de votre besoin</Label>
                                                                 <Textarea
@@ -862,8 +1146,13 @@ export function HeroBookingWizard() {
                                                             className="h-12"
                                                             placeholder="Numéro WhatsApp (ex: 699...)"
                                                             type="tel"
+                                                            inputMode="numeric"
+                                                            pattern="[0-9+\-\s]*"
                                                             value={formData.contactPhone}
-                                                            onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                                                            onChange={(e) => {
+                                                                const value = e.target.value.replace(/[^0-9+\-\s]/g, '');
+                                                                setFormData({ ...formData, contactPhone: value });
+                                                            }}
                                                         />
                                                         <Input
                                                             className="h-12"
@@ -926,113 +1215,120 @@ export function HeroBookingWizard() {
             </div>
 
             {/* Modal Commande Générale */}
-            {showOrderModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowOrderModal(false)} />
-                    <div className="relative bg-card rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
-                        {/* Header */}
-                        <div className="bg-gradient-to-r from-african-green to-primary p-6 text-white sticky top-0 z-10">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h3 className="font-heading font-bold text-2xl">Commande Rapide</h3>
-                                    <p className="text-white/80 text-sm">Décrivez votre besoin, on s'occupe du reste</p>
+            {
+                showOrderModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowOrderModal(false)} />
+                        <div className="relative bg-card rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
+                            {/* Header */}
+                            <div className="bg-gradient-to-r from-african-green to-primary p-6 text-white sticky top-0 z-10">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="font-heading font-bold text-2xl">Commande Rapide</h3>
+                                        <p className="text-white/80 text-sm">Décrivez votre besoin, on s'occupe du reste</p>
+                                    </div>
+                                    <button onClick={() => setShowOrderModal(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
+                                        <X className="w-6 h-6" />
+                                    </button>
                                 </div>
-                                <button onClick={() => setShowOrderModal(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
-                                    <X className="w-6 h-6" />
-                                </button>
                             </div>
+
+                            {/* Form */}
+                            <form onSubmit={handleOrderSubmit} className="p-6 space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="order-nom">Nom complet *</Label>
+                                        <Input
+                                            id="order-nom"
+                                            placeholder="Votre nom"
+                                            value={orderForm.nom}
+                                            onChange={(e) => setOrderForm({ ...orderForm, nom: e.target.value })}
+                                            className="h-12"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="order-tel">Téléphone *</Label>
+                                        <Input
+                                            id="order-tel"
+                                            type="tel"
+                                            inputMode="numeric"
+                                            pattern="[0-9+\-\s]*"
+                                            placeholder="690 547 084"
+                                            value={orderForm.telephone}
+                                            onChange={(e) => {
+                                                const value = e.target.value.replace(/[^0-9+\-\s]/g, '');
+                                                setOrderForm({ ...orderForm, telephone: value });
+                                            }}
+                                            className="h-12"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="order-service">Service souhaité *</Label>
+                                    <Select value={orderForm.service} onValueChange={(v) => setOrderForm({ ...orderForm, service: v })}>
+                                        <SelectTrigger className="h-12">
+                                            <SelectValue placeholder="Choisir un service" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="poubelles">Gestion d'ordure</SelectItem>
+                                            <SelectItem value="gaz">Livraison de gaz</SelectItem>
+                                            <SelectItem value="colis">Expédition de colis</SelectItem>
+                                            <SelectItem value="lessive">Ramassage lessive</SelectItem>
+                                            <SelectItem value="nettoyage">Nettoyage professionnel</SelectItem>
+                                            <SelectItem value="logement">Recherche de logement</SelectItem>
+                                            <SelectItem value="autre">Autre service</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="order-adresse">Adresse / Quartier</Label>
+                                    <Input
+                                        id="order-adresse"
+                                        placeholder="Ex: Bonamoussadi, Douala"
+                                        value={orderForm.adresse}
+                                        onChange={(e) => setOrderForm({ ...orderForm, adresse: e.target.value })}
+                                        className="h-12"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="order-desc">Description de votre demande *</Label>
+                                    <Textarea
+                                        id="order-desc"
+                                        placeholder="Décrivez votre besoin en détail..."
+                                        value={orderForm.description}
+                                        onChange={(e) => setOrderForm({ ...orderForm, description: e.target.value })}
+                                        className="min-h-[100px] resize-none"
+                                        required
+                                    />
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    disabled={orderLoading}
+                                    className="w-full h-14 bg-gradient-to-r from-african-green to-primary hover:opacity-90 text-white font-bold text-lg rounded-xl shadow-lg"
+                                >
+                                    {orderLoading ? (
+                                        <span className="flex items-center gap-2">
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            Envoi en cours...
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-2">
+                                            <Send className="w-5 h-5" />
+                                            Envoyer ma commande
+                                        </span>
+                                    )}
+                                </Button>
+                            </form>
                         </div>
-
-                        {/* Form */}
-                        <form onSubmit={handleOrderSubmit} className="p-6 space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="order-nom">Nom complet *</Label>
-                                    <Input
-                                        id="order-nom"
-                                        placeholder="Votre nom"
-                                        value={orderForm.nom}
-                                        onChange={(e) => setOrderForm({ ...orderForm, nom: e.target.value })}
-                                        className="h-12"
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="order-tel">Téléphone *</Label>
-                                    <Input
-                                        id="order-tel"
-                                        type="tel"
-                                        placeholder="690 547 084"
-                                        value={orderForm.telephone}
-                                        onChange={(e) => setOrderForm({ ...orderForm, telephone: e.target.value })}
-                                        className="h-12"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="order-service">Service souhaité *</Label>
-                                <Select value={orderForm.service} onValueChange={(v) => setOrderForm({ ...orderForm, service: v })}>
-                                    <SelectTrigger className="h-12">
-                                        <SelectValue placeholder="Choisir un service" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="poubelles">Gestion d'ordure</SelectItem>
-                                        <SelectItem value="gaz">Livraison de gaz</SelectItem>
-                                        <SelectItem value="colis">Expédition de colis</SelectItem>
-                                        <SelectItem value="lessive">Ramassage lessive</SelectItem>
-                                        <SelectItem value="nettoyage">Nettoyage professionnel</SelectItem>
-                                        <SelectItem value="logement">Recherche de logement</SelectItem>
-                                        <SelectItem value="autre">Autre service</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="order-adresse">Adresse / Quartier</Label>
-                                <Input
-                                    id="order-adresse"
-                                    placeholder="Ex: Bonamoussadi, Douala"
-                                    value={orderForm.adresse}
-                                    onChange={(e) => setOrderForm({ ...orderForm, adresse: e.target.value })}
-                                    className="h-12"
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="order-desc">Description de votre demande *</Label>
-                                <Textarea
-                                    id="order-desc"
-                                    placeholder="Décrivez votre besoin en détail..."
-                                    value={orderForm.description}
-                                    onChange={(e) => setOrderForm({ ...orderForm, description: e.target.value })}
-                                    className="min-h-[100px] resize-none"
-                                    required
-                                />
-                            </div>
-
-                            <Button
-                                type="submit"
-                                disabled={orderLoading}
-                                className="w-full h-14 bg-gradient-to-r from-african-green to-primary hover:opacity-90 text-white font-bold text-lg rounded-xl shadow-lg"
-                            >
-                                {orderLoading ? (
-                                    <span className="flex items-center gap-2">
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Envoi en cours...
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        <Send className="w-5 h-5" />
-                                        Envoyer ma commande
-                                    </span>
-                                )}
-                            </Button>
-                        </form>
                     </div>
-                </div>
-            )}
+                )
+            }
         </section >
     );
 }

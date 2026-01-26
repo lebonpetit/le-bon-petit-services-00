@@ -367,7 +367,7 @@ export default function Lessive() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="telephone">Téléphone</Label>
-                                <Input id="telephone" className="bg-secondary/20 h-12" value={commandeForm.telephone} onChange={e => setCommandeForm({ ...commandeForm, telephone: e.target.value })} required />
+                                <Input id="telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20 h-12" value={commandeForm.telephone} onChange={e => setCommandeForm({ ...commandeForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} required />
                             </div>
                         </div>
 

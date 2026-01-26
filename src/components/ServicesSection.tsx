@@ -39,7 +39,7 @@ const servicesData = [
   },
   {
     id: "logements",
-    title: "Recherche de logement",
+    title: "Recherche de logements",
     description: "Trouvez votre logement ou publiez votre bien. Meublé ou non meublé, nous vous accompagnons.",
     image: "/service-logement.png",
     href: "/logements",
@@ -194,7 +194,7 @@ export function ServicesSection() {
 
               <Button variant="cta" size="lg" className="shadow-lg" asChild>
                 <Link to="/logements">
-                  Logements meublés
+                  Recherche de logements
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>

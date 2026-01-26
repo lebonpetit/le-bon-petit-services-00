@@ -788,7 +788,7 @@ export default function Nettoyage() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="telephone">Téléphone / WhatsApp</Label>
-                            <Input id="telephone" value={devisForm.telephone} onChange={e => setDevisForm({ ...devisForm, telephone: e.target.value })} placeholder="+237..." required />
+                            <Input id="telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" value={devisForm.telephone} onChange={e => setDevisForm({ ...devisForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} placeholder="+237..." required />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email (optionnel)</Label>

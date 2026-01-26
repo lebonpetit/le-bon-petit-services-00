@@ -193,27 +193,27 @@ export default function Demenagement() {
     const renderAccueil = () => (
         <div className="space-y-16 animate-fade-in">
             {/* Hero Section */}
-            <section className="relative rounded-3xl overflow-hidden min-h-[500px] flex items-center shadow-2xl bg-african-earth">
+            <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden min-h-[400px] sm:min-h-[500px] flex items-center shadow-2xl bg-african-earth">
                 <div className="absolute inset-0 bg-black/50 z-10" />
                 <div className="absolute inset-0">
-                    <img src={demenagementHeroImage} alt="Déménagement" className="w-full h-full object-cover" />
+                    <img src={demenagementHeroImage} alt="Déménagement & Aménagement" className="w-full h-full object-cover" />
                 </div>
 
-                <div className="relative z-20 px-8 py-20 md:py-28 text-center text-white max-w-4xl mx-auto space-y-8">
+                <div className="relative z-20 px-4 sm:px-8 py-12 sm:py-20 md:py-28 text-center text-white max-w-4xl mx-auto space-y-4 sm:space-y-8">
                     <Badge className="bg-white/20 text-white border-none py-2 px-4 backdrop-blur-md">
                         🚚 Service professionnel
                     </Badge>
-                    <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight">
+                    <h1 className="font-heading text-2xl xs:text-3xl sm:text-4xl md:text-6xl font-extrabold leading-tight break-words">
                         Déménagement &<br />
                         <span className="text-african-yellow">Aménagement</span>
                     </h1>
-                    <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-relaxed font-light">
+                    <p className="text-sm sm:text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-relaxed font-light px-2">
                         Vous déménagez ? Besoin de transporter ou monter des meubles ? Le Bon Petit vous accompagne de A à Z avec professionnalisme.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             size="lg"
-                            className="bg-african-yellow text-black hover:bg-white font-bold h-14 px-8 rounded-full shadow-lg"
+                            className="bg-african-yellow text-black hover:bg-white font-bold h-12 sm:h-14 px-4 sm:px-8 rounded-full shadow-lg text-sm sm:text-base"
                             onClick={() => navigateToSection('tarifs')}
                         >
                             <CreditCard className="mr-2 h-5 w-5" />
@@ -222,7 +222,7 @@ export default function Demenagement() {
                         <Button
                             size="lg"
                             variant="outline"
-                            className="border-2 border-white text-white hover:bg-white/10 font-semibold h-14 px-8 rounded-full"
+                            className="border-2 border-white text-white hover:bg-white/10 font-semibold h-12 sm:h-14 px-4 sm:px-8 rounded-full text-sm sm:text-base"
                             onClick={() => window.open('https://wa.me/237690547084', '_blank')}
                         >
                             <MessageCircle className="mr-2 h-5 w-5" />
@@ -235,16 +235,16 @@ export default function Demenagement() {
             {/* Avantages */}
             <section>
                 <h2 className="font-heading text-3xl md:text-4xl font-bold mb-10 text-center dark:text-white">
-                    Pourquoi <span className="text-african-earth">nous choisir</span> ?
+                    Pourquoi <span className="text-african-earth dark:text-african-yellow">nous choisir</span> ?
                 </h2>
-                <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
                     {avantages.map((item, index) => (
                         <Card key={index} className="group text-center hover:-translate-y-2 transition-all duration-300 border shadow-sm hover:shadow-xl bg-card">
-                            <CardContent className="p-6">
-                                <div className="w-12 h-12 mx-auto rounded-xl bg-african-earth/10 flex items-center justify-center mb-4 group-hover:bg-african-earth group-hover:text-white transition-all">
-                                    <item.icon className="h-6 w-6 text-african-earth group-hover:text-white" />
+                            <CardContent className="p-3 sm:p-6">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-xl bg-african-earth/10 flex items-center justify-center mb-2 sm:mb-4 group-hover:bg-african-earth group-hover:text-white transition-all">
+                                    <item.icon className="h-5 w-5 sm:h-6 sm:w-6 text-african-earth dark:text-african-yellow group-hover:text-white dark:group-hover:text-white" />
                                 </div>
-                                <p className="font-semibold text-sm">{item.text}</p>
+                                <p className="font-semibold text-xs sm:text-sm">{item.text}</p>
                             </CardContent>
                         </Card>
                     ))}
@@ -254,9 +254,9 @@ export default function Demenagement() {
             {/* Team Gallery */}
             <section>
                 <h2 className="font-heading text-3xl md:text-4xl font-bold mb-10 text-center dark:text-white">
-                    Notre <span className="text-african-earth">Équipe</span> en action
+                    Notre <span className="text-african-earth dark:text-african-yellow">Équipe</span> en action
                 </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                     <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
                         <img src={demenagementTeamImage} alt="Équipe Le Bon Petit 237" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
@@ -281,7 +281,7 @@ export default function Demenagement() {
             {/* CTA */}
             <section className="text-center">
                 <Card className="bg-african-earth text-white border-none shadow-2xl">
-                    <CardContent className="p-10">
+                    <CardContent className="p-6 sm:p-10">
                         <h2 className="font-heading text-3xl font-bold mb-4">Prêt à déménager ?</h2>
                         <p className="text-white/80 mb-6 text-lg max-w-2xl mx-auto">
                             Obtenez un devis gratuit en quelques minutes. Notre équipe vous rappelle rapidement.
@@ -304,7 +304,7 @@ export default function Demenagement() {
             <div className="text-center">
                 <Badge className="bg-african-earth text-white mb-4">Nos Prestations</Badge>
                 <h2 className="font-heading text-4xl font-bold mb-4 dark:text-white">
-                    Services de <span className="text-african-earth">Déménagement</span>
+                    Services de <span className="text-african-earth dark:text-african-yellow">Déménagement & Aménagement</span>
                 </h2>
                 <p className="text-muted-foreground text-lg">Transport sécurisé de vos biens</p>
             </div>
@@ -316,7 +316,7 @@ export default function Demenagement() {
                             <div className="h-1 bg-african-earth w-0 group-hover:w-full transition-all duration-500" />
                             <CardHeader className="pb-2">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 rounded-xl bg-african-earth/10 text-african-earth group-hover:bg-african-earth group-hover:text-white transition-all">
+                                    <div className="p-3 rounded-xl bg-african-earth/10 text-african-earth dark:text-african-yellow group-hover:bg-african-earth group-hover:text-white transition-all">
                                         <Icon className="h-6 w-6" />
                                     </div>
                                     <div>
@@ -333,7 +333,7 @@ export default function Demenagement() {
             <div className="text-center pt-8">
                 <Badge className="bg-african-yellow text-black mb-4">Aménagement & Installation</Badge>
                 <h2 className="font-heading text-4xl font-bold mb-4 dark:text-white">
-                    Services d'<span className="text-african-earth">Aménagement</span>
+                    Services d'<span className="text-african-earth dark:text-african-yellow">Aménagement</span>
                 </h2>
                 <p className="text-muted-foreground text-lg">Installation et montage professionnels</p>
             </div>
@@ -345,7 +345,7 @@ export default function Demenagement() {
                             <div className="h-1 bg-african-yellow w-0 group-hover:w-full transition-all duration-500" />
                             <CardHeader className="pb-2">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 rounded-xl bg-african-yellow/10 text-african-earth group-hover:bg-african-yellow group-hover:text-black transition-all">
+                                    <div className="p-3 rounded-xl bg-african-yellow/10 text-african-earth dark:text-african-yellow group-hover:bg-african-yellow group-hover:text-black transition-all">
                                         <Icon className="h-6 w-6" />
                                     </div>
                                     <div>
@@ -366,7 +366,7 @@ export default function Demenagement() {
             <div className="text-center">
                 <Badge className="bg-african-earth text-white mb-4">Particuliers</Badge>
                 <h2 className="font-heading text-4xl font-bold mb-4 dark:text-white">
-                    Déménagez <span className="text-african-earth">l'esprit tranquille</span>
+                    Déménagez <span className="text-african-earth dark:text-african-yellow">l'esprit tranquille</span>
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Que vous changiez de quartier ou de ville, nous prenons soin de vos affaires comme si c'étaient les nôtres.
@@ -382,7 +382,7 @@ export default function Demenagement() {
                     <Card key={idx} className="group border-none shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                         <CardContent className="p-6 text-center">
                             <div className="w-14 h-14 mx-auto rounded-xl bg-african-earth/10 flex items-center justify-center mb-4 group-hover:bg-african-earth transition-colors">
-                                <item.icon className="h-7 w-7 text-african-earth group-hover:text-white" />
+                                <item.icon className="h-7 w-7 text-african-earth dark:text-african-yellow group-hover:text-white" />
                             </div>
                             <h3 className="font-bold text-lg mb-2">{item.title}</h3>
                             <p className="text-muted-foreground text-sm">{item.desc}</p>
@@ -404,7 +404,7 @@ export default function Demenagement() {
             <div className="text-center">
                 <Badge className="bg-african-earth text-white mb-4">Entreprises</Badge>
                 <h2 className="font-heading text-4xl font-bold mb-4 dark:text-white">
-                    Solutions <span className="text-african-earth">professionnelles</span>
+                    Solutions <span className="text-african-earth dark:text-african-yellow">professionnelles</span>
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Déménagement de bureaux, réagencement de locaux, installation d'équipements — nous intervenons rapidement.
@@ -423,7 +423,7 @@ export default function Demenagement() {
                             <ul className="space-y-2">
                                 {item.features.map((f, i) => (
                                     <li key={i} className="flex items-center gap-2 text-sm">
-                                        <CheckCircle2 className="h-4 w-4 text-african-earth flex-shrink-0" />
+                                        <CheckCircle2 className="h-4 w-4 text-african-earth dark:text-african-yellow flex-shrink-0" />
                                         {f}
                                     </li>
                                 ))}
@@ -446,7 +446,7 @@ export default function Demenagement() {
             <div className="text-center">
                 <Badge className="bg-african-yellow text-black mb-4">Devis Gratuit</Badge>
                 <h2 className="font-heading text-4xl font-bold mb-4 dark:text-white">
-                    Tarifs & <span className="text-african-earth">Devis</span>
+                    Tarifs & <span className="text-african-earth dark:text-african-yellow">Devis</span>
                 </h2>
                 <p className="text-muted-foreground text-lg">
                     Chaque déménagement est unique. Remplissez le formulaire pour recevoir un devis personnalisé.
@@ -460,14 +460,14 @@ export default function Demenagement() {
                     <CardDescription>Réponse sous 24h</CardDescription>
                 </CardHeader>
                 <CardContent className="p-8">
-                    <form onSubmit={handleDevisSubmit} className="grid md:grid-cols-2 gap-6">
+                    <form onSubmit={handleDevisSubmit} className="grid gap-4 sm:gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="nom">Nom complet</Label>
                             <Input id="nom" value={devisForm.nom} onChange={e => setDevisForm({ ...devisForm, nom: e.target.value })} placeholder="Votre nom" required />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="telephone">Téléphone / WhatsApp</Label>
-                            <Input id="telephone" value={devisForm.telephone} onChange={e => setDevisForm({ ...devisForm, telephone: e.target.value })} placeholder="+237..." required />
+                            <Input id="telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" value={devisForm.telephone} onChange={e => setDevisForm({ ...devisForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} placeholder="+237..." required />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="typeService">Type de service</Label>
@@ -495,11 +495,11 @@ export default function Demenagement() {
                             <Label htmlFor="arrivee">Adresse d'arrivée</Label>
                             <Input id="arrivee" value={devisForm.arrivee} onChange={e => setDevisForm({ ...devisForm, arrivee: e.target.value })} placeholder="Quartier, repère..." required />
                         </div>
-                        <div className="space-y-2 md:col-span-2">
+                        <div className="space-y-2">
                             <Label htmlFor="details">Détails supplémentaires</Label>
                             <Textarea id="details" value={devisForm.details} onChange={e => setDevisForm({ ...devisForm, details: e.target.value })} placeholder="Liste des objets, étage, accès difficile..." className="min-h-[100px]" />
                         </div>
-                        <div className="md:col-span-2 pt-4">
+                        <div className="pt-4">
                             <Button type="submit" size="lg" className="w-full bg-african-earth hover:bg-african-earth/90 text-white font-bold h-14 text-lg rounded-xl" disabled={devisLoading}>
                                 {devisLoading ? "Envoi en cours..." : "Envoyer ma demande"}
                             </Button>
@@ -508,7 +508,7 @@ export default function Demenagement() {
                 </CardContent>
             </Card>
 
-            <div className="grid md:grid-cols-3 gap-4 text-center">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-center">
                 {[
                     { title: "Transport simple", price: "À partir de 10 000 FCFA", desc: "Petit volume, courte distance" },
                     { title: "Déménagement standard", price: "À partir de 50 000 FCFA", desc: "Appartement, équipe de 2-3 personnes" },
@@ -517,7 +517,7 @@ export default function Demenagement() {
                     <Card key={idx} className="border shadow-sm">
                         <CardContent className="p-6">
                             <h4 className="font-bold mb-2">{item.title}</h4>
-                            <p className="text-xl font-extrabold text-african-earth mb-2">{item.price}</p>
+                            <p className="text-xl font-extrabold text-african-earth dark:text-african-yellow mb-2">{item.price}</p>
                             <p className="text-muted-foreground text-sm">{item.desc}</p>
                         </CardContent>
                     </Card>
@@ -530,13 +530,13 @@ export default function Demenagement() {
         <div className="max-w-4xl mx-auto text-center space-y-10 animate-fade-in">
             <div>
                 <Badge className="bg-african-earth text-white mb-4">Notre Vision</Badge>
-                <h2 className="font-heading text-4xl font-bold dark:text-white">À <span className="text-african-earth">Propos</span></h2>
+                <h2 className="font-heading text-4xl font-bold dark:text-white">À <span className="text-african-earth dark:text-african-yellow">Propos</span></h2>
             </div>
             <Card className="border-none shadow-2xl">
                 <div className="h-2 bg-african-earth w-full" />
                 <CardContent className="p-12 space-y-6">
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        <strong className="text-foreground">Le Bon Petit Déménagement</strong> est un service de transport et d'aménagement basé à Douala.
+                        <strong className="text-foreground">Le Bon Petit Déménagement & Aménagement</strong> est un service de transport et d'aménagement basé à Douala.
                         Nous aidons les particuliers et les professionnels à déplacer leurs biens en toute sérénité.
                     </p>
                     <p className="text-lg text-muted-foreground leading-relaxed">
@@ -559,7 +559,7 @@ export default function Demenagement() {
                     <CardContent className="p-6 space-y-6">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-african-earth/10 flex items-center justify-center">
-                                <Phone className="h-6 w-6 text-african-earth" />
+                                <Phone className="h-6 w-6 text-african-earth dark:text-african-yellow" />
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Téléphone</p>
@@ -646,15 +646,15 @@ export default function Demenagement() {
                 {/* Sidebar Navigation */}
                 <aside
                     className={`
-                        fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-card/95 backdrop-blur border-r shadow-2xl lg:shadow-none
+                        fixed lg:sticky top-0 left-0 z-50 h-screen w-64 sm:w-72 bg-card/95 backdrop-blur border-r shadow-2xl lg:shadow-none
                         transform transition-transform duration-300 ease-in-out
                         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         flex flex-col
                     `}
                 >
                     <div className="p-6 border-b flex items-center justify-between">
-                        <span className="font-heading text-2xl font-bold text-african-earth dark:text-white">
-                            Déménagement
+                        <span className="font-heading text-lg sm:text-xl lg:text-2xl font-bold text-african-earth dark:text-white leading-tight">
+                            Déménagement & Aménagement
                         </span>
                         <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
                             <X className="h-6 w-6" />
@@ -697,15 +697,15 @@ export default function Demenagement() {
                     {/* Mobile Header */}
                     <div className="lg:hidden sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b p-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Truck className="h-5 w-5 text-african-earth" />
-                            <span className="font-heading font-bold text-lg">Déménagement</span>
+                            <Truck className="h-5 w-5 text-african-earth dark:text-african-yellow" />
+                            <span className="font-heading font-bold text-sm sm:text-lg truncate">Déménagement</span>
                         </div>
                         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
                             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                         </Button>
                     </div>
 
-                    <div className="p-4 md:p-8 lg:p-12 max-w-7xl mx-auto min-h-screen">
+                    <div className="p-2 sm:p-4 md:p-8 lg:p-12 max-w-7xl mx-auto min-h-screen">
                         {activeSection === 'accueil' && renderAccueil()}
                         {activeSection === 'services' && renderServices()}
                         {activeSection === 'particuliers' && renderParticuliers()}

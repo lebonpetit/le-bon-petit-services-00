@@ -60,8 +60,12 @@ export default function Login() {
             <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 african-pattern">
                 <Card className="w-full max-w-md shadow-card border-border">
                     <CardHeader className="text-center">
-                        <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-african-green to-african-green/80 flex items-center justify-center mb-4 shadow-soft">
-                            <span className="text-primary-foreground font-heading font-bold text-2xl">BP</span>
+                        <div className="mx-auto w-20 h-20 flex items-center justify-center mb-4">
+                            <img
+                                src="/logo.jpg"
+                                alt="Le Bon Petit"
+                                className="w-full h-full object-contain rounded-xl shadow-soft"
+                            />
                         </div>
                         <CardTitle className="font-heading text-2xl">Connexion</CardTitle>
                         <CardDescription>

@@ -24,8 +24,8 @@ const servicesMenu = [
 // Main navigation items
 const navigation = [
   { name: "Accueil", href: "/", icon: Home },
-  { name: "Logement", href: "/logements", icon: Building2 },
-  { name: "Déménagement", href: "/demenagement", icon: Truck },
+  { name: "Recherche de logements", href: "/logements", icon: Building2 },
+  { name: "Déménagement & Aménagement", href: "/demenagement", icon: Truck },
 ];
 
 // All navigation for mobile
@@ -36,8 +36,8 @@ const allNavigation = [
   { name: "Expédition de colis", href: "/colis", icon: Package },
   { name: "Ramassage lessive", href: "/lessive", icon: Shirt },
   { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
-  { name: "Logement", href: "/logements", icon: Building2 },
-  { name: "Déménagement", href: "/demenagement", icon: Truck },
+  { name: "Recherche de logements", href: "/logements", icon: Building2 },
+  { name: "Déménagement & Aménagement", href: "/demenagement", icon: Truck },
 ];
 
 export function Header() {

@@ -47,8 +47,8 @@ export function Footer() {
                   { name: "Livraison de gaz", path: "/gaz" },
                   { name: "Lessive", path: "/lessive" },
                   { name: "Nettoyage", path: "/nettoyage" },
-                  { name: "Logement", path: "/logements" },
-                  { name: "Déménagement", path: "/demenagement" }
+                  { name: "Recherche de logements", path: "/logements" },
+                  { name: "Déménagement & Aménagement", path: "/demenagement" }
                 ].map((service) => (
                   <li key={service.name}>
                     <Link to={service.path} className="text-xs lg:text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
@@ -104,7 +104,7 @@ export function Footer() {
         <div className="mt-6 lg:mt-12 pt-4 lg:pt-6 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Le Bon Petit. Tous droits réservés. | Développé par <a href="https://www.facebook.com/jbs2237" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">L'agence Johnny Black Solutions</a>
+              © {new Date().getFullYear()} Le Bon Petit. Tous droits réservés. | Développé par Africa Digital Services
             </p>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Fièrement camerounais</span>

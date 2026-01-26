@@ -129,3 +129,22 @@ export const FURNITURE_MATERIALS = ["Tissu", "Cuir", "Velours", "Daim", "Autre"]
 export const MATTRESS_SIZES = ["1 Place (90x190)", "2 Places (140x190)", "Queen Size (160x200)", "King Size (180x200)", "Berceau"];
 export const INTERVENTION_LOCATIONS = ["Habitation", "Bureau", "Restaurant", "Hôtel", "École", "Hôpital", "Commerce", "Espace ouvert", "Entrepôt"];
 export const EVENT_SPACES = ["Espace fermé (Salle)", "Espace ouvert (Jardin, Stade...)", "Mixte"];
+
+export const MOVE_SIZES = [
+    "Studio",
+    "Appartement (T2/T3)",
+    "Grand Appartement (T4+)",
+    "Maison",
+    "Bureau",
+    "Autre"
+];
+
+export const WORK_TYPES = [
+    "Peinture",
+    "Plomberie",
+    "Électricité",
+    "Menuiserie",
+    "Montage de meubles",
+    "Petits travaux",
+    "Autre"
+];

@@ -451,7 +451,7 @@ export default function Gaz() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="cmd-telephone">Téléphone</Label>
-                                    <Input id="cmd-telephone" className="bg-secondary/20 h-12" value={commandeForm.telephone} onChange={e => setCommandeForm({ ...commandeForm, telephone: e.target.value })} placeholder="Numéro joignable" required />
+                                    <Input id="cmd-telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20 h-12" value={commandeForm.telephone} onChange={e => setCommandeForm({ ...commandeForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} placeholder="Numéro joignable" required />
                                 </div>
                             </div>
                         </div>

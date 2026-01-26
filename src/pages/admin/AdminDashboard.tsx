@@ -10,14 +10,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase, User, Listing, ServiceRequest, Subscription } from '@/lib/supabase';
+import { supabase, User, Listing, ServiceRequest, Subscription, Message } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Users, Building2, Package, Flame, Shirt, Trash2, Sparkles,
     CheckCircle, XCircle, Eye, Search, Trash, Phone, Mail, MapPin,
     CreditCard, Clock, AlertTriangle, TrendingUp, RefreshCw, Calendar,
-    MessageCircle, ExternalLink, ToggleLeft, Save, Home, Settings
+    MessageCircle, ExternalLink, ToggleLeft, Save, Home, Settings, Truck, BarChart2
 } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import {
@@ -30,6 +30,7 @@ import {
 import {
     Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter
 } from "@/components/ui/dialog";
+import { AnalyticsTab } from './AnalyticsTab';
 
 // Labels français pour les champs de demande
 const fieldLabels: Record<string, string> = {
@@ -62,6 +63,18 @@ const fieldLabels: Record<string, string> = {
     description: 'Description du besoin',
     adresse: 'Adresse / Quartier',
     service_demande: 'Service souhaité',
+    // Déménagement fields
+    typeService: 'Type de service',
+    datePreferee: 'Date préférée',
+    depart: 'Adresse de départ',
+    arrivee: 'Adresse d\'arrivée',
+    original_service: 'Service d\'origine',
+    // Logement fields
+    logementType: 'Type de logement',
+    budget: 'Budget',
+    ville: 'Ville',
+    rooms: 'Nombre de pièces',
+    searchType: 'Type de recherche',
 };
 
 // Labels pour les services de nettoyage
@@ -85,6 +98,8 @@ const serviceTypeLabels: Record<string, string> = {
     lessive: 'Lessive',
     poubelles: 'Poubelles',
     nettoyage: 'Nettoyage',
+    logement: 'Logement',
+    demenagement: 'Déménagement',
 };
 
 export default function AdminDashboard() {
@@ -95,6 +110,7 @@ export default function AdminDashboard() {
     const [landlords, setLandlords] = useState<(User & { listingsCount?: number })[]>([]);
     const [listings, setListings] = useState<Listing[]>([]);
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
+    const [messages, setMessages] = useState<(Message & { sender?: User; receiver?: User; listing?: Listing })[]>([]);
     const [requestTab, setRequestTab] = useState('all');
     const [stats, setStats] = useState({
         totalTenants: 0,
@@ -105,6 +121,8 @@ export default function AdminDashboard() {
         activeListings: 0,
         totalRequests: 0,
         newRequests: 0,
+        totalMessages: 0,
+        unreadMessages: 0,
     });
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -114,6 +132,7 @@ export default function AdminDashboard() {
     const [serviceFilter, setServiceFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [landlordFilter, setLandlordFilter] = useState<string>('all');
+    const [destinationFilter, setDestinationFilter] = useState<string>('admin');
     const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
     // Settings states
@@ -172,6 +191,13 @@ export default function AdminDashboard() {
                 .select('*')
                 .order('created_at', { ascending: false });
 
+            // Fetch messages with sender and receiver info
+            const { data: messagesData } = await supabase
+                .from('messages')
+                .select('*, sender:from_user(id, name, email, role), receiver:to_user(id, name, email, role)')
+                .order('created_at', { ascending: false })
+                .limit(100);
+
             // Process tenants with their latest subscription
             const processedTenants = tenantsData?.map(t => ({
                 ...t,
@@ -188,6 +214,7 @@ export default function AdminDashboard() {
             setLandlords(processedLandlords);
             setListings(listingsData || []);
             setRequests(requestsData || []);
+            setMessages(messagesData || []);
 
             // Calculate stats
             setStats({
@@ -199,6 +226,8 @@ export default function AdminDashboard() {
                 activeListings: listingsData?.filter(l => l.available).length || 0,
                 totalRequests: requestsData?.length || 0,
                 newRequests: requestsData?.filter(r => r.status === 'new').length || 0,
+                totalMessages: messagesData?.length || 0,
+                unreadMessages: messagesData?.filter(m => !m.read).length || 0,
             });
 
             // Load settings from Supabase
@@ -341,24 +370,46 @@ export default function AdminDashboard() {
 
     const deleteRequest = async (requestId: string) => {
         try {
-            const { error } = await supabase
+            // First try hard delete
+            const { error, data } = await supabase
                 .from('requests')
                 .delete()
+                .eq('id', requestId)
+                .select();
+
+            // If success
+            if (!error && data && data.length > 0) {
+                setRequests(requests.filter(r => r.id !== requestId));
+                toast({
+                    title: "Demande supprimée",
+                    description: "La demande a été supprimée définitivement.",
+                });
+                return;
+            }
+
+            // If hard delete failed (likely permissions), try soft delete (archive)
+            const { error: updateError } = await supabase
+                .from('requests')
+                .update({ status: 'cancelled' })
                 .eq('id', requestId);
 
-            if (error) throw error;
+            if (updateError) throw updateError;
 
-            setRequests(requests.filter(r => r.id !== requestId));
+            // Update local state to show as cancelled
+            setRequests(requests.map(r => r.id === requestId ? { ...r, status: 'cancelled' } : r));
+
             toast({
-                title: "Demande supprimée",
-                description: "La demande a été supprimée avec succès",
+                title: "Demande archivée",
+                description: "Suppression définitive bloquée par la sécurité. La demande a été annulée/archivée.",
+                variant: "default", // Changed from successful green to default/info to signal difference
             });
-        } catch (error) {
-            console.error('Error deleting request:', error);
+
+        } catch (error: any) {
+            console.error('Error handling request deletion:', error);
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: "Impossible de supprimer la demande",
+                description: "Action refusée. Vérifiez vos permissions.",
             });
         }
     };
@@ -418,6 +469,8 @@ export default function AdminDashboard() {
             case 'lessive': return <Shirt className="h-4 w-4" />;
             case 'poubelles': return <Trash2 className="h-4 w-4" />;
             case 'nettoyage': return <Sparkles className="h-4 w-4" />;
+            case 'logement': return <Building2 className="h-4 w-4" />;
+            case 'demenagement': return <Truck className="h-4 w-4" />;
             default: return <Package className="h-4 w-4" />;
         }
     };
@@ -429,6 +482,8 @@ export default function AdminDashboard() {
             case 'lessive': return 'bg-african-yellow text-foreground';
             case 'poubelles': return 'bg-primary';
             case 'nettoyage': return 'bg-cyan-500';
+            case 'logement': return 'bg-purple-500';
+            case 'demenagement': return 'bg-amber-500';
             default: return 'bg-muted';
         }
     };
@@ -470,8 +525,12 @@ export default function AdminDashboard() {
         const matchesService = serviceFilter === 'all' || r.service_type === serviceFilter;
         const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
         const matchesLandlord = landlordFilter === 'all' || r.landlord_id === landlordFilter;
-        return matchesSearch && matchesService && matchesStatus && matchesLandlord;
-    });
+        // Destination filter: for logement, separate admin (no landlord_id) from landlords (has landlord_id)
+        const matchesDestination = destinationFilter === 'all' ||
+            (destinationFilter === 'admin' && !r.landlord_id) ||
+            (destinationFilter === 'landlords' && r.landlord_id);
+        return matchesSearch && matchesService && matchesStatus && matchesLandlord && matchesDestination;
+    }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const myRequests = filteredRequests.filter(r => r.landlord_id === user?.id);
     // const otherRequests = filteredRequests.filter(r => r.landlord_id !== user?.id); // Unused for now
@@ -481,6 +540,8 @@ export default function AdminDashboard() {
         if (pathname === '/admin/landlords') return 'landlords';
         if (pathname === '/admin/listings') return 'listings';
         if (pathname === '/admin/requests') return 'requests';
+        if (pathname === '/admin/messages') return 'messages';
+        if (pathname === '/admin/analytics') return 'analytics';
         if (pathname === '/admin/settings') return 'settings';
         if (pathname === '/admin/tenants') return 'tenants';
         return 'overview';
@@ -491,6 +552,8 @@ export default function AdminDashboard() {
             case 'landlords': return '/admin/landlords';
             case 'listings': return '/admin/listings';
             case 'requests': return '/admin/requests';
+            case 'messages': return '/admin/messages';
+            case 'analytics': return '/admin/analytics';
             case 'settings': return '/admin/settings';
             case 'tenants': return '/admin/tenants';
             case 'overview':
@@ -647,7 +710,7 @@ export default function AdminDashboard() {
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
                 <TabsContent value="overview">
-                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto mb-8">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-7 h-auto mb-8">
                         <TabsTrigger value="tenants" className="relative h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
                             <Users className="h-6 w-6" />
                             <span>Locataires</span>
@@ -673,6 +736,19 @@ export default function AdminDashboard() {
                                     {stats.newRequests}
                                 </span>
                             )}
+                        </TabsTrigger>
+                        <TabsTrigger value="messages" className="relative h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <MessageCircle className="h-6 w-6" />
+                            <span>Messages</span>
+                            {stats.unreadMessages > 0 && (
+                                <span className="absolute top-2 right-2 w-5 h-5 bg-african-red text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                                    {stats.unreadMessages}
+                                </span>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger value="analytics" className="h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
+                            <BarChart2 className="h-6 w-6" />
+                            <span>Analytic</span>
                         </TabsTrigger>
                         <TabsTrigger value="settings" className="h-24 flex flex-col gap-2 bg-card hover:bg-muted/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground border">
                             <Settings className="h-6 w-6" />
@@ -1122,14 +1198,8 @@ export default function AdminDashboard() {
                                     <div className="flex flex-col gap-2">
                                         <CardTitle className="flex items-center gap-2">
                                             <Package className="h-5 w-5" />
-                                            Demandes de Services ({requestsToDisplay.length})
+                                            Demandes de Services ({filteredRequests.length})
                                         </CardTitle>
-                                        <Tabs value={requestTab} onValueChange={setRequestTab} className="w-full md:w-auto">
-                                            <TabsList>
-                                                <TabsTrigger value="all">Toutes les demandes</TabsTrigger>
-                                                <TabsTrigger value="mine">Sur mes demandes</TabsTrigger>
-                                            </TabsList>
-                                        </Tabs>
                                     </div>
                                     <div className="relative w-full md:w-64">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1154,6 +1224,8 @@ export default function AdminDashboard() {
                                             <SelectItem value="lessive">Lessive</SelectItem>
                                             <SelectItem value="poubelles">Poubelles</SelectItem>
                                             <SelectItem value="nettoyage">Nettoyage</SelectItem>
+                                            <SelectItem value="logement">Logement</SelectItem>
+                                            <SelectItem value="demenagement">Déménagement</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -1176,6 +1248,16 @@ export default function AdminDashboard() {
                                             {landlords.map((l) => (
                                                 <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
                                             ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Select value={destinationFilter} onValueChange={setDestinationFilter}>
+                                        <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Destination" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Toutes destinations</SelectItem>
+                                            <SelectItem value="admin">Pour l'admin</SelectItem>
+                                            <SelectItem value="landlords">Pour les bailleurs</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -1254,30 +1336,32 @@ export default function AdminDashboard() {
                                                                 Traiter
                                                             </Button>
                                                         )}
-                                                        <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
-                                                                <Button size="sm" variant="outline" className="text-destructive">
-                                                                    <Trash className="h-4 w-4" />
-                                                                </Button>
-                                                            </AlertDialogTrigger>
-                                                            <AlertDialogContent>
-                                                                <AlertDialogHeader>
-                                                                    <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
-                                                                    <AlertDialogDescription>
-                                                                        Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
-                                                                    </AlertDialogDescription>
-                                                                </AlertDialogHeader>
-                                                                <AlertDialogFooter>
-                                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                                                    <AlertDialogAction
-                                                                        onClick={() => deleteRequest(request.id)}
-                                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                    >
-                                                                        Supprimer
-                                                                    </AlertDialogAction>
-                                                                </AlertDialogFooter>
-                                                            </AlertDialogContent>
-                                                        </AlertDialog>
+                                                        {!request.landlord_id && (
+                                                            <AlertDialog>
+                                                                <AlertDialogTrigger asChild>
+                                                                    <Button size="sm" variant="outline" className="text-destructive">
+                                                                        <Trash className="h-4 w-4" />
+                                                                    </Button>
+                                                                </AlertDialogTrigger>
+                                                                <AlertDialogContent>
+                                                                    <AlertDialogHeader>
+                                                                        <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
+                                                                        <AlertDialogDescription>
+                                                                            Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
+                                                                        </AlertDialogDescription>
+                                                                    </AlertDialogHeader>
+                                                                    <AlertDialogFooter>
+                                                                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                                        <AlertDialogAction
+                                                                            onClick={() => deleteRequest(request.id)}
+                                                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                        >
+                                                                            Supprimer
+                                                                        </AlertDialogAction>
+                                                                    </AlertDialogFooter>
+                                                                </AlertDialogContent>
+                                                            </AlertDialog>
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -1460,6 +1544,97 @@ export default function AdminDashboard() {
                             </Button>
                         </div>
                     </div>
+                </TabsContent>
+
+                {/* Messages Tab */}
+                <TabsContent value="messages">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
+                    <Card>
+                        <CardHeader>
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <CardTitle className="flex items-center gap-2">
+                                    <MessageCircle className="h-5 w-5" />
+                                    Messages entre Locataires et Bailleurs ({messages.length})
+                                </CardTitle>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <span>{stats.unreadMessages} non lus</span>
+                                </div>
+                            </div>
+                            <CardDescription>
+                                Aperçu des conversations sur la plateforme (lecture seule)
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Expéditeur</TableHead>
+                                            <TableHead>Destinataire</TableHead>
+                                            <TableHead className="hidden md:table-cell">Message</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Lu</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {messages.map((msg) => (
+                                            <TableRow key={msg.id}>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">{msg.sender?.name || 'Inconnu'}</span>
+                                                        <span className="text-xs text-muted-foreground">{msg.sender?.role === 'tenant' ? 'Locataire' : msg.sender?.role === 'landlord' ? 'Bailleur' : msg.sender?.role}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">{msg.receiver?.name || 'Inconnu'}</span>
+                                                        <span className="text-xs text-muted-foreground">{msg.receiver?.role === 'tenant' ? 'Locataire' : msg.receiver?.role === 'landlord' ? 'Bailleur' : msg.receiver?.role}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell max-w-[300px]">
+                                                    <p className="truncate text-sm text-muted-foreground">{msg.content}</p>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex flex-col text-sm">
+                                                        <span className="flex items-center gap-1">
+                                                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                                                            {new Date(msg.created_at).toLocaleDateString('fr-FR')}
+                                                        </span>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {new Date(msg.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={msg.read ? 'secondary' : 'default'} className={msg.read ? '' : 'bg-african-yellow text-foreground'}>
+                                                        {msg.read ? 'Lu' : 'Non lu'}
+                                                    </Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            {messages.length === 0 && (
+                                <p className="text-center text-muted-foreground py-8">Aucun message trouvé</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Analytics Tab */}
+                <TabsContent value="analytics">
+                    <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-primary gap-2" onClick={() => handleTabChange('overview')}>
+                        <span className="flex items-center gap-2">← Retour au tableau de bord</span>
+                    </Button>
+                    <AnalyticsTab
+                        requests={requests}
+                        tenants={tenants}
+                        landlords={landlords}
+                        listings={listings}
+                    />
                 </TabsContent>
             </Tabs>
         </DashboardLayout>

@@ -72,7 +72,7 @@ export default function Tarifs() {
         },
         {
             id: 'logements',
-            title: "Logements meublés",
+            title: "Recherche de logements",
             icon: Home,
             color: 'bg-orange-500',
             plans: [

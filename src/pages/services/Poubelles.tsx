@@ -341,7 +341,7 @@ export default function Poubelles() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="telephone" className="text-sm font-semibold">Téléphone / WhatsApp</Label>
-                                <Input id="telephone" value={collecteForm.telephone} onChange={e => setCollecteForm({ ...collecteForm, telephone: e.target.value })} placeholder="+237..." className="h-12 bg-secondary/30" required />
+                                <Input id="telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" value={collecteForm.telephone} onChange={e => setCollecteForm({ ...collecteForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} placeholder="+237..." className="h-12 bg-secondary/30" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="secteur" className="text-sm font-semibold">Secteur d'activité</Label>

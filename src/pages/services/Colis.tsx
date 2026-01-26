@@ -444,7 +444,7 @@ export default function Colis() {
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Téléphone / WhatsApp</Label>
-                                        <Input className="bg-secondary/20" placeholder="+237..." value={envoiForm.expediteurTelephone} onChange={e => setEnvoiForm({ ...envoiForm, expediteurTelephone: e.target.value })} required />
+                                        <Input type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20" placeholder="+237..." value={envoiForm.expediteurTelephone} onChange={e => setEnvoiForm({ ...envoiForm, expediteurTelephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} required />
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Adresse de collecte</Label>
@@ -465,7 +465,7 @@ export default function Colis() {
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Téléphone</Label>
-                                        <Input className="bg-secondary/20" placeholder="Numéro du destinataire" value={envoiForm.destinataireTelephone} onChange={e => setEnvoiForm({ ...envoiForm, destinataireTelephone: e.target.value })} required />
+                                        <Input type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20" placeholder="Numéro du destinataire" value={envoiForm.destinataireTelephone} onChange={e => setEnvoiForm({ ...envoiForm, destinataireTelephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} required />
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         {envoiForm.typeDestination === 'national' ? (

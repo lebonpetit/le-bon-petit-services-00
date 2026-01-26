@@ -30,7 +30,7 @@ export default function APropos() {
         { icon: Truck, label: "Livraison de gaz", color: "text-red-500" },
         { icon: Package, label: "Expédition de colis", color: "text-blue-500" },
         { icon: Sparkles, label: "Nettoyage", color: "text-purple-500" },
-        { icon: Home, label: "Logements meublés", color: "text-orange-500" },
+        { icon: Home, label: "Recherche de logements", color: "text-orange-500" },
     ];
 
     return (
