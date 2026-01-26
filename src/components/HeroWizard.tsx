@@ -29,17 +29,8 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router-dom";
 import { GAS_BRANDS, GAS_SIZES, PARCEL_TYPES, INT_DESTINATIONS, CITIES, LAUNDRY_TYPES, NETTOYAGE_PRO_SERVICES, SANITATION_SERVICES, WASTE_TYPES, WASTE_FREQUENCIES, HOUSING_TYPES, CAR_TYPES, FURNITURE_MATERIALS, MATTRESS_SIZES, INTERVENTION_LOCATIONS, EVENT_SPACES, TYPES_LOGEMENT, BUDGET_RANGES, MOVE_SIZES, WORK_TYPES } from "@/lib/constants";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Badge } from "@/components/ui/badge";
 
 type ServiceType = 'colis' | 'gaz' | 'lessive' | 'poubelles' | 'nettoyage' | 'logements' | 'demenagement' | null;
 
