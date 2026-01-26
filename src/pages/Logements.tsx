@@ -52,6 +52,7 @@ import {
 // Import images - African context
 import heroImage from '@/assets/apartments/logements-hero.png';
 import ownerImage from '@/assets/apartments/owner.png';
+import { useQuery } from '@tanstack/react-query';
 
 type Section = 'accueil' | 'appartements' | 'reserver' | 'proprietaires' | 'services' | 'apropos' | 'blog' | 'contact';
 
@@ -105,13 +106,25 @@ export default function Logements() {
 
     const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [listings, setListings] = useState<Listing[]>([]);
     const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
-    const [loadingListings, setLoadingListings] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
     const { toast } = useToast();
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    const { data: listings = [], isLoading: loadingListings } = useQuery({
+        queryKey: ['listings'],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('listings')
+                .select('*')
+                .eq('available', true)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data as Listing[];
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes cache
+    });
 
     // Navigate to section and update URL
     const navigateToSection = useCallback((section: Section) => {
@@ -179,9 +192,7 @@ export default function Logements() {
         navigateToSection('reserver');
     }, [navigateToSection]);
 
-    useEffect(() => {
-        fetchListings();
-    }, []);
+
 
     useEffect(() => {
         applyFilters();
@@ -225,25 +236,7 @@ export default function Logements() {
         setFilteredListings(result);
     };
 
-    const fetchListings = async () => {
-        setLoadingListings(true);
-        try {
-            const { data, error } = await supabase
-                .from('listings')
-                .select('*')
-                .eq('available', true)
-                .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            setListings(data || []);
-        } catch (error) {
-            console.error('Error fetching listings:', error);
-            // Fallback mock data if needed or empty
-            setListings([]);
-        } finally {
-            setLoadingListings(false);
-        }
-    };
 
     const handleReservationSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -580,6 +573,8 @@ export default function Logements() {
                                                     <img
                                                         src={listing.photos?.[0] || heroImage}
                                                         alt={listing.title}
+                                                        loading="lazy"
+                                                        decoding="async"
                                                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                                                     />
                                                     <div className="absolute top-4 left-4 z-20">

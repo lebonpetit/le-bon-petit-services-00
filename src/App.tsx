@@ -89,232 +89,254 @@ const queryClient = new QueryClient({
 function RoleBasedRedirect() {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <PageLoader />;
-  }
+  if (loading) return <PageLoader />;
+  if (!user) return <Navigate to="/login" replace />;
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+  if (user.role === 'landlord') return <Navigate to="/landlord/dashboard" replace />;
+  if (user.role === 'tenant') {
+    if (user.status === 'pending') return <Navigate to="/pending-payment" replace />;
+    if (user.status === 'blocked') return <Navigate to="/account-blocked" replace />;
+    return <Navigate to="/tenant/dashboard" replace />;
   }
-
-  switch (user.role) {
-    case 'admin':
-      return <Navigate to="/admin/dashboard" replace />;
-    case 'landlord':
-      return <Navigate to="/landlord/dashboard" replace />;
-    case 'tenant':
-      if (user.status === 'pending') {
-        return <Navigate to="/pending-payment" replace />;
-      }
-      if (user.status === 'blocked') {
-        return <Navigate to="/account-blocked" replace />;
-      }
-      return <Navigate to="/tenant/dashboard" replace />;
-    default:
-      return <Navigate to="/" replace />;
-  }
+  return <Navigate to="/" replace />;
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <AuthProvider>
-        <BrowserRouter>
-          <Toaster />
-          <Sonner />
-          <ErrorBoundary>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<><SEO /><Index /></>} />
+import { useEffect } from 'react';
 
-                {/* Auth Routes */}
-                <Route path="/login" element={<><SEO title="Connexion" /><Login /></>} />
-                <Route path="/register/tenant" element={<><SEO title="Inscription Locataire" description="Créez votre compte locataire pour accéder à nos services." /><RegisterTenant /></>} />
-                <Route path="/register/landlord" element={<><SEO title="Inscription Bailleur" description="Devenez partenaire et publiez vos annonces immobilières." /><RegisterLandlord /></>} />
-                <Route path="/pending-payment" element={<PendingPayment />} />
-                <Route path="/account-blocked" element={<AccountBlocked />} />
-                <Route path="/dashboard" element={<RoleBasedRedirect />} />
+import { AnalyticsTracker } from "./components/AnalyticsTracker";
 
-                {/* Service Forms (no auth required) */}
-                <Route path="/colis" element={<><SEO title="Expédition de Colis" description="Service d'envoi de colis national et international rapide et sécurisé." /><Colis /></>} />
-                <Route path="/gaz" element={<><SEO title="Livraison de Gaz" description="Commandez votre bouteille de gaz en ligne et faites-vous livrer à domicile à Douala." /><Gaz /></>} />
-                <Route path="/lessive" element={<><SEO title="Service de Lessive" description="Ramassage et livraison de votre lessive à domicile. Pressing de qualité à Douala." /><Lessive /></>} />
-                <Route path="/poubelles" element={<><SEO title="Gestion des Ordures" description="Service de collecte et gestion des ordures ménagères à Douala." /><Poubelles /></>} />
-                <Route path="/nettoyage" element={<><SEO title="Nettoyage & Entretien" description="Service de nettoyage professionnel pour particuliers et entreprises." /><Nettoyage /></>} />
-                <Route path="/demenagement" element={<><SEO title="Déménagement & Aménagement" description="Service de déménagement et aménagement professionnel à Douala." /><Demenagement /></>} />
+const App = () => {
+  // Preload critical routes after initial load
+  useEffect(() => {
+    const preloadRoutes = async () => {
+      // Small delay to prioritize main thread for initial render
+      await new Promise(r => setTimeout(r, 2000));
 
-                {/* Static Info Pages */}
-                <Route path="/a-propos" element={<><SEO title="À Propos" description="Découvrez Le Bon Petit, startup camerounaise de services de proximité." /><APropos /></>} />
-                <Route path="/tarifs" element={<><SEO title="Tarifs" description="Consultez nos tarifs transparents pour tous nos services." /><Tarifs /></>} />
-                <Route path="/faq" element={<><SEO title="FAQ" description="Questions fréquentes sur nos services." /><FAQ /></>} />
-                <Route path="/cgu" element={<><SEO title="Conditions Générales d'Utilisation" /><CGU /></>} />
-                <Route path="/confidentialite" element={<><SEO title="Politique de Confidentialité" /><Confidentialite /></>} />
+      const routes = [
+        import("./pages/services/Colis"),
+        import("./pages/services/Gaz"),
+        import("./pages/services/Lessive"),
+        import("./pages/services/Poubelles"),
+        import("./pages/services/Nettoyage"),
+        import("./pages/services/Demenagement"),
+        import("./pages/Logements"),
+        import("./pages/Habitations"),
+      ];
 
-                {/* Logements - Public apartment rental section (furnished) */}
-                <Route path="/logements" element={<><SEO title="Logements Meublés" description="Trouvez des appartements et studios meublés à louer à Douala." /><Logements /></>} />
-                <Route path="/appartements/:id" element={<ApartmentDetail />} />
+      try {
+        await Promise.all(routes);
+        console.log("Critical routes preloaded");
+      } catch (e) {
+        console.error("Error preloading routes", e);
+      }
+    };
 
-                {/* Habitations - Public housing rental section (unfurnished) */}
-                <Route path="/habitations" element={<><SEO title="Logements Non-Meublés" description="Location d'appartements et maisons non-meublés à Douala." /><Habitations /></>} />
-                <Route path="/habitations/:id" element={<HabitationDetail />} />
+    preloadRoutes();
+  }, []);
 
-                {/* Tenant Routes */}
-                <Route
-                  path="/tenant/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['tenant']}>
-                      <SEO title="Espace Locataire" />
-                      <TenantDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <AuthProvider>
+          <BrowserRouter>
+            <AnalyticsTracker />
+            <Toaster />
+            <Sonner />
+            <ErrorBoundary>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<><SEO /><Index /></>} />
 
-                {/* Landlord Routes */}
-                <Route
-                  path="/landlord/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <LandlordDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/landlord/listings"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <LandlordDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/landlord/add-listing"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <AddListing />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/landlord/requests"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <LandlordRequests />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/landlord/edit-listing/:id"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <EditListing />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/landlord/messages"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <LandlordMessages />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<><SEO title="Connexion" /><Login /></>} />
+                  <Route path="/register/tenant" element={<><SEO title="Inscription Locataire" description="Créez votre compte locataire pour accéder à nos services." /><RegisterTenant /></>} />
+                  <Route path="/register/landlord" element={<><SEO title="Inscription Bailleur" description="Devenez partenaire et publiez vos annonces immobilières." /><RegisterLandlord /></>} />
+                  <Route path="/pending-payment" element={<PendingPayment />} />
+                  <Route path="/account-blocked" element={<AccountBlocked />} />
+                  <Route path="/dashboard" element={<RoleBasedRedirect />} />
 
-                {/* Tenant Messages */}
-                <Route
-                  path="/tenant/messages"
-                  element={
-                    <ProtectedRoute allowedRoles={['tenant']}>
-                      <TenantMessages />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Service Forms (no auth required) */}
+                  <Route path="/colis" element={<><SEO title="Expédition de Colis" description="Service d'envoi de colis national et international rapide et sécurisé." /><Colis /></>} />
+                  <Route path="/gaz" element={<><SEO title="Livraison de Gaz" description="Commandez votre bouteille de gaz en ligne et faites-vous livrer à domicile à Douala." /><Gaz /></>} />
+                  <Route path="/lessive" element={<><SEO title="Service de Lessive" description="Ramassage et livraison de votre lessive à domicile. Pressing de qualité à Douala." /><Lessive /></>} />
+                  <Route path="/poubelles" element={<><SEO title="Gestion des Ordures" description="Service de collecte et gestion des ordures ménagères à Douala." /><Poubelles /></>} />
+                  <Route path="/nettoyage" element={<><SEO title="Nettoyage & Entretien" description="Service de nettoyage professionnel pour particuliers et entreprises." /><Nettoyage /></>} />
+                  <Route path="/demenagement" element={<><SEO title="Déménagement & Aménagement" description="Service de déménagement et aménagement professionnel à Douala." /><Demenagement /></>} />
 
-                {/* Listing Detail (accessible to authenticated users) */}
-                <Route
-                  path="/listings/:id"
-                  element={
-                    <ProtectedRoute allowedRoles={['tenant', 'landlord', 'admin']}>
-                      <ListingDetail />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Static Info Pages */}
+                  <Route path="/a-propos" element={<><SEO title="À Propos" description="Découvrez Le Bon Petit, startup camerounaise de services de proximité." /><APropos /></>} />
+                  <Route path="/tarifs" element={<><SEO title="Tarifs" description="Consultez nos tarifs transparents pour tous nos services." /><Tarifs /></>} />
+                  <Route path="/faq" element={<><SEO title="FAQ" description="Questions fréquentes sur nos services." /><FAQ /></>} />
+                  <Route path="/cgu" element={<><SEO title="Conditions Générales d'Utilisation" /><CGU /></>} />
+                  <Route path="/confidentialite" element={<><SEO title="Politique de Confidentialité" /><Confidentialite /></>} />
 
-                {/* Admin Routes */}
-                <Route
-                  path="/admin/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/tenants"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/landlords"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/listings"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/requests"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/messages"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/analytics"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/settings"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Logements - Public apartment rental section (furnished) */}
+                  <Route path="/logements" element={<><SEO title="Logements Meublés" description="Trouvez des appartements et studios meublés à louer à Douala." /><Logements /></>} />
+                  <Route path="/appartements/:id" element={<ApartmentDetail />} />
 
-                {/* Catch-all */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </ErrorBoundary>
-        </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider >
-);
+                  {/* Habitations - Public housing rental section (unfurnished) */}
+                  <Route path="/habitations" element={<><SEO title="Logements Non-Meublés" description="Location d'appartements et maisons non-meublés à Douala." /><Habitations /></>} />
+                  <Route path="/habitations/:id" element={<HabitationDetail />} />
+
+                  {/* Tenant Routes */}
+                  <Route
+                    path="/tenant/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['tenant']}>
+                        <SEO title="Espace Locataire" />
+                        <TenantDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Landlord Routes */}
+                  <Route
+                    path="/landlord/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['landlord']}>
+                        <LandlordDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/landlord/listings"
+                    element={
+                      <ProtectedRoute allowedRoles={['landlord']}>
+                        <LandlordDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/landlord/add-listing"
+                    element={
+                      <ProtectedRoute allowedRoles={['landlord']}>
+                        <AddListing />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/landlord/requests"
+                    element={
+                      <ProtectedRoute allowedRoles={['landlord']}>
+                        <LandlordRequests />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/landlord/edit-listing/:id"
+                    element={
+                      <ProtectedRoute allowedRoles={['landlord']}>
+                        <EditListing />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/landlord/messages"
+                    element={
+                      <ProtectedRoute allowedRoles={['landlord']}>
+                        <LandlordMessages />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Tenant Messages */}
+                  <Route
+                    path="/tenant/messages"
+                    element={
+                      <ProtectedRoute allowedRoles={['tenant']}>
+                        <TenantMessages />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Listing Detail (accessible to authenticated users) */}
+                  <Route
+                    path="/listings/:id"
+                    element={
+                      <ProtectedRoute allowedRoles={['tenant', 'landlord', 'admin']}>
+                        <ListingDetail />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Admin Routes */}
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/tenants"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/landlords"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/listings"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/requests"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/messages"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/analytics"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/settings"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Catch-all */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider >
+  );
+};
 
 export default App;

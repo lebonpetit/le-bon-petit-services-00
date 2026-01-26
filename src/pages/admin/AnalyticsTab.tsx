@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ServiceRequest, User, Listing } from '@/lib/supabase';
+import { ServiceRequest, User, Listing, supabase } from '@/lib/supabase';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, BarChart, Bar, Legend
@@ -112,8 +113,111 @@ export function AnalyticsTab({ requests, tenants, landlords, listings }: Analyti
         ];
     }, [requests]);
 
+    // ... previous code
+
+    // Real-time Online Users
+    const [onlineUsers, setOnlineUsers] = useState(0);
+    const { data: pageViews = [] } = useQuery({
+        queryKey: ['page_views'],
+        queryFn: async () => {
+            const { data } = await supabase
+                .from('page_views')
+                .select('*, users(email, name)')
+                .order('entered_at', { ascending: false })
+                .limit(50);
+            return data || [];
+        },
+        refetchInterval: 10000, // Refresh every 10s
+    });
+
+    useEffect(() => {
+        const channel = supabase.channel('online_users')
+            .on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState();
+                setOnlineUsers(Object.keys(state).length);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
     return (
         <div className="space-y-6">
+            {/* Real-time Status Banner */}
+            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-1 shadow-lg animate-fade-in">
+                <div className="bg-background rounded-[1.3rem] p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                            <div className="p-3 bg-secondary rounded-full">
+                                <Users className="h-6 w-6 text-primary" />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="font-heading font-bold text-xl">Utilisateurs en ligne</h3>
+                            <p className="text-muted-foreground text-sm">Actuellement connectés sur le site</p>
+                        </div>
+                    </div>
+                    <div className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                        {onlineUsers}
+                    </div>
+                </div>
+            </div>
+
+            {/* Recent Activity Log */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Clock className="w-5 h-5" /> Historique de navigation
+                    </CardTitle>
+                    <CardDescription>Les 50 dernières pages consultées et le temps passé.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left">
+                            <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
+                                <tr>
+                                    <th className="px-4 py-3 rounded-l-lg">Utilisateur</th>
+                                    <th className="px-4 py-3">Page</th>
+                                    <th className="px-4 py-3">Entrée</th>
+                                    <th className="px-4 py-3 rounded-r-lg">Durée</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y">
+                                {pageViews.map((view: any) => (
+                                    <tr key={view.id} className="hover:bg-secondary/10">
+                                        <td className="px-4 py-3 font-medium">
+                                            {view.users?.email || 'Visiteur Anonyme'}
+                                        </td>
+                                        <td className="px-4 py-3 truncate max-w-[200px]" title={view.path}>
+                                            {view.path}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            {new Date(view.entered_at).toLocaleTimeString()}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            {view.duration_seconds ? `${view.duration_seconds}s` : 'En cours...'}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {pageViews.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                                            Aucune donnée d'activité récente.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card>
