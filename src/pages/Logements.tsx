@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { supabase, Listing } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { CITIES, QUARTIERS_BY_CITY, BUDGET_RANGES } from '@/lib/constants';
 import {
@@ -111,6 +111,7 @@ export default function Logements() {
     const { toast } = useToast();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const { data: listings = [], isLoading: loadingListings } = useQuery({
         queryKey: ['listings'],
@@ -125,6 +126,36 @@ export default function Logements() {
         },
         staleTime: 5 * 60 * 1000, // 5 minutes cache
     });
+
+    // Check for navigation state/params
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const action = params.get('action');
+
+        if (action === 'reserver') {
+            setActiveSection('reserver');
+            window.location.hash = 'reserver';
+
+            // Check state for pre-fill
+            if (location.state) {
+                const { listing_title, listing_link, landlord_id } = location.state as any;
+                if (listing_title) {
+                    setReservationForm(prev => ({
+                        ...prev,
+                        listing_title: listing_title,
+                        listing_link: listing_link || '',
+                        landlord_id: landlord_id || ''
+                    }));
+                }
+            }
+
+            // Allow smooth scroll to kick in after render
+            setTimeout(() => {
+                const el = document.getElementById('reserver');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }, [location]);
 
     // Navigate to section and update URL
     const navigateToSection = useCallback((section: Section) => {
@@ -146,6 +177,12 @@ export default function Logements() {
                 setActiveSection(hash);
             }
         };
+        // Initial check too
+        const initialHash = window.location.hash.replace('#', '') as Section;
+        if (initialHash && navigation.some(nav => nav.id === initialHash)) {
+            setActiveSection(initialHash);
+        }
+
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);

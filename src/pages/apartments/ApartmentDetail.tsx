@@ -269,20 +269,24 @@ export default function ApartmentDetail() {
                                     )}
 
                                     <div className="space-y-3">
-                                        <Button variant="cta" className="w-full" asChild>
-                                            <a
-                                                href={`https://wa.me/${listing.owner?.phone?.replace(/\s/g, '')}?text=Bonjour, je suis intéressé par votre appartement "${listing.title}" sur Le Bon Petit`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <MessageCircle className="h-4 w-4 mr-2" />
-                                                Réserver maintenant
-                                            </a>
+                                        <Button
+                                            variant="cta"
+                                            className="w-full"
+                                            onClick={() => navigate('/logements?action=reserver', {
+                                                state: {
+                                                    listing_title: listing.title,
+                                                    listing_link: window.location.href,
+                                                    landlord_id: listing.owner_id
+                                                }
+                                            })}
+                                        >
+                                            <Calendar className="h-4 w-4 mr-2" />
+                                            Réserver maintenant
                                         </Button>
 
                                         <Button variant="outline" className="w-full" asChild>
                                             <a
-                                                href={`https://wa.me/${listing.owner?.phone?.replace(/\s/g, '')}?text=Bonjour, j'aimerais avoir plus d'informations sur l'appartement "${listing.title}"`}
+                                                href={`https://wa.me/237690547084?text=Bonjour, je suis intéressé par ce logement : ${window.location.href}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >
@@ -295,7 +299,7 @@ export default function ApartmentDetail() {
                                             <Button variant="outline" className="w-full" asChild>
                                                 <a href={`tel:${listing.owner.phone}`}>
                                                     <Phone className="h-4 w-4 mr-2" />
-                                                    Appeler
+                                                    Appeler le propriétaire
                                                 </a>
                                             </Button>
                                         )}
