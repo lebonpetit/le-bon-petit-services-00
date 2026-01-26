@@ -53,7 +53,7 @@ import {
 import heroImage from '@/assets/apartments/logements-hero.png';
 import ownerImage from '@/assets/apartments/owner.png';
 import { useQuery } from '@tanstack/react-query';
-import { PhoneInput } from '@/components/ui/phone-input';
+import { PhoneInputV2 } from '@/components/ui/phone-input-v2';
 
 type Section = 'accueil' | 'appartements' | 'reserver' | 'proprietaires' | 'services' | 'apropos' | 'blog' | 'contact';
 
@@ -750,7 +750,7 @@ export default function Logements() {
                                         </div>
                                         <div className="space-y-2">
                                             <Label>WhatsApp *</Label>
-                                            <PhoneInput
+                                            <PhoneInputV2
                                                 value={reservationForm.whatsapp}
                                                 onValueChange={(val) => setReservationForm({ ...reservationForm, whatsapp: val })}
                                                 placeholder="69X XX XX XX"

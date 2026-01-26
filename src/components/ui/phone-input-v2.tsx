@@ -64,7 +64,7 @@ const COUNTRY_CODES = [
     { code: '+91', country: 'IN', label: 'Inde (+91)' },
 ];
 
-export function PhoneInput({ value, onValueChange, className, defaultCountryCode = '+237', ...props }: PhoneInputProps) {
+export function PhoneInputV2({ value, onValueChange, className, defaultCountryCode = '+237', ...props }: PhoneInputProps) {
     // Extract country code and number from the full value if possible
     // Assumption: value might be fully formatted like "+237 690909090" or just "690909090"
 
@@ -106,7 +106,7 @@ export function PhoneInput({ value, onValueChange, className, defaultCountryCode
     return (
         <div className={`flex gap-2 ${className}`}>
             <Select value={countryCode} onValueChange={handleCodeChange}>
-                <SelectTrigger className="w-[140px] shrink-0 bg-background/50">
+                <SelectTrigger className="w-[140px] shrink-0 bg-background/50 border-african-yellow/50">
                     <SelectValue placeholder="Code" />
                 </SelectTrigger>
                 <SelectContent>
@@ -125,7 +125,7 @@ export function PhoneInput({ value, onValueChange, className, defaultCountryCode
                 inputMode="numeric"
                 value={phoneNumber}
                 onChange={handleNumberChange}
-                className="flex-1 bg-background/50"
+                className="flex-1 bg-background/50 border-african-yellow/50 focus:border-african-yellow"
                 placeholder="6XX XXX XXX"
                 {...props}
             />
