@@ -46,6 +46,8 @@ export default function AddListing() {
         setFormData({ ...formData, [name]: value });
     };
 
+    import imageCompression from 'browser-image-compression';
+
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
@@ -65,19 +67,26 @@ export default function AddListing() {
                 continue;
             }
 
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                toast({
-                    variant: "destructive",
-                    title: "Fichier trop volumineux",
-                    description: `${file.name} dépasse 5MB`,
-                });
-                continue;
-            }
+            try {
+                // Compress image to ~30-40KB
+                const options = {
+                    maxSizeMB: 0.04, // 40KB
+                    maxWidthOrHeight: 800,
+                    useWebWorker: true,
+                    initialQuality: 0.6,
+                };
 
-            // Create preview
-            const preview = URL.createObjectURL(file);
-            newPhotos.push({ file, preview });
+                const compressedFile = await imageCompression(file, options);
+
+                // Create preview
+                const preview = URL.createObjectURL(compressedFile);
+                newPhotos.push({ file: compressedFile, preview });
+            } catch (error) {
+                console.error("Compression error:", error);
+                // Fallback to original if compression fails (though rare)
+                const preview = URL.createObjectURL(file);
+                newPhotos.push({ file, preview });
+            }
         }
 
         setPhotos([...photos, ...newPhotos]);
