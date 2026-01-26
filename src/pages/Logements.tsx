@@ -53,6 +53,7 @@ import {
 import heroImage from '@/assets/apartments/logements-hero.png';
 import ownerImage from '@/assets/apartments/owner.png';
 import { useQuery } from '@tanstack/react-query';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 type Section = 'accueil' | 'appartements' | 'reserver' | 'proprietaires' | 'services' | 'apropos' | 'blog' | 'contact';
 
@@ -749,7 +750,11 @@ export default function Logements() {
                                         </div>
                                         <div className="space-y-2">
                                             <Label>WhatsApp *</Label>
-                                            <Input type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" placeholder="69X XX XX XX" className="h-12 bg-secondary/30 border-transparent focus:border-african-yellow" value={reservationForm.whatsapp} onChange={(e) => setReservationForm({ ...reservationForm, whatsapp: e.target.value.replace(/[^0-9+\-\s]/g, '') })} />
+                                            <PhoneInput
+                                                value={reservationForm.whatsapp}
+                                                onValueChange={(val) => setReservationForm({ ...reservationForm, whatsapp: val })}
+                                                placeholder="69X XX XX XX"
+                                            />
                                         </div>
                                         <div className="grid grid-cols-2 gap-6">
                                             <div className="space-y-2">
@@ -816,7 +821,11 @@ export default function Logements() {
                                         <h3 className="text-center font-heading font-bold text-2xl mb-8">Proposer mon bien</h3>
                                         <form className="space-y-5">
                                             <Input placeholder="Votre nom" className="h-12 bg-secondary/30 border-transparent" value={ownerForm.nom} onChange={(e) => setOwnerForm({ ...ownerForm, nom: e.target.value })} />
-                                            <Input type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" placeholder="Votre téléphone" className="h-12 bg-secondary/30 border-transparent" value={ownerForm.telephone} onChange={(e) => setOwnerForm({ ...ownerForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} />
+                                            <PhoneInput
+                                                value={ownerForm.telephone}
+                                                onValueChange={(val) => setOwnerForm({ ...ownerForm, telephone: val })}
+                                                placeholder="Votre téléphone"
+                                            />
                                             <div className="grid grid-cols-2 gap-4">
                                                 <Select value={ownerForm.ville} onValueChange={(v) => setOwnerForm({ ...ownerForm, ville: v })}>
                                                     <SelectTrigger className="h-12 bg-secondary/30 border-transparent"><SelectValue placeholder="Ville" /></SelectTrigger>

@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import {
     Package,
     Flame,
@@ -76,12 +80,10 @@ export function HeroBookingWizard() {
     const [formData, setFormData] = useState({
         details: '',
         quantity: '1',
-        quantity: '1',
         bottleBrand: '',
         bottleSize: '12.5kg',
         destinationType: 'national',
         parcelType: '',
-        laundryType: '',
         laundryType: '',
         cleaningCategory: '',
         cleaningTypes: [] as string[],
@@ -226,12 +228,12 @@ export function HeroBookingWizard() {
         try {
             const payload: any = {
                 ...formData,
-                bottleType: formData.bottleBrand ? `${formData.bottleBrand} ${formData.bottleSize}` : '',
+                bottleType: formData.bottleBrand ? `${formData.bottleBrand} ${formData.bottleSize} ` : '',
                 cleaningType: formData.cleaningTypes.join(', '),
                 logementType: formData.logementTypes.join(', '),
                 moveDetails: formData.demenagementType === 'demenagement'
-                    ? `Déménagement: ${formData.moveSize} de ${formData.moveFromCity} à ${formData.moveToCity}`
-                    : `Aménagement: ${formData.workTypes.join(', ')}`,
+                    ? `Déménagement: ${formData.moveSize} de ${formData.moveFromCity} à ${formData.moveToCity} `
+                    : `Aménagement: ${formData.workTypes.join(', ')} `,
                 source: 'wizard_homepage_premium'
             };
 
@@ -286,7 +288,7 @@ export function HeroBookingWizard() {
             deliveryAddress: '',
             contactName: '',
             contactPhone: '',
-            logementType: '',
+            logementSearchType: '',
             logementTypes: [],
             logementCity: '',
             logementBudget: '',
@@ -376,11 +378,11 @@ export function HeroBookingWizard() {
                                 onClick={() => window.open(`https://wa.me/237690547084?text=${encodeURIComponent('Bonjour, je souhaite obtenir un devis gratuit.')}`, '_blank')}
                             >
                                 Obtenir un devis gratuitement
-                            </Button>
-                        </div>
+                            </Button >
+                        </div >
 
                         {/* Main Title */}
-                        <div className="space-y-4">
+                        < div className="space-y-4" >
                             <h1 className="font-heading font-extrabold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
                                 Votre quotidien,{" "}
                                 <span className="relative">
@@ -403,10 +405,10 @@ export function HeroBookingWizard() {
                                 Poubelle, gaz, colis, lessive, nettoyage ou recherche de logement — <strong className="text-foreground">Le Bon Petit</strong> s'occupe de tout.
                                 Un service camerounais moderne, fiable et à votre portée.
                             </p>
-                        </div>
+                        </div >
 
                         {/* Action Question Section */}
-                        <div className="space-y-4 max-w-xl mx-auto lg:mx-0">
+                        < div className="space-y-4 max-w-xl mx-auto lg:mx-0" >
                             <h3 className="text-sm sm:text-lg font-heading font-bold text-foreground text-center lg:text-left">
                                 Que voulez-vous faire aujourd'hui ?
                             </h3>
@@ -435,10 +437,10 @@ export function HeroBookingWizard() {
                                     </button>
                                 ))}
                             </div>
-                        </div>
+                        </div >
 
                         {/* Features Grid */}
-                        <div className="grid grid-cols-2 gap-2 sm:gap-4 max-w-lg mx-auto lg:mx-0">
+                        < div className="grid grid-cols-2 gap-2 sm:gap-4 max-w-lg mx-auto lg:mx-0" >
                             <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-background/50 border border-border/50 backdrop-blur-sm">
                                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-african-green/10 flex items-center justify-center shrink-0">
                                     <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-african-green" />
@@ -463,21 +465,23 @@ export function HeroBookingWizard() {
                                 </div>
                                 <span className="text-xs sm:text-sm font-medium">Partout à Douala</span>
                             </div>
-                        </div>
+                        </div >
 
                         {/* Stats Bar */}
-                        <div className="hidden lg:flex items-center gap-8 pt-4">
-                            {stats.map((stat, index) => (
-                                <div key={index} className="text-center">
-                                    <p className="font-heading font-bold text-2xl text-foreground">{stat.value}</p>
-                                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                        < div className="hidden lg:flex items-center gap-8 pt-4" >
+                            {
+                                stats.map((stat, index) => (
+                                    <div key={index} className="text-center">
+                                        <p className="font-heading font-bold text-2xl text-foreground">{stat.value}</p>
+                                        <p className="text-xs text-muted-foreground">{stat.label}</p>
+                                    </div>
+                                ))
+                            }
+                        </div >
+                    </div >
 
                     {/* Right Column: Service Selection Card */}
-                    <div className="order-1 lg:order-2 w-full max-w-xl mx-auto lg:mx-0">
+                    < div className="order-1 lg:order-2 w-full max-w-xl mx-auto lg:mx-0" >
                         <div className="relative">
                             {/* Glow effect behind card */}
                             <div className="absolute inset-0 bg-gradient-to-br from-african-green/20 via-primary/20 to-african-yellow/20 rounded-[2.5rem] blur-2xl transform scale-95" />
@@ -1142,17 +1146,11 @@ export function HeroBookingWizard() {
                                                             value={formData.contactName}
                                                             onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
                                                         />
-                                                        <Input
-                                                            className="h-12"
+                                                        <PhoneInput
                                                             placeholder="Numéro WhatsApp (ex: 699...)"
-                                                            type="tel"
-                                                            inputMode="numeric"
-                                                            pattern="[0-9+\-\s]*"
                                                             value={formData.contactPhone}
-                                                            onChange={(e) => {
-                                                                const value = e.target.value.replace(/[^0-9+\-\s]/g, '');
-                                                                setFormData({ ...formData, contactPhone: value });
-                                                            }}
+                                                            onValueChange={(val) => setFormData({ ...formData, contactPhone: val })}
+                                                            className="mb-2"
                                                         />
                                                         <Input
                                                             className="h-12"
@@ -1189,12 +1187,12 @@ export function HeroBookingWizard() {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+                    </div >
+                </div >
+            </div >
 
             {/* Mobile Stats Bar */}
-            <div className="lg:hidden bg-card/80 backdrop-blur-sm border-t border-border py-4">
+            < div className="lg:hidden bg-card/80 backdrop-blur-sm border-t border-border py-4" >
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-around">
                         {stats.slice(0, 3).map((stat, index) => (
@@ -1205,14 +1203,14 @@ export function HeroBookingWizard() {
                         ))}
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Bottom wave */}
-            <div className="absolute bottom-0 left-0 right-0 hidden lg:block">
+            < div className="absolute bottom-0 left-0 right-0 hidden lg:block" >
                 <svg viewBox="0 0 1440 60" className="w-full h-auto fill-secondary/30">
                     <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" />
                 </svg>
-            </div>
+            </div >
 
             {/* Modal Commande Générale */}
             {
@@ -1249,17 +1247,11 @@ export function HeroBookingWizard() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="order-tel">Téléphone *</Label>
-                                        <Input
+                                        <PhoneInput
                                             id="order-tel"
-                                            type="tel"
-                                            inputMode="numeric"
-                                            pattern="[0-9+\-\s]*"
                                             placeholder="690 547 084"
                                             value={orderForm.telephone}
-                                            onChange={(e) => {
-                                                const value = e.target.value.replace(/[^0-9+\-\s]/g, '');
-                                                setOrderForm({ ...orderForm, telephone: value });
-                                            }}
+                                            onValueChange={(val) => setOrderForm({ ...orderForm, telephone: val })}
                                             className="h-12"
                                             required
                                         />

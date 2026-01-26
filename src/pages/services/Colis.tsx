@@ -3,6 +3,7 @@ import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -444,7 +445,13 @@ export default function Colis() {
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Téléphone / WhatsApp</Label>
-                                        <Input type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20" placeholder="+237..." value={envoiForm.expediteurTelephone} onChange={e => setEnvoiForm({ ...envoiForm, expediteurTelephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} required />
+                                        <PhoneInput
+                                            value={envoiForm.expediteurTelephone}
+                                            onValueChange={(val) => setEnvoiForm({ ...envoiForm, expediteurTelephone: val })}
+                                            placeholder="Numéro de l'expéditeur"
+                                            className="bg-secondary/20"
+                                            required
+                                        />
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Adresse de collecte</Label>
@@ -465,7 +472,13 @@ export default function Colis() {
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Téléphone</Label>
-                                        <Input type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20" placeholder="Numéro du destinataire" value={envoiForm.destinataireTelephone} onChange={e => setEnvoiForm({ ...envoiForm, destinataireTelephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} required />
+                                        <PhoneInput
+                                            value={envoiForm.destinataireTelephone}
+                                            onValueChange={(val) => setEnvoiForm({ ...envoiForm, destinataireTelephone: val })}
+                                            placeholder="Numéro du destinataire"
+                                            className="bg-secondary/20"
+                                            required
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         {envoiForm.typeDestination === 'national' ? (

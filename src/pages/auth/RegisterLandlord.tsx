@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -146,12 +147,12 @@ export default function RegisterLandlord() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="phone">Numéro WhatsApp</Label>
-                                <Input
+                                <PhoneInput
                                     id="phone"
                                     name="phone"
                                     placeholder="+237 6XX XXX XXX"
                                     value={formData.phone}
-                                    onChange={handleChange}
+                                    onValueChange={(val) => setFormData(prev => ({ ...prev, phone: val }))}
                                     required
                                     className="bg-background"
                                 />

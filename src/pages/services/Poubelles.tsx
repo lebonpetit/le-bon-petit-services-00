@@ -3,6 +3,7 @@ import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -341,7 +342,13 @@ export default function Poubelles() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="telephone" className="text-sm font-semibold">Téléphone / WhatsApp</Label>
-                                <Input id="telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" value={collecteForm.telephone} onChange={e => setCollecteForm({ ...collecteForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} placeholder="+237..." className="h-12 bg-secondary/30" required />
+                                <PhoneInput
+                                    value={collecteForm.telephone}
+                                    onValueChange={(val) => setCollecteForm({ ...collecteForm, telephone: val })}
+                                    placeholder="Numéro de téléphone"
+                                    className="h-12 bg-secondary/30"
+                                    required
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="secteur" className="text-sm font-semibold">Secteur d'activité</Label>

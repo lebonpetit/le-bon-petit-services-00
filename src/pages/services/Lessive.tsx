@@ -3,6 +3,7 @@ import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -367,7 +368,13 @@ export default function Lessive() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="telephone">Téléphone</Label>
-                                <Input id="telephone" type="tel" inputMode="numeric" pattern="[0-9+\-\s]*" className="bg-secondary/20 h-12" value={commandeForm.telephone} onChange={e => setCommandeForm({ ...commandeForm, telephone: e.target.value.replace(/[^0-9+\-\s]/g, '') })} required />
+                                <PhoneInput
+                                    value={commandeForm.telephone}
+                                    onValueChange={(val) => setCommandeForm({ ...commandeForm, telephone: val })}
+                                    placeholder="Numéro de téléphone"
+                                    className="bg-secondary/20 h-12"
+                                    required
+                                />
                             </div>
                         </div>
 
