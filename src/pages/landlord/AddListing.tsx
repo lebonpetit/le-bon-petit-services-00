@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Home, Plus, ArrowLeft, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CITIES, QUARTIERS_BY_CITY, TYPES_LOGEMENT } from '@/lib/constants';
+import imageCompression from 'browser-image-compression';
 
 // Shared data moved to @/lib/constants
 
@@ -46,7 +47,7 @@ export default function AddListing() {
         setFormData({ ...formData, [name]: value });
     };
 
-    import imageCompression from 'browser-image-compression';
+
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
