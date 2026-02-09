@@ -56,6 +56,7 @@ import { useQuery } from '@tanstack/react-query';
 import { PhoneInputV2 } from '@/components/ui/phone-input-v2';
 
 type Section = 'accueil' | 'appartements' | 'reserver' | 'proprietaires' | 'services' | 'apropos' | 'blog' | 'contact';
+type SelectionState = 'none' | 'meuble' | 'habitation'; // New state for initial selection
 
 const navigation: { id: Section; name: string; icon: any }[] = [
     { id: 'accueil', name: 'Accueil', icon: Home },
@@ -109,6 +110,13 @@ export default function Logements() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
     const [showFilters, setShowFilters] = useState(false);
+
+    // Check if we already have a specific section or if we need to show selection
+    const [selectionState, setSelectionState] = useState<SelectionState>(() => {
+        const hash = window.location.hash.replace('#', '');
+        return hash && navigation.some(nav => nav.id === hash) ? 'meuble' : 'none';
+    });
+
     const { toast } = useToast();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -315,7 +323,7 @@ export default function Logements() {
         try {
             const { error } = await supabase.from('requests').insert({
                 service_type: 'logement',
-                payload: { ...ownerForm, type: 'proposition_proprietaire' },
+                payload: { ...ownerForm, type: 'depot_bien_meuble' },
                 contact_name: ownerForm.nom,
                 contact_phone: ownerForm.telephone,
                 status: 'new',
@@ -354,6 +362,99 @@ export default function Logements() {
 
 
     // Handle hash changes moved to navigateToSection block
+
+    // If selection state is 'none', show the landing choice page
+    if (selectionState === 'none') {
+        const landingImages = [heroImage, ownerImage]; // Use available images for carousel
+        const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+        useEffect(() => {
+            const timer = setInterval(() => {
+                setCurrentImageIndex((prev) => (prev + 1) % landingImages.length);
+            }, 5000);
+            return () => clearInterval(timer);
+        }, []);
+
+        return (
+            <Layout>
+                <div className="min-h-screen bg-background relative flex flex-col items-center justify-center p-4">
+                    {/* Background Carousel */}
+                    <div className="absolute inset-0 overflow-hidden z-0">
+                        {landingImages.map((img, index) => (
+                            <div
+                                key={index}
+                                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                            >
+                                <div className="absolute inset-0 bg-black/60 z-10" />
+                                <img src={img} alt={`Slide ${index}`} className="w-full h-full object-cover scale-105 animate-slow-zoom" />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="relative z-10 w-full max-w-5xl mx-auto space-y-12 text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+                        <div className="space-y-4">
+                            <Badge className="bg-african-yellow text-primary-foreground border-none px-6 py-2 text-sm font-bold uppercase tracking-widest shadow-lg backdrop-blur-md">
+                                Bienvenue chez Le Bon Petit
+                            </Badge>
+                            <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight drop-shadow-lg">
+                                Que cherchez-vous <br />
+                                <span className="text-african-yellow">aujourd'hui ?</span>
+                            </h1>
+                            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed">
+                                Découvrez nos solutions de logement adaptées à tous vos besoins, pour un jour ou pour la vie.
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6 md:gap-10 max-w-4xl mx-auto">
+                            {/* Option 1: Logement Meublé */}
+                            <button
+                                onClick={() => setSelectionState('meuble')}
+                                className="group relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 hover:bg-african-yellow hover:border-african-yellow transition-all duration-300 hover:scale-[1.02] shadow-2xl text-left"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-african-yellow/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="relative z-10 flex flex-col h-full justify-between gap-6">
+                                    <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-african-yellow text-white transition-colors">
+                                        <Building2 className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-heading text-2xl font-bold text-white mb-2">Logement Meublé</h3>
+                                        <p className="text-white/70 text-sm leading-relaxed group-hover:text-white/90">
+                                            Appartements, studios et chambres équipés pour vos séjours courts et moyens. Confort immédiat.
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center text-african-yellow group-hover:text-white font-bold text-sm uppercase tracking-wider">
+                                        Explorer les offres <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </div>
+                            </button>
+
+                            {/* Option 2: Domicile Habitation */}
+                            <button
+                                onClick={() => window.location.href = '/habitations'}
+                                className="group relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 hover:bg-african-earth hover:border-african-earth transition-all duration-300 hover:scale-[1.02] shadow-2xl text-left"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-african-earth/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="relative z-10 flex flex-col h-full justify-between gap-6">
+                                    <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-african-earth text-white transition-colors">
+                                        <Home className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-heading text-2xl font-bold text-white mb-2">Domicile pour Habitation</h3>
+                                        <p className="text-white/70 text-sm leading-relaxed group-hover:text-white/90">
+                                            Maisons et appartements nus à louer pour votre résidence principale. Installez-vous durablement.
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center text-african-earth group-hover:text-white font-bold text-sm uppercase tracking-wider">
+                                        Voir les annonces <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>

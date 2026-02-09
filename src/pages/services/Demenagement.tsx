@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { CITIES, QUARTIERS_BY_CITY, TYPES_LOCAL } from '@/lib/constants'; // Imported constants
 import {
     Home,
     Truck,
@@ -151,10 +152,15 @@ export default function Demenagement() {
         nom: '',
         telephone: '',
         typeService: '',
-        depart: '',
-        arrivee: '',
+        villeDepart: '',
+        quartierDepart: '',
+        villeArrivee: '',
+        quartierArrivee: '',
         datePreferee: '',
         details: '',
+        // For Renovation/Amenagement
+        quartier: '',
+        typeLocal: '',
     });
     const [devisLoading, setDevisLoading] = useState(false);
 
@@ -178,7 +184,7 @@ export default function Demenagement() {
                 title: "Demande envoyée !",
                 description: "Notre équipe vous contactera pour votre devis.",
             });
-            setDevisForm({ nom: '', telephone: '', typeService: '', depart: '', arrivee: '', datePreferee: '', details: '' });
+            setDevisForm({ nom: '', telephone: '', typeService: '', villeDepart: '', quartierDepart: '', villeArrivee: '', quartierArrivee: '', datePreferee: '', details: '', quartier: '', typeLocal: '' });
         } catch (error) {
             console.error('Error submitting form:', error);
             toast({
@@ -489,18 +495,82 @@ export default function Demenagement() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="datePreferee">Date souhaitée</Label>
-                            <Input id="datePreferee" type="date" value={devisForm.datePreferee} onChange={e => setDevisForm({ ...devisForm, datePreferee: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="depart">Adresse de départ</Label>
-                            <Input id="depart" value={devisForm.depart} onChange={e => setDevisForm({ ...devisForm, depart: e.target.value })} placeholder="Quartier, repère..." required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="arrivee">Adresse d'arrivée</Label>
-                            <Input id="arrivee" value={devisForm.arrivee} onChange={e => setDevisForm({ ...devisForm, arrivee: e.target.value })} placeholder="Quartier, repère..." required />
-                        </div>
+                        {/* Specific fields based on Service Type */}
+                        {(devisForm.typeService === 'agencement_locaux' || devisForm.typeService === 'amenagement') ? (
+                            <>
+                                <div className="space-y-2">
+                                    <Label htmlFor="quartier">Quartier</Label>
+                                    <Input id="quartier" value={devisForm.quartier} onChange={e => setDevisForm({ ...devisForm, quartier: e.target.value })} placeholder="Quartier du local..." required />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="typeLocal">Type de local</Label>
+                                    <Select onValueChange={v => setDevisForm({ ...devisForm, typeLocal: v })}>
+                                        <SelectTrigger><SelectValue placeholder="Appartement, Bureau..." /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="appartement">Appartement</SelectItem>
+                                            <SelectItem value="maison">Maison</SelectItem>
+                                            <SelectItem value="client_bureau">Bureau</SelectItem>
+                                            <SelectItem value="commerce">Commerce</SelectItem>
+                                            <SelectItem value="entrepot">Entrepôt</SelectItem>
+                                            <SelectItem value="autre">Autre</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {/* Déménagement fields */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="villeDepart">Ville de départ</Label>
+                                        <Select onValueChange={v => setDevisForm({ ...devisForm, villeDepart: v })}>
+                                            <SelectTrigger><SelectValue placeholder="Ville..." /></SelectTrigger>
+                                            <SelectContent>
+                                                {CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="quartierDepart">Quartier de départ</Label>
+                                        {devisForm.villeDepart && QUARTIERS_BY_CITY[devisForm.villeDepart] ? (
+                                            <Select onValueChange={v => setDevisForm({ ...devisForm, quartierDepart: v })}>
+                                                <SelectTrigger><SelectValue placeholder="Quartier..." /></SelectTrigger>
+                                                <SelectContent>
+                                                    {QUARTIERS_BY_CITY[devisForm.villeDepart].map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                        ) : (
+                                            <Input id="quartierDepart" value={devisForm.quartierDepart} onChange={e => setDevisForm({ ...devisForm, quartierDepart: e.target.value })} placeholder="Quartier..." />
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="villeArrivee">Ville d'arrivée</Label>
+                                        <Select onValueChange={v => setDevisForm({ ...devisForm, villeArrivee: v })}>
+                                            <SelectTrigger><SelectValue placeholder="Ville..." /></SelectTrigger>
+                                            <SelectContent>
+                                                {CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="quartierArrivee">Quartier d'arrivée</Label>
+                                        {devisForm.villeArrivee && QUARTIERS_BY_CITY[devisForm.villeArrivee] ? (
+                                            <Select onValueChange={v => setDevisForm({ ...devisForm, quartierArrivee: v })}>
+                                                <SelectTrigger><SelectValue placeholder="Quartier..." /></SelectTrigger>
+                                                <SelectContent>
+                                                    {QUARTIERS_BY_CITY[devisForm.villeArrivee].map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                        ) : (
+                                            <Input id="quartierArrivee" value={devisForm.quartierArrivee} onChange={e => setDevisForm({ ...devisForm, quartierArrivee: e.target.value })} placeholder="Quartier..." />
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        )}
                         <div className="space-y-2">
                             <Label htmlFor="details">Détails supplémentaires</Label>
                             <Textarea id="details" value={devisForm.details} onChange={e => setDevisForm({ ...devisForm, details: e.target.value })} placeholder="Liste des objets, étage, accès difficile..." className="min-h-[100px]" />

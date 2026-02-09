@@ -225,6 +225,12 @@ export default function Nettoyage() {
         typeService: '',
         description: '',
         localisation: '',
+        // New fields
+        nombre_places_canape: '',
+        nombre_chaises: '',
+        taille_matelas: '',
+        dimensions_tapis: '',
+        type_vehicule: '',
     });
     const [devisLoading, setDevisLoading] = useState(false);
 
@@ -256,7 +262,10 @@ export default function Nettoyage() {
                 title: "Demande envoyée !",
                 description: "Nous vous enverrons un devis sous 24h.",
             });
-            setDevisForm({ nom: '', telephone: '', email: '', typeService: '', description: '', localisation: '' });
+            setDevisForm({
+                nom: '', telephone: '', email: '', typeService: '', description: '', localisation: '',
+                nombre_places_canape: '', nombre_chaises: '', taille_matelas: '', dimensions_tapis: '', type_vehicule: ''
+            });
         } catch (error) {
             console.error('Error submitting form:', error);
             toast({
@@ -820,6 +829,87 @@ export default function Nettoyage() {
                                 </SelectContent>
                             </Select>
                         </div>
+
+                        {/* Canapés & Chaises */}
+                        {devisForm.typeService === 'canape' && (
+                            <div className="grid grid-cols-2 gap-4 md:col-span-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="places_canape">Nombre de places (Canapé)</Label>
+                                    <Input
+                                        id="places_canape"
+                                        type="number"
+                                        min="0"
+                                        value={devisForm.nombre_places_canape}
+                                        onChange={e => setDevisForm({ ...devisForm, nombre_places_canape: e.target.value })}
+                                        placeholder="Ex: 3"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="nb_chaises">Nombre de chaises</Label>
+                                    <Input
+                                        id="nb_chaises"
+                                        type="number"
+                                        min="0"
+                                        value={devisForm.nombre_chaises}
+                                        onChange={e => setDevisForm({ ...devisForm, nombre_chaises: e.target.value })}
+                                        placeholder="Ex: 6"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Matelas */}
+                        {devisForm.typeService === 'matelas' && (
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="taille_matelas">Taille du matelas</Label>
+                                <Select onValueChange={v => setDevisForm({ ...devisForm, taille_matelas: v })}>
+                                    <SelectTrigger><SelectValue placeholder="Choisir la taille..." /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1_place">1 Place</SelectItem>
+                                        <SelectItem value="2_places">2 Places</SelectItem>
+                                        <SelectItem value="3_places">3 Places (King Size)</SelectItem>
+                                        <SelectItem value="berceau">Berceau</SelectItem>
+                                        <SelectItem value="autre">Autre</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+
+                        {/* Véhicules */}
+                        {devisForm.typeService === 'vehicule' && (
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="type_vehicule">Type de véhicule</Label>
+                                <Select onValueChange={v => setDevisForm({ ...devisForm, type_vehicule: v })}>
+                                    <SelectTrigger><SelectValue placeholder="Choisir le type..." /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="berline">Berline / Petite voiture</SelectItem>
+                                        <SelectItem value="4x4_suv">4x4 / SUV</SelectItem>
+                                        <SelectItem value="pickup">Pick-up</SelectItem>
+                                        <SelectItem value="minibus">Minibus</SelectItem>
+                                        <SelectItem value="bus">Bus</SelectItem>
+                                        <SelectItem value="moto">Moto</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+
+                        {/* Tapis */}
+                        {devisForm.typeService === 'tapis' && (
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="dimensions_tapis">Dimensions du tapis</Label>
+                                <Select onValueChange={v => setDevisForm({ ...devisForm, dimensions_tapis: v })}>
+                                    <SelectTrigger><SelectValue placeholder="Choisir les dimensions..." /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="petit">Petit (Descente de lit ~ 60x100cm)</SelectItem>
+                                        <SelectItem value="moyen">Moyen (~ 120x170cm)</SelectItem>
+                                        <SelectItem value="grand">Grand (~ 160x230cm)</SelectItem>
+                                        <SelectItem value="tres_grand">Très Grand (~ 200x300cm+)</SelectItem>
+                                        <SelectItem value="moquette">Moquette (au m²)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+
                         <div className="space-y-2 md:col-span-2">
                             <Label htmlFor="localisation">Localisation</Label>
                             <Input id="localisation" value={devisForm.localisation} onChange={e => setDevisForm({ ...devisForm, localisation: e.target.value })} placeholder="Quartier, ville..." required />
@@ -1090,7 +1180,6 @@ export default function Nettoyage() {
             <WhatsAppButton
                 phoneNumber="+237690547084"
                 message="Bonjour, je souhaite demander un devis pour un service de nettoyage."
-                label="Demander un devis"
             />
         </Layout>
     );
