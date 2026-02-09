@@ -117,6 +117,21 @@ export default function Logements() {
         return hash && navigation.some(nav => nav.id === hash) ? 'meuble' : 'none';
     });
 
+    const landingImages = [heroImage, ownerImage];
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (selectionState === 'none') {
+            timer = setInterval(() => {
+                setCurrentImageIndex((prev) => (prev + 1) % landingImages.length);
+            }, 5000);
+        }
+        return () => {
+            if (timer) clearInterval(timer);
+        };
+    }, [selectionState]);
+
     const { toast } = useToast();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -364,17 +379,8 @@ export default function Logements() {
     // Handle hash changes moved to navigateToSection block
 
     // If selection state is 'none', show the landing choice page
+    // If selection state is 'none', show the landing choice page
     if (selectionState === 'none') {
-        const landingImages = [heroImage, ownerImage]; // Use available images for carousel
-        const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-        useEffect(() => {
-            const timer = setInterval(() => {
-                setCurrentImageIndex((prev) => (prev + 1) % landingImages.length);
-            }, 5000);
-            return () => clearInterval(timer);
-        }, []);
-
         return (
             <Layout>
                 <div className="min-h-screen bg-background relative flex flex-col items-center justify-center p-4">
