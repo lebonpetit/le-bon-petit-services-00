@@ -9,11 +9,12 @@ import {
     Users, Package, Settings, ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react';
 
-interface NavItem {
+export interface NavItem {
     label: string;
     href: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: number;
+    badgeColor?: string;
 }
 
 interface DashboardLayoutProps {
@@ -83,8 +84,22 @@ export function DashboardLayout({ children, title, subtitle, navItems }: Dashboa
                 {/* User Info */}
                 {!sidebarCollapsed && (
                     <div className="p-4 border-b border-border">
-                        <p className="font-medium text-sm truncate">{user?.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                                {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                                <p className="font-medium text-sm truncate">{user?.name}</p>
+                                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {sidebarCollapsed && (
+                    <div className="p-2 border-b border-border flex justify-center">
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                            {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
                     </div>
                 )}
 
@@ -100,23 +115,24 @@ export function DashboardLayout({ children, title, subtitle, navItems }: Dashboa
                                         to={item.href}
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={cn(
-                                            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors relative",
+                                            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group",
                                             isActive
-                                                ? "bg-primary text-primary-foreground"
-                                                : "hover:bg-secondary text-foreground",
+                                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20"
+                                                : "hover:bg-secondary/80 text-muted-foreground hover:text-foreground",
                                             sidebarCollapsed && "justify-center"
                                         )}
                                     >
-                                        <Icon className="h-5 w-5 flex-shrink-0" />
+                                        <Icon className={cn("h-5 w-5 flex-shrink-0 transition-transform", !isActive && "group-hover:scale-110")} />
                                         {!sidebarCollapsed && (
-                                            <span className="flex-1 truncate">{item.label}</span>
+                                            <span className="flex-1 truncate text-sm">{item.label}</span>
                                         )}
-                                        {item.badge && item.badge > 0 && (
+                                        {item.badge != null && item.badge > 0 && (
                                             <span className={cn(
-                                                "w-5 h-5 rounded-full bg-african-red text-white text-xs flex items-center justify-center",
+                                                "min-w-[20px] h-5 px-1 rounded-full text-white text-[10px] font-bold flex items-center justify-center animate-in zoom-in-50",
+                                                item.badgeColor || "bg-african-red",
                                                 sidebarCollapsed && "absolute -top-1 -right-1"
                                             )}>
-                                                {item.badge}
+                                                {item.badge > 99 ? '99+' : item.badge}
                                             </span>
                                         )}
                                     </Link>
@@ -197,11 +213,15 @@ export const landlordNavItems: NavItem[] = [
     { label: 'Messages', href: '/landlord/messages', icon: MessageCircle },
 ];
 
-export const adminNavItems: NavItem[] = [
+export const getAdminNavItems = (badges?: { pendingTenants?: number; newRequests?: number; unreadMessages?: number }): NavItem[] => [
     { label: 'Tableau de bord', href: '/admin/dashboard', icon: Home },
-    { label: 'Locataires', href: '/admin/tenants', icon: Users },
+    { label: 'Locataires', href: '/admin/tenants', icon: Users, badge: badges?.pendingTenants, badgeColor: 'bg-african-yellow' },
     { label: 'Bailleurs', href: '/admin/landlords', icon: Building2 },
     { label: 'Logements', href: '/admin/listings', icon: Building2 },
-    { label: 'Demandes', href: '/admin/requests', icon: Package },
+    { label: 'Publier un logement', href: '/admin/add-listing', icon: Plus },
+    { label: 'Demandes', href: '/admin/requests', icon: Package, badge: badges?.newRequests, badgeColor: 'bg-african-red' },
     { label: 'Paramètres', href: '/admin/settings', icon: Settings },
 ];
+
+/** @deprecated Use getAdminNavItems() instead */
+export const adminNavItems: NavItem[] = getAdminNavItems();

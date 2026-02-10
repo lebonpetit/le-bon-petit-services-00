@@ -259,7 +259,7 @@ export default function ApartmentDetail() {
                                     <p className="text-primary font-heading font-bold text-3xl mb-1">
                                         {listing.price?.toLocaleString()} FCFA
                                     </p>
-                                    <p className="text-muted-foreground mb-6">par nuit</p>
+                                    <p className="text-muted-foreground mb-6">{listing.furnished ? 'par jour' : 'par mois'}</p>
 
                                     {listing.owner && (
                                         <div className="p-4 rounded-xl bg-secondary mb-4">

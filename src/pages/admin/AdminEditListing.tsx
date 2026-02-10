@@ -1,20 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Layout } from '@/components/Layout';
+import { DashboardLayout, adminNavItems } from '@/components/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { supabase, Listing } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import { Home, ArrowLeft, Upload, X, Image as ImageIcon, Loader2, Save } from 'lucide-react';
+import { Home, ArrowLeft, Upload, X, Image as ImageIcon, Loader2, Save, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CITIES, QUARTIERS_BY_CITY, TYPES_LOGEMENT } from '@/lib/constants';
-
-// Shared data moved to @/lib/constants
 
 interface PhotoItem {
     url: string;
@@ -23,7 +22,7 @@ interface PhotoItem {
     preview?: string;
 }
 
-export default function EditListing() {
+export default function AdminEditListing() {
     const { id } = useParams<{ id: string }>();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -61,13 +60,14 @@ export default function EditListing() {
 
             if (error) throw error;
 
+            // Admin can only edit their own listings
             if (data.owner_id !== user?.id) {
                 toast({
                     variant: "destructive",
                     title: "Accès refusé",
                     description: "Vous ne pouvez modifier que vos propres logements",
                 });
-                navigate('/landlord/dashboard');
+                navigate('/admin/listings');
                 return;
             }
 
@@ -83,7 +83,6 @@ export default function EditListing() {
                 furnished: data.furnished ?? true,
             });
 
-            // Convert existing photos to PhotoItems
             const existingPhotos: PhotoItem[] = (data.photos || []).map((url: string) => ({
                 url,
                 isNew: false,
@@ -96,7 +95,7 @@ export default function EditListing() {
                 title: "Erreur",
                 description: "Impossible de charger le logement",
             });
-            navigate('/landlord/dashboard');
+            navigate('/admin/listings');
         } finally {
             setLoading(false);
         }
@@ -150,7 +149,6 @@ export default function EditListing() {
         if (photo.isNew && photo.preview) {
             URL.revokeObjectURL(photo.preview);
         } else if (!photo.isNew) {
-            // Mark for deletion from storage
             setPhotosToDelete([...photosToDelete, photo.url]);
         }
 
@@ -195,17 +193,14 @@ export default function EditListing() {
         setSaving(true);
 
         try {
-            // Upload new photos
             const newPhotoUrls = await uploadNewPhotos();
 
-            // Combine existing (non-deleted) photos with new ones
             const existingPhotoUrls = photos
                 .filter(p => !p.isNew)
                 .map(p => p.url);
 
             const allPhotoUrls = [...existingPhotoUrls, ...newPhotoUrls];
 
-            // Validate data
             const parsedPrice = parseInt(formData.price);
             if (isNaN(parsedPrice)) {
                 throw new Error("Le prix doit être un nombre valide");
@@ -215,7 +210,6 @@ export default function EditListing() {
                 throw new Error("Le type de logement est requis");
             }
 
-            // Update listing
             const { error: updateError } = await supabase
                 .from('listings')
                 .update({
@@ -238,7 +232,7 @@ export default function EditListing() {
                 title: "Logement modifié !",
                 description: "Les modifications ont été enregistrées",
             });
-            navigate('/landlord/dashboard');
+            navigate('/admin/listings');
         } catch (error: any) {
             console.error('Error updating listing:', error);
             toast({
@@ -253,34 +247,46 @@ export default function EditListing() {
 
     if (loading) {
         return (
-            <Layout>
-                <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
+            <DashboardLayout
+                title="Modifier un logement"
+                subtitle="Chargement..."
+                navItems={adminNavItems}
+            >
+                <div className="flex items-center justify-center min-h-[60vh]">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-            </Layout>
+            </DashboardLayout>
         );
     }
 
     return (
-        <Layout>
-            <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <DashboardLayout
+            title="Modifier un logement"
+            subtitle="Modifiez les détails de votre annonce"
+            navItems={adminNavItems}
+        >
+            <div className="max-w-2xl mx-auto">
                 <div className="mb-6">
-                    <Link to="/landlord/dashboard" className="inline-flex items-center text-muted-foreground hover:text-foreground">
+                    <Link to="/admin/listings" className="inline-flex items-center text-muted-foreground hover:text-foreground">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Retour au tableau de bord
+                        Retour aux logements
                     </Link>
                 </div>
 
                 <Card className="shadow-card">
                     <CardHeader>
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-african-yellow to-african-yellow/80 flex items-center justify-center">
-                                <Home className="h-6 w-6 text-foreground" />
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+                                <Home className="h-6 w-6 text-white" />
                             </div>
-                            <div>
+                            <div className="flex-1">
                                 <CardTitle className="font-heading text-2xl">Modifier le logement</CardTitle>
-                                <CardDescription>Mettez à jour les informations de votre bien</CardDescription>
+                                <CardDescription>Mettez à jour les informations de votre annonce</CardDescription>
                             </div>
+                            <Badge className="bg-purple-600 text-white border-none gap-1">
+                                <ShieldCheck className="h-3 w-3" />
+                                Annonce Admin
+                            </Badge>
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -304,6 +310,22 @@ export default function EditListing() {
                                     required
                                     className="min-h-[120px]"
                                 />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>État du logement</Label>
+                                <Select
+                                    value={formData.furnished ? "true" : "false"}
+                                    onValueChange={(v) => handleChange('furnished', v === "true")}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Meublé ?" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="true">Meublé</SelectItem>
+                                        <SelectItem value="false">Non meublé</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -376,30 +398,13 @@ export default function EditListing() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>État du logement</Label>
-                                    <Select
-                                        value={formData.furnished ? "true" : "false"}
-                                        onValueChange={(v) => handleChange('furnished', v === "true")}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="true">Meublé</SelectItem>
-                                            <SelectItem value="false">Non meublé</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="rue">Rue / Repère</Label>
-                                    <Input
-                                        id="rue"
-                                        value={formData.rue}
-                                        onChange={(e) => handleChange('rue', e.target.value)}
-                                    />
-                                </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="rue">Rue / Repère</Label>
+                                <Input
+                                    id="rue"
+                                    value={formData.rue}
+                                    onChange={(e) => handleChange('rue', e.target.value)}
+                                />
                             </div>
 
                             {/* Availability Toggle */}
@@ -478,7 +483,7 @@ export default function EditListing() {
                                     type="button"
                                     variant="outline"
                                     className="flex-1"
-                                    onClick={() => navigate('/landlord/dashboard')}
+                                    onClick={() => navigate('/admin/listings')}
                                 >
                                     Annuler
                                 </Button>
@@ -500,6 +505,6 @@ export default function EditListing() {
                     </CardContent>
                 </Card>
             </div>
-        </Layout>
+        </DashboardLayout>
     );
 }

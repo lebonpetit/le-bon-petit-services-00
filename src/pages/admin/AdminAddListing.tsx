@@ -1,21 +1,20 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Layout } from '@/components/Layout';
+import { DashboardLayout, adminNavItems } from '@/components/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import { Home, Plus, ArrowLeft, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Home, Plus, ArrowLeft, Upload, X, Image as ImageIcon, Loader2, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CITIES, QUARTIERS_BY_CITY, TYPES_LOGEMENT } from '@/lib/constants';
 import imageCompression from 'browser-image-compression';
-
-// Shared data moved to @/lib/constants
 
 interface UploadedPhoto {
     file: File;
@@ -24,7 +23,7 @@ interface UploadedPhoto {
     url?: string;
 }
 
-export default function AddListing() {
+export default function AdminAddListing() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -35,7 +34,7 @@ export default function AddListing() {
         title: '',
         description: '',
         price: '',
-        city: 'Douala', // Default to Douala
+        city: 'Douala',
         quartier: '',
         rue: '',
         type_logement: '',
@@ -47,8 +46,6 @@ export default function AddListing() {
         setFormData({ ...formData, [name]: value });
     };
 
-
-
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
@@ -58,7 +55,6 @@ export default function AddListing() {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
 
-            // Validate file type
             if (!file.type.startsWith('image/')) {
                 toast({
                     variant: "destructive",
@@ -69,22 +65,18 @@ export default function AddListing() {
             }
 
             try {
-                // Compress image to ~30-40KB
                 const options = {
-                    maxSizeMB: 0.04, // 40KB
+                    maxSizeMB: 0.04,
                     maxWidthOrHeight: 800,
                     useWebWorker: true,
                     initialQuality: 0.6,
                 };
 
                 const compressedFile = await imageCompression(file, options);
-
-                // Create preview
                 const preview = URL.createObjectURL(compressedFile);
                 newPhotos.push({ file: compressedFile, preview });
             } catch (error) {
                 console.error("Compression error:", error);
-                // Fallback to original if compression fails (though rare)
                 const preview = URL.createObjectURL(file);
                 newPhotos.push({ file, preview });
             }
@@ -92,7 +84,6 @@ export default function AddListing() {
 
         setPhotos([...photos, ...newPhotos]);
 
-        // Reset input
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -100,7 +91,7 @@ export default function AddListing() {
 
     const removePhoto = (index: number) => {
         const photo = photos[index];
-        URL.revokeObjectURL(photo.preview); // Clean up memory
+        URL.revokeObjectURL(photo.preview);
         setPhotos(photos.filter((_, i) => i !== index));
     };
 
@@ -109,11 +100,9 @@ export default function AddListing() {
 
         for (const photo of photos) {
             try {
-                // Generate unique filename
                 const fileExt = photo.file.name.split('.').pop();
                 const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-                // Upload to Supabase Storage
                 const { data, error } = await supabase.storage
                     .from('listings')
                     .upload(fileName, photo.file, {
@@ -126,7 +115,6 @@ export default function AddListing() {
                     throw error;
                 }
 
-                // Get public URL
                 const { data: urlData } = supabase.storage
                     .from('listings')
                     .getPublicUrl(fileName);
@@ -161,7 +149,7 @@ export default function AddListing() {
             toast({
                 variant: "destructive",
                 title: "Photos requises",
-                description: "Ajoutez au moins une photo de votre logement",
+                description: "Ajoutez au moins une photo du logement",
             });
             return;
         }
@@ -170,7 +158,6 @@ export default function AddListing() {
         setUploadingPhotos(true);
 
         try {
-            // Upload photos first
             const photoUrls = await uploadPhotos();
 
             if (photoUrls.length === 0) {
@@ -179,7 +166,6 @@ export default function AddListing() {
 
             setUploadingPhotos(false);
 
-            // Validate data
             const parsedPrice = parseInt(formData.price);
             if (isNaN(parsedPrice)) {
                 throw new Error("Le prix doit être un nombre valide");
@@ -189,7 +175,6 @@ export default function AddListing() {
                 throw new Error("Le type de logement est requis");
             }
 
-            // Create listing
             const { error: insertError } = await supabase.from('listings').insert({
                 owner_id: user.id,
                 title: formData.title,
@@ -208,10 +193,10 @@ export default function AddListing() {
             if (insertError) throw insertError;
 
             toast({
-                title: "Logement ajouté !",
-                description: "Votre logement est maintenant visible par les locataires",
+                title: "Logement publié !",
+                description: "Le logement est maintenant visible par les locataires",
             });
-            navigate('/landlord/dashboard');
+            navigate('/admin/listings');
         } catch (error: any) {
             console.error('Error adding listing:', error);
             toast({
@@ -226,25 +211,33 @@ export default function AddListing() {
     };
 
     return (
-        <Layout>
-            <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <DashboardLayout
+            title="Publier un logement"
+            subtitle="Créez une annonce de logement en tant qu'administrateur"
+            navItems={adminNavItems}
+        >
+            <div className="max-w-2xl mx-auto">
                 <div className="mb-6">
-                    <Link to="/landlord/dashboard" className="inline-flex items-center text-muted-foreground hover:text-foreground">
+                    <Link to="/admin/listings" className="inline-flex items-center text-muted-foreground hover:text-foreground">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Retour au tableau de bord
+                        Retour aux logements
                     </Link>
                 </div>
 
                 <Card className="shadow-card">
                     <CardHeader>
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-african-green to-african-green/80 flex items-center justify-center">
-                                <Home className="h-6 w-6 text-primary-foreground" />
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+                                <Home className="h-6 w-6 text-white" />
                             </div>
-                            <div>
+                            <div className="flex-1">
                                 <CardTitle className="font-heading text-2xl">Ajouter un logement</CardTitle>
-                                <CardDescription>Publiez votre bien pour le rendre visible aux locataires</CardDescription>
+                                <CardDescription>Publiez un bien en tant qu'administrateur</CardDescription>
                             </div>
+                            <Badge className="bg-purple-600 text-white border-none gap-1">
+                                <ShieldCheck className="h-3 w-3" />
+                                Annonce Admin
+                            </Badge>
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -264,7 +257,7 @@ export default function AddListing() {
                                 <Label htmlFor="description">Description</Label>
                                 <Textarea
                                     id="description"
-                                    placeholder="Décrivez votre logement en détail (équipements, proximité, etc.)"
+                                    placeholder="Décrivez le logement en détail (équipements, proximité, etc.)"
                                     value={formData.description}
                                     onChange={(e) => handleChange('description', e.target.value)}
                                     required
@@ -321,7 +314,6 @@ export default function AddListing() {
                                 </div>
                             </div>
 
-
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Ville</Label>
@@ -374,7 +366,6 @@ export default function AddListing() {
                             <div className="space-y-4">
                                 <Label>Photos du logement</Label>
 
-                                {/* Upload Zone */}
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
                                     className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-secondary/50 transition-colors"
@@ -394,7 +385,6 @@ export default function AddListing() {
                                     </p>
                                 </div>
 
-                                {/* Photo Previews */}
                                 {photos.length > 0 && (
                                     <div className="grid grid-cols-3 gap-3">
                                         {photos.map((photo, index) => (
@@ -417,7 +407,6 @@ export default function AddListing() {
                                             </div>
                                         ))}
 
-                                        {/* Add more button */}
                                         <div
                                             onClick={() => fileInputRef.current?.click()}
                                             className="aspect-square border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-secondary/50 transition-colors"
@@ -451,6 +440,6 @@ export default function AddListing() {
                     </CardContent>
                 </Card>
             </div>
-        </Layout >
+        </DashboardLayout>
     );
 }

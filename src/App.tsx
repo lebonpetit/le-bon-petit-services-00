@@ -64,6 +64,8 @@ const HabitationDetail = lazy(() => import("./pages/apartments/HabitationDetail"
 
 // Admin Pages - lazy loaded
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminAddListing = lazy(() => import("./pages/admin/AdminAddListing"));
+const AdminEditListing = lazy(() => import("./pages/admin/AdminEditListing"));
 
 // Static Info Pages - lazy loaded
 const APropos = lazy(() => import("./pages/APropos"));
@@ -323,6 +325,22 @@ const App = () => {
                     element={
                       <ProtectedRoute allowedRoles={['admin']}>
                         <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/add-listing"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminAddListing />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/edit-listing/:id"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminEditListing />
                       </ProtectedRoute>
                     }
                   />

@@ -3,6 +3,7 @@ import { HeroBookingWizard } from "@/components/HeroWizard.tsx";
 import { ServicesSection } from "@/components/ServicesSection";
 import { HowItWorks } from "@/components/HowItWorks";
 import { CTASection } from "@/components/CTASection";
+import { PersonalBrandingSection } from "@/components/PersonalBrandingSection";
 
 const Index = () => {
   return (
@@ -12,6 +13,7 @@ const Index = () => {
       <ServicesSection />
       <HowItWorks />
       <CTASection />
+      <PersonalBrandingSection />
     </Layout>
   );
 };

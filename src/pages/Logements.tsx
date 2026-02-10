@@ -730,7 +730,7 @@ export default function Logements() {
                                                     <div className="absolute bottom-4 left-4 right-4 z-20">
                                                         <div className="bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-lg flex justify-between items-center transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                                                             <p className="font-bold text-african-yellow text-lg">
-                                                                {listing.price?.toLocaleString()} <span className="text-[10px] uppercase font-bold text-african-earth opacity-70">FCFA / Nuit</span>
+                                                                {listing.price?.toLocaleString()} <span className="text-[10px] uppercase font-bold text-african-earth opacity-70">FCFA {listing.furnished ? '/ Jour' : '/ Mois'}</span>
                                                             </p>
                                                             <div className="flex gap-1">
                                                                 <Star className="w-3 h-3 text-african-yellow fill-african-yellow" />

@@ -241,7 +241,7 @@ export default function LandlordDashboard() {
                                 </div>
                                 <div className="flex items-center justify-between mb-4">
                                     <p className="text-primary font-heading font-bold text-xl">
-                                        {listing.price?.toLocaleString()} FCFA
+                                        {listing.price?.toLocaleString()} FCFA <span className="text-sm font-normal text-muted-foreground">{listing.furnished ? '/ jour' : '/ mois'}</span>
                                     </p>
                                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                         <Eye className="h-4 w-4" />
