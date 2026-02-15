@@ -104,7 +104,7 @@ export function Footer() {
         <div className="mt-6 lg:mt-12 pt-4 lg:pt-6 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Le Bon Petit. Tous droits réservés. | Développé par Africa Digital Services - Johnny Black Solutions
+              © {new Date().getFullYear()} Le Bon Petit. Tous droits réservés. | Développé par Africa Digital Services - JBS
             </p>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Fièrement camerounais</span>

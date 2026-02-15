@@ -111,18 +111,36 @@ export default function Logements() {
     const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
     const [showFilters, setShowFilters] = useState(false);
 
-    // Check if we already have a specific section or if we need to show selection
-    const [selectionState, setSelectionState] = useState<SelectionState>(() => {
-        const hash = window.location.hash.replace('#', '');
-        return hash && navigation.some(nav => nav.id === hash) ? 'meuble' : 'none';
-    });
+    const checkShowChoicePage = () => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('view') !== 'meubles';
+    };
+
+    const [showChoicePage, setShowChoicePage] = useState(checkShowChoicePage);
+
+    useEffect(() => {
+        const handleUrlChange = () => {
+            setShowChoicePage(checkShowChoicePage());
+        };
+        // Listen to popstate for back/forward
+        window.addEventListener('popstate', handleUrlChange);
+        // Also check on location change (if using React Router's location, we might need a useEffect on that, but this covers browser nav)
+        return () => window.removeEventListener('popstate', handleUrlChange);
+    }, []);
+
+    // Also update on location change from React Router
+    const location = useLocation();
+    useEffect(() => {
+        setShowChoicePage(checkShowChoicePage());
+    }, [location]);
+
 
     const landingImages = [heroImage, ownerImage];
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (selectionState === 'none') {
+        if (showChoicePage) {
             timer = setInterval(() => {
                 setCurrentImageIndex((prev) => (prev + 1) % landingImages.length);
             }, 5000);
@@ -130,12 +148,12 @@ export default function Logements() {
         return () => {
             if (timer) clearInterval(timer);
         };
-    }, [selectionState]);
+    }, [showChoicePage]);
 
     const { toast } = useToast();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
+    // location is already imported
 
     const { data: listings = [], isLoading: loadingListings } = useQuery({
         queryKey: ['listings'],
@@ -184,10 +202,19 @@ export default function Logements() {
     // Navigate to section and update URL
     const navigateToSection = useCallback((section: Section) => {
         if (section === 'proprietaires' && !user) {
-            navigate(`/login?redirect=${encodeURIComponent('/logements#proprietaires')}`);
+            navigate(`/login?redirect=${encodeURIComponent('/logements?view=meubles#proprietaires')}`);
             return;
         }
-        window.location.hash = section;
+
+        // Ensure we keep the view param
+        const currentParams = new URLSearchParams(window.location.search);
+        if (currentParams.get('view') !== 'meubles') {
+            // If we are navigating to a section within "meubles" but not in that view, switch view
+            navigate(`/logements?view=meubles#${section}`);
+        } else {
+            window.location.hash = section;
+        }
+
         setActiveSection(section);
         setSidebarOpen(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -342,6 +369,7 @@ export default function Logements() {
                 contact_name: ownerForm.nom,
                 contact_phone: ownerForm.telephone,
                 status: 'new',
+                landlord_id: ownerForm.landlord_id || null, // Best effort
             });
             if (error) throw error;
             toast({ title: "Proposition reçue !", description: "Un agent va étudier votre bien et vous rappeler." });
@@ -363,6 +391,7 @@ export default function Logements() {
                 contact_name: contactForm.nom,
                 contact_phone: 'N/A',
                 status: 'new',
+                landlord_id: null,
             });
             if (error) throw error;
             toast({ title: "Message envoyé !", description: "Nous vous répondrons par email." });
@@ -378,9 +407,8 @@ export default function Logements() {
 
     // Handle hash changes moved to navigateToSection block
 
-    // If selection state is 'none', show the landing choice page
-    // If selection state is 'none', show the landing choice page
-    if (selectionState === 'none') {
+    // If choice page is active (no hash)
+    if (showChoicePage) {
         return (
             <Layout>
                 <div className="min-h-screen bg-background relative flex flex-col items-center justify-center p-4">
@@ -414,7 +442,7 @@ export default function Logements() {
                         <div className="grid md:grid-cols-2 gap-6 md:gap-10 max-w-4xl mx-auto">
                             {/* Option 1: Logement Meublé */}
                             <button
-                                onClick={() => setSelectionState('meuble')}
+                                onClick={() => navigate('/logements?view=meubles')}
                                 className="group relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 hover:bg-african-yellow hover:border-african-yellow transition-all duration-300 hover:scale-[1.02] shadow-2xl text-left"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br from-african-yellow/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
