@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/lib/utils';
 import {
-    Home, LogOut, MessageCircle, CreditCard, Building2, Plus,
-    Users, Package, Settings, ChevronLeft, ChevronRight, Menu, X
+    Users, Package, Settings, ChevronLeft, ChevronRight, Menu, X, Building2,
+    Home, MessageCircle, BarChart2, LogOut, CreditCard, Plus
 } from 'lucide-react';
 
 export interface NavItem {
@@ -215,11 +215,10 @@ export const landlordNavItems: NavItem[] = [
 
 export const getAdminNavItems = (badges?: { pendingTenants?: number; newRequests?: number; unreadMessages?: number }): NavItem[] => [
     { label: 'Tableau de bord', href: '/admin/dashboard', icon: Home },
-    { label: 'Locataires', href: '/admin/tenants', icon: Users, badge: badges?.pendingTenants, badgeColor: 'bg-african-yellow' },
-    { label: 'Bailleurs', href: '/admin/landlords', icon: Building2 },
-    { label: 'Logements', href: '/admin/listings', icon: Building2 },
-    { label: 'Publier un logement', href: '/admin/add-listing', icon: Plus },
+    { label: 'Gestion Logements', href: '/admin/housing', icon: Building2, badge: badges?.pendingTenants, badgeColor: 'bg-african-yellow' },
     { label: 'Demandes', href: '/admin/requests', icon: Package, badge: badges?.newRequests, badgeColor: 'bg-african-red' },
+    { label: 'Messages', href: '/admin/messages', icon: MessageCircle, badge: badges?.unreadMessages, badgeColor: 'bg-african-red' },
+    { label: 'Analytiques', href: '/admin/analytics', icon: BarChart2 },
     { label: 'Paramètres', href: '/admin/settings', icon: Settings },
 ];
 

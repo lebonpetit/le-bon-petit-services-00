@@ -583,25 +583,21 @@ export default function AdminDashboard() {
     const requestsToDisplay = requestTab === 'mine' ? myRequests : filteredRequests;
 
     const pathToTab = (pathname: string) => {
-        if (pathname === '/admin/landlords') return 'landlords';
-        if (pathname === '/admin/listings') return 'listings';
+        if (pathname === '/admin/housing') return 'housing';
         if (pathname === '/admin/requests') return 'requests';
         if (pathname === '/admin/messages') return 'messages';
         if (pathname === '/admin/analytics') return 'analytics';
         if (pathname === '/admin/settings') return 'settings';
-        if (pathname === '/admin/tenants') return 'tenants';
         return 'overview';
     };
 
     const tabToPath = (tab: string) => {
         switch (tab) {
-            case 'landlords': return '/admin/landlords';
-            case 'listings': return '/admin/listings';
+            case 'housing': return '/admin/housing';
             case 'requests': return '/admin/requests';
             case 'messages': return '/admin/messages';
             case 'analytics': return '/admin/analytics';
             case 'settings': return '/admin/settings';
-            case 'tenants': return '/admin/tenants';
             case 'overview':
             default: return '/admin/dashboard';
         }
@@ -843,7 +839,7 @@ export default function AdminDashboard() {
 
                             {/* Stats Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <Card className="bg-gradient-to-br from-african-green/10 to-african-green/5 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-african-green/20" onClick={() => handleTabChange('tenants')}>
+                                <Card className="bg-gradient-to-br from-african-green/10 to-african-green/5 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-african-green/20" onClick={() => handleTabChange('housing')}>
                                     <CardContent className="pt-6">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-xl bg-african-green/20 flex items-center justify-center">
@@ -857,7 +853,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </CardContent>
                                 </Card>
-                                <Card className="bg-gradient-to-br from-primary/8 to-primary/3 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-primary/20" onClick={() => handleTabChange('landlords')}>
+                                <Card className="bg-gradient-to-br from-primary/8 to-primary/3 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-primary/20" onClick={() => handleTabChange('housing')}>
                                     <CardContent className="pt-6">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
@@ -871,7 +867,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </CardContent>
                                 </Card>
-                                <Card className="bg-gradient-to-br from-african-yellow/10 to-african-yellow/5 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-african-yellow/20" onClick={() => handleTabChange('tenants')}>
+                                <Card className="bg-gradient-to-br from-african-yellow/10 to-african-yellow/5 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 border-african-yellow/20" onClick={() => handleTabChange('housing')}>
                                     <CardContent className="pt-6">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 rounded-xl bg-african-yellow/20 flex items-center justify-center">
@@ -923,7 +919,7 @@ export default function AdminDashboard() {
                                     <Button
                                         variant="outline"
                                         className="gap-2 border-african-yellow/40 text-african-yellow hover:bg-african-yellow/5"
-                                        onClick={() => handleTabChange('tenants')}
+                                        onClick={() => handleTabChange('housing')}
                                     >
                                         <CheckCircle className="h-4 w-4" /> {stats.pendingTenants} locataire(s) à valider
                                     </Button>
@@ -974,16 +970,14 @@ export default function AdminDashboard() {
                             {/* Navigation Cards */}
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {[
-                                    { tab: 'tenants', label: 'Locataires', icon: Users, count: stats.totalTenants, color: 'from-african-green/15 to-african-green/5', iconColor: 'text-african-green bg-african-green/20', badge: stats.pendingTenants, badgeColor: 'bg-african-yellow' },
-                                    { tab: 'landlords', label: 'Bailleurs', icon: Building2, count: stats.totalLandlords, color: 'from-primary/10 to-primary/5', iconColor: 'text-primary bg-primary/15' },
-                                    { tab: 'listings', label: 'Logements', icon: Home, count: stats.totalListings, color: 'from-blue-500/10 to-blue-500/5', iconColor: 'text-blue-500 bg-blue-500/15' },
+                                    { tab: 'housing', label: 'Logements & Tiers', icon: Building2, count: stats.totalListings, color: 'from-primary/10 to-primary/5', iconColor: 'text-primary bg-primary/15' },
                                     { tab: 'requests', label: 'Demandes', icon: Package, count: stats.totalRequests, color: 'from-purple-500/10 to-purple-500/5', iconColor: 'text-purple-500 bg-purple-500/15', badge: stats.newRequests, badgeColor: 'bg-african-red' },
                                     { tab: 'messages', label: 'Messages', icon: MessageCircle, count: stats.totalMessages, color: 'from-cyan-500/10 to-cyan-500/5', iconColor: 'text-cyan-500 bg-cyan-500/15', badge: stats.unreadMessages, badgeColor: 'bg-cyan-500' },
                                     { tab: 'analytics', label: 'Analytiques', icon: BarChart2, count: null, color: 'from-amber-500/10 to-amber-500/5', iconColor: 'text-amber-500 bg-amber-500/15' },
                                     { tab: 'settings', label: 'Paramètres', icon: Settings, count: null, color: 'from-gray-500/10 to-gray-500/5', iconColor: 'text-gray-500 bg-gray-500/15' },
-                                ].map(card => (
+                                ].map((card, index) => (
                                     <Card
-                                        key={card.tab}
+                                        key={index}
                                         className={`bg-gradient-to-br ${card.color} cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 relative overflow-hidden group`}
                                         onClick={() => handleTabChange(card.tab)}
                                     >
@@ -1038,426 +1032,487 @@ export default function AdminDashboard() {
                     )}
                 </TabsContent>
 
-                {/* Tenants Tab */}
-                <TabsContent value="tenants">
-
-                    <Card>
-                        <CardHeader>
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <CardTitle className="flex items-center gap-2">
-                                    <Users className="h-5 w-5" />
-                                    Gestion des Locataires ({filteredTenants.length})
-                                </CardTitle>
-                                <div className="relative w-full md:w-64">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Rechercher..."
-                                        value={tenantsSearchTerm}
-                                        onChange={(e) => setTenantsSearchTerm(e.target.value)}
-                                        className="pl-9"
-                                    />
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Nom</TableHead>
-                                        <TableHead>Contact</TableHead>
-                                        <TableHead>Statut</TableHead>
-                                        <TableHead>Inscription</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredTenants.map((tenant) => (
-                                        <TableRow key={tenant.id} className="group">
-                                            <TableCell>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                                                        {tenant.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-medium">{tenant.name}</p>
-                                                        <p className="text-xs text-muted-foreground md:hidden">{tenant.email}</p>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-sm">
-                                                        <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                                                        {tenant.email}
-                                                    </div>
-                                                    {tenant.phone && (
-                                                        <div className="flex items-center gap-2 text-sm">
-                                                            <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                                                            <a
-                                                                href={`https://wa.me/${tenant.phone.replace(/\s/g, '')}`}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="text-african-green hover:underline"
-                                                            >
-                                                                {tenant.phone}
-                                                            </a>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge
-                                                    variant="secondary"
-                                                    className={
-                                                        tenant.status === 'active' ? 'bg-green-100 text-green-700 hover:bg-green-100' :
-                                                            tenant.status === 'pending' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100' :
-                                                                'bg-red-100 text-red-700 hover:bg-red-100'
-                                                    }
-                                                >
-                                                    {tenant.status === 'active' ? 'Actif' :
-                                                        tenant.status === 'pending' ? 'En attente' : 'Bloqué'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
-                                                {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {tenant.status === 'pending' && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            className="text-african-green border-african-green/20 hover:bg-african-green/10 h-8"
-                                                            onClick={() => updateUserStatus(tenant.id, 'active', 'tenant')}
-                                                        >
-                                                            <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
-                                                            Valider
-                                                        </Button>
-                                                    )}
-                                                    {tenant.status === 'active' && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                                                            onClick={() => updateUserStatus(tenant.id, 'blocked', 'tenant')}
-                                                            title="Bloquer"
-                                                        >
-                                                            <XCircle className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                    {tenant.status === 'blocked' && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            className="text-african-green hover:text-african-green hover:bg-african-green/10 h-8 w-8 p-0"
-                                                            onClick={() => updateUserStatus(tenant.id, 'active', 'tenant')}
-                                                            title="Débloquer"
-                                                        >
-                                                            <CheckCircle className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {filteredTenants.length === 0 && (
-                                        <TableRow>
-                                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                                                Aucun locataire trouvé
-                                            </TableCell>
-                                        </TableRow>
+                {/* Housing Management Tab */}
+                <TabsContent value="housing">
+                    <Tabs defaultValue="tenants" className="space-y-6">
+                        <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-14 z-10 w-full border-b pb-4">
+                            <TabsList className="w-full justify-start h-auto p-1 bg-muted/50">
+                                <TabsTrigger value="tenants" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                                    <Users className="h-4 w-4" />
+                                    Locataires
+                                    {stats.pendingTenants > 0 && (
+                                        <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-african-yellow text-african-black text-[10px]">
+                                            {stats.pendingTenants}
+                                        </Badge>
                                     )}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                                </TabsTrigger>
+                                <TabsTrigger value="landlords" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                                    <Building2 className="h-4 w-4" />
+                                    Bailleurs
+                                </TabsTrigger>
+                                <TabsTrigger value="listings" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                                    <Home className="h-4 w-4" />
+                                    Logements
+                                </TabsTrigger>
+                                <TabsTrigger value="add-listing" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                                    <Plus className="h-4 w-4" />
+                                    Publier
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
 
-                {/* Landlords Tab */}
-                <TabsContent value="landlords">
+                        {/* Tenants Sub-Tab */}
+                        <TabsContent value="tenants">
 
-                    <Card>
-                        <CardHeader>
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <CardTitle className="flex items-center gap-2">
-                                    <Building2 className="h-5 w-5" />
-                                    Gestion des Bailleurs ({filteredLandlords.length})
-                                </CardTitle>
-                                <div className="relative w-full md:w-64">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Rechercher..."
-                                        value={landlordsSearchTerm}
-                                        onChange={(e) => setLandlordsSearchTerm(e.target.value)}
-                                        className="pl-9"
-                                    />
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Nom</TableHead>
-                                        <TableHead>Contact</TableHead>
-                                        <TableHead>Logements</TableHead>
-                                        <TableHead>Statut</TableHead>
-                                        <TableHead>Inscription</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredLandlords.map((landlord) => (
-                                        <TableRow key={landlord.id} className="group">
-                                            <TableCell>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                                                        {landlord.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-medium">{landlord.name}</p>
-                                                        <p className="text-xs text-muted-foreground md:hidden">{landlord.email}</p>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-sm">
-                                                        <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                                                        {landlord.email}
-                                                    </div>
-                                                    {landlord.phone && (
-                                                        <div className="flex items-center gap-2 text-sm">
-                                                            <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                                                            <a
-                                                                href={`https://wa.me/${landlord.phone.replace(/\s/g, '')}`}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="text-african-green hover:underline"
-                                                            >
-                                                                {landlord.phone}
-                                                            </a>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant="secondary">
-                                                    {landlord.listingsCount} logement(s)
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={landlord.status === 'active' ? 'default' : 'destructive'}>
-                                                    {landlord.status === 'active' ? 'Actif' : 'Bloqué'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
-                                                {new Date(landlord.created_at).toLocaleDateString('fr-FR')}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {landlord.status === 'active' ? (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                                                            onClick={() => updateUserStatus(landlord.id, 'blocked', 'landlord')}
-                                                            title="Bloquer"
-                                                        >
-                                                            <XCircle className="h-4 w-4" />
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            className="text-african-green hover:text-african-green hover:bg-african-green/10 h-8 w-8 p-0"
-                                                            onClick={() => updateUserStatus(landlord.id, 'active', 'landlord')}
-                                                            title="Débloquer"
-                                                        >
-                                                            <CheckCircle className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            {filteredLandlords.length === 0 && (
-                                <p className="text-center text-muted-foreground py-8">Aucun bailleur trouvé</p>
-                            )}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* Listings Tab */}
-                <TabsContent value="listings">
-
-                    <Card>
-                        <CardHeader>
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <CardTitle className="flex items-center gap-2">
-                                    <TrendingUp className="h-5 w-5" />
-                                    Gestion des Logements ({filteredListings.length})
-                                </CardTitle>
-                                <div className="flex items-center gap-3">
-                                    <div className="relative w-full md:w-64">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Rechercher..."
-                                            value={listingsSearchTerm}
-                                            onChange={(e) => setListingsSearchTerm(e.target.value)}
-                                            className="pl-9"
-                                        />
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Users className="h-5 w-5" />
+                                            Gestion des Locataires ({filteredTenants.length})
+                                        </CardTitle>
+                                        <div className="relative w-full md:w-64">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Rechercher..."
+                                                value={tenantsSearchTerm}
+                                                onChange={(e) => setTenantsSearchTerm(e.target.value)}
+                                                className="pl-9"
+                                            />
+                                        </div>
                                     </div>
-                                    <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
-                                        <Link to="/admin/add-listing">
-                                            <Plus className="h-4 w-4" />
-                                            Ajouter un logement
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Image</TableHead>
-                                            <TableHead>Titre</TableHead>
-                                            <TableHead className="hidden md:table-cell">Quartier</TableHead>
-                                            <TableHead>Prix</TableHead>
-                                            <TableHead className="hidden md:table-cell">Vues</TableHead>
-                                            <TableHead className="hidden md:table-cell">Propriétaire</TableHead>
-                                            <TableHead>Statut</TableHead>
-                                            <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredListings.map((listing) => (
-                                            <TableRow key={listing.id}>
-                                                <TableCell>
-                                                    <div className="h-10 w-16 bg-muted rounded overflow-hidden">
-                                                        {(listing.images?.[0] || listing.image_url) ? (
-                                                            <img
-                                                                src={listing.images?.[0] || listing.image_url}
-                                                                alt={listing.title}
-                                                                className="h-full w-full object-cover"
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).src = 'https://placehold.co/100x60?text=No+Image';
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <div className="h-full w-full flex items-center justify-center bg-secondary">
-                                                                <Home className="h-4 w-4 text-muted-foreground" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="font-medium max-w-[150px] truncate">{listing.title}</TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    <span className="flex items-center gap-1">
-                                                        <MapPin className="h-3 w-3 text-muted-foreground" />
-                                                        {listing.quartier}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell>{listing.price?.toLocaleString()} FCFA <span className="text-xs text-muted-foreground font-normal whitespace-nowrap">{listing.furnished ? '/ jour' : '/ mois'}</span></TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    <span className="flex items-center gap-1">
-                                                        <Eye className="h-4 w-4" />
-                                                        {listing.views}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    {listing.owner_id === user?.id ? (
-                                                        <Badge className="bg-purple-600 text-white border-none gap-1">
-                                                            <ShieldCheck className="h-3 w-3" />
-                                                            Admin
-                                                        </Badge>
-                                                    ) : (
-                                                        listing.owner?.name
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant={listing.available ? 'default' : 'secondary'}>
-                                                        {listing.available ? 'Actif' : 'Inactif'}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex gap-2">
-                                                        {listing.owner_id === user?.id && (
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                className="text-purple-600 border-purple-300 hover:bg-purple-50"
-                                                                asChild
-                                                            >
-                                                                <Link to={`/admin/edit-listing/${listing.id}`}>
-                                                                    <Pencil className="h-4 w-4 mr-1" />
-                                                                    Modifier
-                                                                </Link>
-                                                            </Button>
-                                                        )}
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            onClick={() => toggleListingAvailability(listing.id, !listing.available)}
-                                                        >
-                                                            <ToggleLeft className="h-4 w-4 mr-1" />
-                                                            {listing.available ? 'Désactiver' : 'Activer'}
-                                                        </Button>
-                                                        <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
-                                                                <Button size="sm" variant="outline" className="text-destructive">
-                                                                    <Trash className="h-4 w-4" />
-                                                                </Button>
-                                                            </AlertDialogTrigger>
-                                                            <AlertDialogContent>
-                                                                <AlertDialogHeader>
-                                                                    <AlertDialogTitle>Supprimer ce logement ?</AlertDialogTitle>
-                                                                    <AlertDialogDescription>
-                                                                        Cette action est irréversible. Le logement "{listing.title}" sera définitivement supprimé.
-                                                                    </AlertDialogDescription>
-                                                                </AlertDialogHeader>
-                                                                <AlertDialogFooter>
-                                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                                                    <AlertDialogAction
-                                                                        onClick={() => deleteListing(listing.id)}
-                                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                    >
-                                                                        Supprimer
-                                                                    </AlertDialogAction>
-                                                                </AlertDialogFooter>
-                                                            </AlertDialogContent>
-                                                        </AlertDialog>
-                                                    </div>
-                                                </TableCell>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Nom</TableHead>
+                                                <TableHead>Contact</TableHead>
+                                                <TableHead>Statut</TableHead>
+                                                <TableHead>Inscription</TableHead>
+                                                <TableHead>Actions</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {filteredTenants.map((tenant) => (
+                                                <TableRow key={tenant.id} className="group">
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                                                                {tenant.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-medium">{tenant.name}</p>
+                                                                <p className="text-xs text-muted-foreground md:hidden">{tenant.email}</p>
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="hidden md:table-cell">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-sm">
+                                                                <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                                                                {tenant.email}
+                                                            </div>
+                                                            {tenant.phone && (
+                                                                <div className="flex items-center gap-2 text-sm">
+                                                                    <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                                                                    <a
+                                                                        href={`https://wa.me/${tenant.phone.replace(/\s/g, '')}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-african-green hover:underline"
+                                                                    >
+                                                                        {tenant.phone}
+                                                                    </a>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className={
+                                                                tenant.status === 'active' ? 'bg-green-100 text-green-700 hover:bg-green-100' :
+                                                                    tenant.status === 'pending' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100' :
+                                                                        'bg-red-100 text-red-700 hover:bg-red-100'
+                                                            }
+                                                        >
+                                                            {tenant.status === 'active' ? 'Actif' :
+                                                                tenant.status === 'pending' ? 'En attente' : 'Bloqué'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                                                        {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            {tenant.status === 'pending' && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className="text-african-green border-african-green/20 hover:bg-african-green/10 h-8"
+                                                                    onClick={() => updateUserStatus(tenant.id, 'active', 'tenant')}
+                                                                >
+                                                                    <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+                                                                    Valider
+                                                                </Button>
+                                                            )}
+                                                            {tenant.status === 'active' && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                                                                    onClick={() => updateUserStatus(tenant.id, 'blocked', 'tenant')}
+                                                                    title="Bloquer"
+                                                                >
+                                                                    <XCircle className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                            {tenant.status === 'blocked' && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="text-african-green hover:text-african-green hover:bg-african-green/10 h-8 w-8 p-0"
+                                                                    onClick={() => updateUserStatus(tenant.id, 'active', 'tenant')}
+                                                                    title="Débloquer"
+                                                                >
+                                                                    <CheckCircle className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                            {filteredTenants.length === 0 && (
+                                                <TableRow>
+                                                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                                                        Aucun locataire trouvé
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+
+                        {/* Landlords Tab */}
+                        <TabsContent value="landlords">
+
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Building2 className="h-5 w-5" />
+                                            Gestion des Bailleurs ({filteredLandlords.length})
+                                        </CardTitle>
+                                        <div className="relative w-full md:w-64">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Rechercher..."
+                                                value={landlordsSearchTerm}
+                                                onChange={(e) => setLandlordsSearchTerm(e.target.value)}
+                                                className="pl-9"
+                                            />
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Nom</TableHead>
+                                                <TableHead>Contact</TableHead>
+                                                <TableHead>Logements</TableHead>
+                                                <TableHead>Statut</TableHead>
+                                                <TableHead>Inscription</TableHead>
+                                                <TableHead>Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {filteredLandlords.map((landlord) => (
+                                                <TableRow key={landlord.id} className="group">
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                                                                {landlord.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-medium">{landlord.name}</p>
+                                                                <p className="text-xs text-muted-foreground md:hidden">{landlord.email}</p>
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="hidden md:table-cell">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-sm">
+                                                                <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                                                                {landlord.email}
+                                                            </div>
+                                                            {landlord.phone && (
+                                                                <div className="flex items-center gap-2 text-sm">
+                                                                    <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                                                                    <a
+                                                                        href={`https://wa.me/${landlord.phone.replace(/\s/g, '')}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-african-green hover:underline"
+                                                                    >
+                                                                        {landlord.phone}
+                                                                    </a>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="secondary">
+                                                            {landlord.listingsCount} logement(s)
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant={landlord.status === 'active' ? 'default' : 'destructive'}>
+                                                            {landlord.status === 'active' ? 'Actif' : 'Bloqué'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                                                        {new Date(landlord.created_at).toLocaleDateString('fr-FR')}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            {landlord.status === 'active' ? (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                                                                    onClick={() => updateUserStatus(landlord.id, 'blocked', 'landlord')}
+                                                                    title="Bloquer"
+                                                                >
+                                                                    <XCircle className="h-4 w-4" />
+                                                                </Button>
+                                                            ) : (
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="text-african-green hover:text-african-green hover:bg-african-green/10 h-8 w-8 p-0"
+                                                                    onClick={() => updateUserStatus(landlord.id, 'active', 'landlord')}
+                                                                    title="Débloquer"
+                                                                >
+                                                                    <CheckCircle className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    {filteredLandlords.length === 0 && (
+                                        <p className="text-center text-muted-foreground py-8">Aucun bailleur trouvé</p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+
+                        {/* Listings Tab */}
+                        <TabsContent value="listings">
+
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <TrendingUp className="h-5 w-5" />
+                                            Gestion des Logements ({filteredListings.length})
+                                        </CardTitle>
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative w-full md:w-64">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                <Input
+                                                    placeholder="Rechercher..."
+                                                    value={listingsSearchTerm}
+                                                    onChange={(e) => setListingsSearchTerm(e.target.value)}
+                                                    className="pl-9"
+                                                />
+                                            </div>
+                                            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
+                                                <Link to="/admin/add-listing">
+                                                    <Plus className="h-4 w-4" />
+                                                    Ajouter un logement
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Image</TableHead>
+                                                    <TableHead>Titre</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Quartier</TableHead>
+                                                    <TableHead>Prix</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Vues</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Propriétaire</TableHead>
+                                                    <TableHead>Statut</TableHead>
+                                                    <TableHead>Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredListings.map((listing) => (
+                                                    <TableRow key={listing.id}>
+                                                        <TableCell>
+                                                            <div className="h-10 w-16 bg-muted rounded overflow-hidden">
+                                                                {(listing.images?.[0] || listing.image_url) ? (
+                                                                    <img
+                                                                        src={listing.images?.[0] || listing.image_url}
+                                                                        alt={listing.title}
+                                                                        className="h-full w-full object-cover"
+                                                                        onError={(e) => {
+                                                                            (e.target as HTMLImageElement).src = 'https://placehold.co/100x60?text=No+Image';
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <div className="h-full w-full flex items-center justify-center bg-secondary">
+                                                                        <Home className="h-4 w-4 text-muted-foreground" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="font-medium max-w-[150px] truncate">{listing.title}</TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <span className="flex items-center gap-1">
+                                                                <MapPin className="h-3 w-3 text-muted-foreground" />
+                                                                {listing.quartier}
+                                                            </span>
+                                                        </TableCell>
+                                                        <TableCell>{listing.price?.toLocaleString()} FCFA <span className="text-xs text-muted-foreground font-normal whitespace-nowrap">{listing.furnished ? '/ jour' : '/ mois'}</span></TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <span className="flex items-center gap-1">
+                                                                <Eye className="h-4 w-4" />
+                                                                {listing.views}
+                                                            </span>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            {listing.owner_id === user?.id ? (
+                                                                <Badge className="bg-purple-600 text-white border-none gap-1">
+                                                                    <ShieldCheck className="h-3 w-3" />
+                                                                    Admin
+                                                                </Badge>
+                                                            ) : (
+                                                                listing.owner?.name
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge variant={listing.available ? 'default' : 'secondary'}>
+                                                                {listing.available ? 'Actif' : 'Inactif'}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="flex gap-2">
+                                                                {listing.owner_id === user?.id && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className="text-purple-600 border-purple-300 hover:bg-purple-50"
+                                                                        asChild
+                                                                    >
+                                                                        <Link to={`/admin/edit-listing/${listing.id}`}>
+                                                                            <Pencil className="h-4 w-4 mr-1" />
+                                                                            Modifier
+                                                                        </Link>
+                                                                    </Button>
+                                                                )}
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    onClick={() => toggleListingAvailability(listing.id, !listing.available)}
+                                                                >
+                                                                    <ToggleLeft className="h-4 w-4 mr-1" />
+                                                                    {listing.available ? 'Désactiver' : 'Activer'}
+                                                                </Button>
+                                                                <AlertDialog>
+                                                                    <AlertDialogTrigger asChild>
+                                                                        <Button size="sm" variant="outline" className="text-destructive">
+                                                                            <Trash className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </AlertDialogTrigger>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>Supprimer ce logement ?</AlertDialogTitle>
+                                                                            <AlertDialogDescription>
+                                                                                Cette action est irréversible. Le logement "{listing.title}" sera définitivement supprimé.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                                            <AlertDialogAction
+                                                                                onClick={() => deleteListing(listing.id)}
+                                                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                            >
+                                                                                Supprimer
+                                                                            </AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                    {filteredListings.length === 0 && (
+                                        <p className="text-center text-muted-foreground py-8">Aucun logement trouvé</p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+
+                        {/* Add Listing Sub-Tab */}
+                        <TabsContent value="add-listing">
+                            <div className="flex flex-col items-center justify-center py-12 space-y-4 text-center">
+                                <div className="p-4 bg-purple-100 rounded-full mb-4">
+                                    <Plus className="h-8 w-8 text-purple-600" />
+                                </div>
+                                <h3 className="text-xl font-bold">Publier un nouveau logement</h3>
+                                <p className="text-muted-foreground max-w-md">
+                                    Ajoutez un nouveau logement à la plateforme. Vous serez redirigé vers le formulaire de création.
+                                </p>
+                                <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white gap-2 mt-4">
+                                    <Link to="/admin/add-listing">
+                                        Accéder au formulaire
+                                    </Link>
+                                </Button>
                             </div>
-                            {filteredListings.length === 0 && (
-                                <p className="text-center text-muted-foreground py-8">Aucun logement trouvé</p>
-                            )}
-                        </CardContent>
-                    </Card>
+                        </TabsContent>
+                    </Tabs>
                 </TabsContent>
 
                 {/* Requests Tab */}
                 <TabsContent value="requests">
+                    <Tabs defaultValue="pending" className="space-y-6">
+                        <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-14 z-10 w-full border-b pb-4">
+                            <TabsList className="w-full justify-start h-auto p-1 bg-muted/50">
+                                <TabsTrigger value="pending" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    À traiter
+                                    {stats.newRequests > 0 && (
+                                        <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-african-red text-white text-[10px]">
+                                            {stats.newRequests}
+                                        </Badge>
+                                    )}
+                                </TabsTrigger>
+                                <TabsTrigger value="history" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                                    <Clock className="h-4 w-4" />
+                                    Historique
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
 
-                    <Card>
-                        <CardHeader>
+                        {/* Shared Filters without Status */}
+                        <div className="bg-card rounded-lg border shadow-sm p-4">
                             <div className="flex flex-col gap-4">
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                    <div className="flex flex-col gap-2">
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Package className="h-5 w-5" />
-                                            Demandes de Services ({filteredRequests.length})
-                                        </CardTitle>
-                                    </div>
                                     <div className="relative w-full md:w-64">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -1467,170 +1522,281 @@ export default function AdminDashboard() {
                                             className="pl-9"
                                         />
                                     </div>
-                                </div>
-                                {/* Filters */}
-                                <div className="flex flex-wrap gap-3">
-                                    <Select value={serviceFilter} onValueChange={setServiceFilter}>
-                                        <SelectTrigger className="w-[160px]">
-                                            <SelectValue placeholder="Type de service" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Tous les services</SelectItem>
-                                            <SelectItem value="colis">Colis</SelectItem>
-                                            <SelectItem value="gaz">Gaz</SelectItem>
-                                            <SelectItem value="lessive">Lessive</SelectItem>
-                                            <SelectItem value="poubelles">Poubelles</SelectItem>
-                                            <SelectItem value="nettoyage">Nettoyage</SelectItem>
-                                            <SelectItem value="logement">Logement</SelectItem>
-                                            <SelectItem value="demenagement">Déménagement</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                        <SelectTrigger className="w-[140px]">
-                                            <SelectValue placeholder="Statut" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Tous</SelectItem>
-                                            <SelectItem value="new">Nouveaux</SelectItem>
-                                            <SelectItem value="processed">Traités</SelectItem>
-                                            <SelectItem value="cancelled">Non conclues</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <Select value={landlordFilter} onValueChange={setLandlordFilter}>
-                                        <SelectTrigger className="w-[200px]">
-                                            <SelectValue placeholder="Par Propriétaire" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Tous les propriétaires</SelectItem>
-                                            {landlords.map((l) => (
-                                                <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Select value={destinationFilter} onValueChange={setDestinationFilter}>
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder="Destination" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Toutes destinations</SelectItem>
-                                            <SelectItem value="admin">Pour l'admin</SelectItem>
-                                            <SelectItem value="landlords">Pour les bailleurs</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="flex flex-wrap gap-3">
+                                        <Select value={serviceFilter} onValueChange={setServiceFilter}>
+                                            <SelectTrigger className="w-[160px]">
+                                                <SelectValue placeholder="Type de service" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">Tous les services</SelectItem>
+                                                <SelectItem value="colis">Colis</SelectItem>
+                                                <SelectItem value="gaz">Gaz</SelectItem>
+                                                <SelectItem value="lessive">Lessive</SelectItem>
+                                                <SelectItem value="poubelles">Poubelles</SelectItem>
+                                                <SelectItem value="nettoyage">Nettoyage</SelectItem>
+                                                <SelectItem value="logement">Logement</SelectItem>
+                                                <SelectItem value="demenagement">Déménagement</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <Select value={landlordFilter} onValueChange={setLandlordFilter}>
+                                            <SelectTrigger className="w-[200px]">
+                                                <SelectValue placeholder="Par Propriétaire" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">Tous les propriétaires</SelectItem>
+                                                {landlords.map((l) => (
+                                                    <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <Select value={destinationFilter} onValueChange={setDestinationFilter}>
+                                            <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Destination" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">Toutes destinations</SelectItem>
+                                                <SelectItem value="admin">Pour l'admin</SelectItem>
+                                                <SelectItem value="landlords">Pour les bailleurs</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Service</TableHead>
-                                            <TableHead>Client</TableHead>
-                                            <TableHead className="hidden md:table-cell">Téléphone</TableHead>
-                                            <TableHead className="hidden md:table-cell">Date</TableHead>
-                                            <TableHead>Statut</TableHead>
-                                            <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {requestsToDisplay.map((request) => (
-                                            <TableRow key={request.id}>
-                                                <TableCell>
-                                                    <Badge className={getServiceColor(request.service_type)}>
-                                                        <span className="flex items-center gap-1">
-                                                            {getServiceIcon(request.service_type)}
-                                                            <span className="hidden lg:inline">{serviceTypeLabels[request.service_type] || request.service_type}</span>
-                                                            <span className="lg:hidden">{serviceTypeLabels[request.service_type]?.slice(0, 3) || request.service_type.slice(0, 3)}</span>
-                                                        </span>
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="font-medium">
-                                                    <div className="flex flex-col">
-                                                        <span>{request.contact_name}</span>
-                                                        <span className="text-xs text-muted-foreground md:hidden">{request.contact_phone}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    <a
-                                                        href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-african-green hover:underline flex items-center gap-1"
-                                                    >
-                                                        <MessageCircle className="h-3 w-3" />
-                                                        {request.contact_phone}
-                                                    </a>
-                                                </TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    <div className="flex flex-col text-sm">
-                                                        <span className="flex items-center gap-1">
-                                                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                                                            {new Date(request.created_at).toLocaleDateString('fr-FR')}
-                                                        </span>
-                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground ml-4">
-                                                            <Clock className="h-3 w-3" />
-                                                            {new Date(request.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant={request.status === 'new' ? 'destructive' : request.status === 'cancelled' ? 'secondary' : 'default'}>
-                                                        {request.status === 'new' ? 'Nouv' : request.status === 'cancelled' ? 'Annul' : 'Fait'}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex gap-2">
-                                                        <RequestDetailsDialog request={request} />
-                                                        {request.status === 'new' && (
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                className="text-african-green"
-                                                                onClick={() => updateRequestStatus(request.id, 'processed')}
+                        </div>
+
+                        {/* Pending Requests Sub-Tab */}
+                        <TabsContent value="pending">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Package className="h-5 w-5" />
+                                        Demandes à traiter ({filteredRequests.filter(r => r.status === 'new').length})
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Service</TableHead>
+                                                    <TableHead>Client</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Téléphone</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Date</TableHead>
+                                                    <TableHead>Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredRequests.filter(r => r.status === 'new').map((request) => (
+                                                    <TableRow key={request.id}>
+                                                        <TableCell>
+                                                            <Badge className={getServiceColor(request.service_type)}>
+                                                                <span className="flex items-center gap-1">
+                                                                    {getServiceIcon(request.service_type)}
+                                                                    <span className="hidden lg:inline">{serviceTypeLabels[request.service_type] || request.service_type}</span>
+                                                                    <span className="lg:hidden">{serviceTypeLabels[request.service_type]?.slice(0, 3) || request.service_type.slice(0, 3)}</span>
+                                                                </span>
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            <div className="flex flex-col">
+                                                                <span>{request.contact_name}</span>
+                                                                <span className="text-xs text-muted-foreground md:hidden">{request.contact_phone}</span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <a
+                                                                href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-african-green hover:underline flex items-center gap-1"
                                                             >
-                                                                <CheckCircle className="h-4 w-4 mr-1" />
-                                                                Traiter
-                                                            </Button>
-                                                        )}
-                                                        {!request.landlord_id && (
-                                                            <AlertDialog>
-                                                                <AlertDialogTrigger asChild>
-                                                                    <Button size="sm" variant="outline" className="text-destructive">
-                                                                        <Trash className="h-4 w-4" />
-                                                                    </Button>
-                                                                </AlertDialogTrigger>
-                                                                <AlertDialogContent>
-                                                                    <AlertDialogHeader>
-                                                                        <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
-                                                                        <AlertDialogDescription>
-                                                                            Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogFooter>
-                                                                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                                                        <AlertDialogAction
-                                                                            onClick={() => deleteRequest(request.id)}
-                                                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                        >
-                                                                            Supprimer
-                                                                        </AlertDialogAction>
-                                                                    </AlertDialogFooter>
-                                                                </AlertDialogContent>
-                                                            </AlertDialog>
-                                                        )}
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                            {requestsToDisplay.length === 0 && (
-                                <p className="text-center text-muted-foreground py-8">Aucune demande trouvée</p>
-                            )}
-                        </CardContent>
-                    </Card>
+                                                                <MessageCircle className="h-3 w-3" />
+                                                                {request.contact_phone}
+                                                            </a>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <div className="flex flex-col text-sm">
+                                                                <span className="flex items-center gap-1">
+                                                                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                                                                    {new Date(request.created_at).toLocaleDateString('fr-FR')}
+                                                                </span>
+                                                                <span className="flex items-center gap-1 text-xs text-muted-foreground ml-4">
+                                                                    <Clock className="h-3 w-3" />
+                                                                    {new Date(request.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="flex gap-2">
+                                                                <RequestDetailsDialog request={request} />
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className="text-african-green"
+                                                                    onClick={() => updateRequestStatus(request.id, 'processed')}
+                                                                >
+                                                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                                                    Traiter
+                                                                </Button>
+                                                                {!request.landlord_id && (
+                                                                    <AlertDialog>
+                                                                        <AlertDialogTrigger asChild>
+                                                                            <Button size="sm" variant="outline" className="text-destructive">
+                                                                                <Trash className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </AlertDialogTrigger>
+                                                                        <AlertDialogContent>
+                                                                            <AlertDialogHeader>
+                                                                                <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
+                                                                                <AlertDialogDescription>
+                                                                                    Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
+                                                                                </AlertDialogDescription>
+                                                                            </AlertDialogHeader>
+                                                                            <AlertDialogFooter>
+                                                                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                                                <AlertDialogAction
+                                                                                    onClick={() => deleteRequest(request.id)}
+                                                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                                >
+                                                                                    Supprimer
+                                                                                </AlertDialogAction>
+                                                                            </AlertDialogFooter>
+                                                                        </AlertDialogContent>
+                                                                    </AlertDialog>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                                {filteredRequests.filter(r => r.status === 'new').length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                                                            Aucune demande à traiter
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+
+                        {/* History Sub-Tab */}
+                        <TabsContent value="history">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Clock className="h-5 w-5" />
+                                        Historique des demandes ({filteredRequests.filter(r => r.status !== 'new').length})
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Service</TableHead>
+                                                    <TableHead>Client</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Téléphone</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Date</TableHead>
+                                                    <TableHead>Statut</TableHead>
+                                                    <TableHead>Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredRequests.filter(r => r.status !== 'new').map((request) => (
+                                                    <TableRow key={request.id}>
+                                                        <TableCell>
+                                                            <Badge className={getServiceColor(request.service_type)}>
+                                                                <span className="flex items-center gap-1">
+                                                                    {getServiceIcon(request.service_type)}
+                                                                    <span className="hidden lg:inline">{serviceTypeLabels[request.service_type] || request.service_type}</span>
+                                                                    <span className="lg:hidden">{serviceTypeLabels[request.service_type]?.slice(0, 3) || request.service_type.slice(0, 3)}</span>
+                                                                </span>
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            <div className="flex flex-col">
+                                                                <span>{request.contact_name}</span>
+                                                                <span className="text-xs text-muted-foreground md:hidden">{request.contact_phone}</span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <a
+                                                                href={`https://wa.me/${request.contact_phone.replace(/\s/g, '')}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-african-green hover:underline flex items-center gap-1"
+                                                            >
+                                                                <MessageCircle className="h-3 w-3" />
+                                                                {request.contact_phone}
+                                                            </a>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <div className="flex flex-col text-sm">
+                                                                <span className="flex items-center gap-1">
+                                                                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                                                                    {new Date(request.created_at).toLocaleDateString('fr-FR')}
+                                                                </span>
+                                                                <span className="flex items-center gap-1 text-xs text-muted-foreground ml-4">
+                                                                    <Clock className="h-3 w-3" />
+                                                                    {new Date(request.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge variant={request.status === 'new' ? 'destructive' : request.status === 'cancelled' ? 'secondary' : 'default'}>
+                                                                {request.status === 'new' ? 'Nouv' : request.status === 'cancelled' ? 'Annul' : 'Fait'}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="flex gap-2">
+                                                                <RequestDetailsDialog request={request} />
+                                                                {!request.landlord_id && (
+                                                                    <AlertDialog>
+                                                                        <AlertDialogTrigger asChild>
+                                                                            <Button size="sm" variant="outline" className="text-destructive">
+                                                                                <Trash className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </AlertDialogTrigger>
+                                                                        <AlertDialogContent>
+                                                                            <AlertDialogHeader>
+                                                                                <AlertDialogTitle>Supprimer cette demande ?</AlertDialogTitle>
+                                                                                <AlertDialogDescription>
+                                                                                    Cette action est irréversible. La demande de {request.contact_name} sera définitivement supprimée.
+                                                                                </AlertDialogDescription>
+                                                                            </AlertDialogHeader>
+                                                                            <AlertDialogFooter>
+                                                                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                                                <AlertDialogAction
+                                                                                    onClick={() => deleteRequest(request.id)}
+                                                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                                >
+                                                                                    Supprimer
+                                                                                </AlertDialogAction>
+                                                                            </AlertDialogFooter>
+                                                                        </AlertDialogContent>
+                                                                    </AlertDialog>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                                {filteredRequests.filter(r => r.status !== 'new').length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                                                            Aucun historique
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </TabsContent>
 
                 {/* Settings Tab */}

@@ -117,7 +117,7 @@ export default function RegisterLandlord() {
                             </ul>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Nom complet</Label>
                                 <Input

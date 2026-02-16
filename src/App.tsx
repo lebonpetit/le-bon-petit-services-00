@@ -39,6 +39,7 @@ const Lessive = lazy(() => import("./pages/services/Lessive"));
 const Poubelles = lazy(() => import("./pages/services/Poubelles"));
 const Nettoyage = lazy(() => import("./pages/services/Nettoyage"));
 const Demenagement = lazy(() => import("./pages/services/Demenagement"));
+const Personnel = lazy(() => import("./pages/services/Personnel"));
 
 // Tenant Pages - lazy loaded
 const TenantDashboard = lazy(() => import("./pages/tenant/TenantDashboard"));
@@ -122,6 +123,7 @@ const App = () => {
         import("./pages/services/Poubelles"),
         import("./pages/services/Nettoyage"),
         import("./pages/services/Demenagement"),
+        import("./pages/services/Personnel"),
         import("./pages/Logements"),
         import("./pages/Habitations"),
       ];
@@ -166,6 +168,7 @@ const App = () => {
                   <Route path="/poubelles" element={<><SEO title="Gestion des Ordures" description="Service de collecte et gestion des ordures ménagères à Douala." /><Poubelles /></>} />
                   <Route path="/nettoyage" element={<><SEO title="Nettoyage & Entretien" description="Service de nettoyage professionnel pour particuliers et entreprises." /><Nettoyage /></>} />
                   <Route path="/demenagement" element={<><SEO title="Déménagement & Aménagement" description="Service de déménagement et aménagement professionnel à Douala." /><Demenagement /></>} />
+                  <Route path="/personnel" element={<><SEO title="Personnel d'Aide à Domicile" description="Service de mise à disposition de personnel qualifié pour votre maison et vos besoins techniques à Douala." /><Personnel /></>} />
 
                   {/* Static Info Pages */}
                   <Route path="/a-propos" element={<><SEO title="À Propos" description="Découvrez Le Bon Petit, startup camerounaise de services de proximité." /><APropos /></>} />
@@ -306,6 +309,14 @@ const App = () => {
                   />
                   <Route
                     path="/admin/messages"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/housing"
                     element={
                       <ProtectedRoute allowedRoles={['admin']}>
                         <AdminDashboard />

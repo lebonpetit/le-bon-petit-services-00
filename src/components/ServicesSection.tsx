@@ -54,6 +54,14 @@ const servicesData = [
     href: "/nettoyage",
     color: "green" as const,
   },
+  {
+    id: "personnel",
+    title: "Personnel à domicile",
+    description: "Gouvernantes, ménagères, cuisinières, électriciens, plombiers — du personnel qualifié, vérifié et formé pour votre maison.",
+    image: "/service-personnel.png",
+    href: "/personnel",
+    color: "green" as const,
+  },
 ];
 
 export function ServicesSection() {

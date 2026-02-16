@@ -42,6 +42,7 @@ const services = [
     { id: 'nettoyage', label: 'Nettoyage & Assainissement', icon: Sparkles, color: 'text-teal-500', bg: 'bg-gradient-to-br from-teal-500 to-green-500', border: 'border-teal-200' },
     { id: 'logements', label: 'Recherche de logements', icon: Building2, color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500 to-pink-500', border: 'border-rose-200' },
     { id: 'demenagement', label: 'Déménagement & Aménagement', icon: Truck, color: 'text-amber-600', bg: 'bg-gradient-to-br from-amber-500 to-yellow-600', border: 'border-amber-200' },
+    { id: 'personnel', label: 'Personnel à domicile', icon: Users, color: 'text-violet-600', bg: 'bg-gradient-to-br from-violet-500 to-indigo-600', border: 'border-violet-200' },
 ];
 
 const stats = [
@@ -102,6 +103,10 @@ export function HeroBookingWizard() {
     const handleServiceSelect = (id: string) => {
         if (id === 'logements') {
             navigate('/logements');
+            return;
+        }
+        if (id === 'personnel') {
+            navigate('/personnel');
             return;
         }
         setSelectedService(id as ServiceType);
@@ -341,15 +346,7 @@ export function HeroBookingWizard() {
             {/* Hero Background with Gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-african-green/5 via-background to-african-yellow/5" />
 
-            {/* Decorative patterns */}
-            <div className="absolute inset-0 african-pattern opacity-30" />
-            <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-african-green/10 to-transparent rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-african-yellow/10 to-transparent rounded-full blur-3xl" />
 
-            {/* Animated floating elements */}
-            <div className="hidden lg:block absolute top-20 right-20 w-20 h-20 bg-african-yellow/20 rounded-full animate-float blur-xl" />
-            <div className="hidden lg:block absolute bottom-40 left-20 w-16 h-16 bg-african-green/20 rounded-full animate-float blur-xl" style={{ animationDelay: '1s' }} />
-            <div className="hidden lg:block absolute top-1/2 right-1/4 w-12 h-12 bg-african-red/20 rounded-full animate-float blur-xl" style={{ animationDelay: '2s' }} />
 
             <div className="container mx-auto px-2 sm:px-4 lg:px-8 relative z-10 flex-1 flex items-center py-8 sm:py-12 lg:py-20">
                 <div className="grid lg:grid-cols-2 gap-6 sm:gap-12 lg:gap-20 items-center w-full">
@@ -415,6 +412,7 @@ export function HeroBookingWizard() {
                                     { label: 'Louer ?', emoji: '🏠', service: 'logements', color: 'from-rose-500 to-pink-500' },
                                     { label: 'Laver ?', emoji: '👕', service: 'lessive', color: 'from-violet-500 to-purple-500' },
                                     { label: 'Déménager ?', emoji: '🚚', service: 'demenagement', color: 'from-amber-500 to-yellow-600' },
+                                    { label: 'Personnel ?', emoji: '👥', service: 'personnel', color: 'from-violet-500 to-indigo-600' },
                                 ].map((action) => (
                                     <button
                                         key={action.label}
@@ -478,8 +476,7 @@ export function HeroBookingWizard() {
                     {/* Right Column: Service Selection Card */}
                     < div className="order-1 lg:order-2 w-full max-w-xl mx-auto lg:mx-0" >
                         <div className="relative">
-                            {/* Glow effect behind card */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-african-green/20 via-primary/20 to-african-yellow/20 rounded-[2.5rem] blur-2xl transform scale-95" />
+
 
                             <div id="service-selection" className="relative bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 md:p-8 overflow-hidden">
                                 {/* Card header decoration */}

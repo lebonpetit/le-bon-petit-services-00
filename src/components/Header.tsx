@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut, Sparkles, Truck, ChevronDown } from "lucide-react";
+import { Menu, X, Home, Package, Flame, Shirt, Trash2, Building2, User, LogOut, Sparkles, Truck, ChevronDown, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,7 @@ const servicesMenu = [
   { name: "Expédition de colis", href: "/colis", icon: Package },
   { name: "Ramassage lessive", href: "/lessive", icon: Shirt },
   { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
+  { name: "Personnel à domicile", href: "/personnel", icon: Users },
 ];
 
 // Main navigation items
@@ -38,6 +39,7 @@ const allNavigation = [
   { name: "Nettoyage", href: "/nettoyage", icon: Sparkles },
   { name: "Recherche de logements", href: "/logements", icon: Building2 },
   { name: "Déménagement & Aménagement", href: "/demenagement", icon: Truck },
+  { name: "Personnel à domicile", href: "/personnel", icon: Users },
 ];
 
 export function Header() {
