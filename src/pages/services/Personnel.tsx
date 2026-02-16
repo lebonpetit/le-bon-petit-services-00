@@ -72,18 +72,18 @@ const avantages = [
 
 const servicesAideDomicile = [
     {
-        title: "Gouvernantes",
-        description: "Gestion complète de votre maison — organisation, supervision et entretien quotidien",
+        title: "Nounous & Baby-sitters",
+        description: "Garde d'enfants bienveillante et expérimentée pour vos tout-petits",
         icon: HandHeart,
     },
     {
-        title: "Ménagères",
-        description: "Nettoyage, rangement et entretien régulier de votre domicile",
+        title: "Ménagères & Techniciens de surface",
+        description: "Nettoyage, rangement et entretien impeccable de votre domicile ou bureau",
         icon: Sparkles,
     },
     {
-        title: "Assistantes de maison",
-        description: "Aide polyvalente — courses, garde d'enfants, accompagnement quotidien",
+        title: "Gouvernantes",
+        description: "Gestion complète de votre maison — organisation, supervision et intendance",
         icon: Users,
     },
     {
@@ -266,14 +266,16 @@ export default function Personnel() {
 
                 <div className="relative z-20 px-8 py-20 md:py-28 text-white max-w-4xl mx-auto md:mx-0 md:ml-12 space-y-8 animate-slide-up text-left">
                     <Badge className="bg-white/20 text-white border-none py-2 px-4 backdrop-blur-md">
-                        👥 Personnel d'Aide à Domicile
+                        👥 Nounous • Ménagères • Techniciens
                     </Badge>
-                    <h1 className="font-heading text-4xl md:text-6xl font-extrabold leading-tight">
-                        Le personnel qu'il vous faut.<br />
-                        <span className="text-african-yellow">En toute confiance. À domicile.</span>
+                    <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+                        Vous cherchez une <span className="text-african-yellow">Nounou</span> ?<br />
+                        Un <span className="text-african-yellow">Électricien</span> ?
                     </h1>
                     <p className="text-lg md:text-xl opacity-90 max-w-xl leading-relaxed font-light">
-                        Nous sélectionnons, formons et mettons à votre disposition du personnel qualifié pour votre maison, votre famille et vos besoins techniques.
+                        Nous mettons à votre disposition : gouvernantes, nounous, ménagères, techniciens de surface, électriciens, frigoristes...
+                        <br /><br />
+                        <span className="font-semibold text-white">Disponible à l'heure, à la journée ou au mois.</span>
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-start">
                         <Button
@@ -285,16 +287,16 @@ export default function Personnel() {
                             }}
                         >
                             <Users className="mr-2 h-5 w-5" />
-                            Demander un agent
+                            Trouver mon personnel
                         </Button>
                         <Button
                             size="lg"
                             variant="outline"
                             className="border-2 border-white text-white hover:bg-white/10 font-semibold h-14 px-8 rounded-full"
-                            onClick={() => navigateToSection('tarifs')}
+                            onClick={() => navigateToSection('services')}
                         >
-                            <FileText className="mr-2 h-5 w-5" />
-                            Obtenir un devis
+                            <Info className="mr-2 h-5 w-5" />
+                            Voir les profils
                         </Button>
                     </div>
                 </div>
@@ -336,14 +338,48 @@ export default function Personnel() {
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="text-center bg-violet-600/10 rounded-3xl p-10 border-2 border-violet-600/20">
-                <HandHeart className="h-12 w-12 mx-auto text-violet-600 mb-4" />
-                <h3 className="font-heading text-2xl md:text-3xl font-bold mb-4">Confiez votre maison à des professionnels de confiance.</h3>
-                <p className="text-muted-foreground text-lg mb-8">Recevez des profils adaptés sous 24h</p>
-                <Button size="lg" className="bg-violet-600 hover:bg-violet-700 text-white font-bold h-14 px-10 rounded-xl shadow-lg" onClick={() => navigateToSection('tarifs')}>
-                    Demander un agent
-                </Button>
+            {/* Formules / Modes d'intervention */}
+            <section className="bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20 rounded-3xl p-10 border border-violet-100 dark:border-violet-800">
+                <div className="text-center mb-10">
+                    <h2 className="font-heading text-3xl font-bold mb-4">À chacun sa formule</h2>
+                    <p className="text-muted-foreground text-lg">Choisissez le mode d'intervention qui vous convient</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <Card className="border-2 border-transparent hover:border-violet-500 transition-all shadow-lg">
+                        <CardHeader>
+                            <div className="w-12 h-12 bg-violet-100 rounded-full flex items-center justify-center mb-4 text-violet-600">
+                                <Clock className="h-6 w-6" />
+                            </div>
+                            <CardTitle>À l'heure ou à la journée</CardTitle>
+                            <CardDescription>Pour des besoins ponctuels ou urgents</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ul className="space-y-2">
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Idéal pour un grand nettoyage</li>
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Dépannage garde d'enfants</li>
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Réparations techniques</li>
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Remplacement temporaire</li>
+                            </ul>
+                        </CardContent>
+                    </Card>
+                    <Card className="border-2 border-transparent hover:border-indigo-500 transition-all shadow-lg">
+                        <CardHeader>
+                            <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4 text-indigo-600">
+                                <Users className="h-6 w-6" />
+                            </div>
+                            <CardTitle>Au mois (Abonnement)</CardTitle>
+                            <CardDescription>Pour une tranquillité d'esprit au quotidien</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ul className="space-y-2">
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Personnel de maison stable</li>
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Nounou à temps plein</li>
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Gestion continue de résidence</li>
+                                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Tarifs préférentiels</li>
+                            </ul>
+                        </CardContent>
+                    </Card>
+                </div>
             </section>
         </div>
     );
@@ -608,14 +644,14 @@ export default function Personnel() {
                             <Select value={devisForm.typePersonnel} onValueChange={v => setDevisForm({ ...devisForm, typePersonnel: v })}>
                                 <SelectTrigger><SelectValue placeholder="Quel profil ?" /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="gouvernante">Gouvernante</SelectItem>
+                                    <SelectItem value="nounou">Nounou / Baby-sitter</SelectItem>
                                     <SelectItem value="menagere">Ménagère</SelectItem>
-                                    <SelectItem value="assistante">Assistante de maison</SelectItem>
+                                    <SelectItem value="technicien_surface">Technicien de surface</SelectItem>
+                                    <SelectItem value="gouvernante">Gouvernante</SelectItem>
                                     <SelectItem value="cuisiniere">Cuisinière</SelectItem>
                                     <SelectItem value="electricien">Électricien</SelectItem>
                                     <SelectItem value="frigoriste">Frigoriste</SelectItem>
                                     <SelectItem value="plombier">Plombier</SelectItem>
-                                    <SelectItem value="technicien">Technicien polyvalent</SelectItem>
                                     <SelectItem value="autre">Autre</SelectItem>
                                 </SelectContent>
                             </Select>
