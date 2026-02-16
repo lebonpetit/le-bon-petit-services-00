@@ -15,7 +15,7 @@ export function PersonalBrandingSection() {
                         </div>
                         <div className="text-muted-foreground text-base md:text-lg leading-relaxed">
                             <p className="mb-4">
-                                IT, entrepreneur digital et marketeur. Je développe une solution digitale innovante conçue pour simplifier le quotidien des particuliers, entreprises et collectivités.
+                                IT, entrepreneur digital et marketeur. J'ai développé une solution digitale innovante conçue pour simplifier le quotidien des particuliers, entreprises et collectivités.
                             </p>
                             <p className="mb-4">
                                 À travers une plateforme unique, nous mettons à votre disposition des services essentiels :

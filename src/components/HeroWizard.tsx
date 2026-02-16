@@ -100,6 +100,10 @@ export function HeroBookingWizard() {
     });
 
     const handleServiceSelect = (id: string) => {
+        if (id === 'logements') {
+            navigate('/logements');
+            return;
+        }
         setSelectedService(id as ServiceType);
         setStep(1);
     };
