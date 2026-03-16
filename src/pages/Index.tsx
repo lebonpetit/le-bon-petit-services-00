@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { HeroSlider } from "@/components/HeroSlider";
+import { HeroBookingWizard } from "@/components/HeroWizard";
 import { ServicesSection } from "@/components/ServicesSection";
 import { HowItWorks } from "@/components/HowItWorks";
 import { CTASection } from "@/components/CTASection";
@@ -7,7 +7,7 @@ import { CTASection } from "@/components/CTASection";
 const Index = () => {
   return (
     <Layout>
-      <HeroSlider />
+      <HeroBookingWizard />
       <ServicesSection />
       <HowItWorks />
       <CTASection />

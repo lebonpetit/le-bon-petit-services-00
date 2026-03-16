@@ -42,24 +42,24 @@ export function HeroSlider() {
   };
 
   const slides: Slide[] = [
-    {
-      id: 0,
-      image: "/slide-waste.jpg",
-      tagline: "Gestion des déchets",
-      useCase: "Vos poubelles débordent ? ",
-      highlight: "On s'en charge.",
-      problem:
-        "Ras-le-bol des ordures qui s'accumulent devant votre maison, votre restaurant ou votre entreprise ?",
-      solution:
-        "Le Bon Petit collecte vos déchets régulièrement. Vous n'avez plus rien à faire.",
-      cta: "Planifier un ramassage",
-      ctaAction: scrollToWizard,
-      serviceIcons: [
-        { icon: Trash2, label: "Collecte", color: "text-green-500" },
-        { icon: Sparkles, label: "Nettoyage", color: "text-teal-500" },
-      ],
-      gradient: "from-green-900/60 via-green-900/30 to-transparent",
-    },
+    // {
+    //   id: 0,
+    //   image: "/slide-waste.jpg",
+    //   tagline: "Gestion des déchets",
+    //   useCase: "Vos poubelles débordent ? ",
+    //   highlight: "On s'en charge.",
+    //   problem:
+    //     "Ras-le-bol des ordures qui s'accumulent devant votre maison, votre restaurant ou votre entreprise ?",
+    //   solution:
+    //     "Le Bon Petit collecte vos déchets régulièrement. Vous n'avez plus rien à faire.",
+    //   cta: "Planifier un ramassage",
+    //   ctaAction: scrollToWizard,
+    //   serviceIcons: [
+    //     { icon: Trash2, label: "Collecte", color: "text-green-500" },
+    //     { icon: Sparkles, label: "Nettoyage", color: "text-teal-500" },
+    //   ],
+    //   gradient: "from-green-900/60 via-green-900/30 to-transparent",
+    // },
     {
       id: 1,
       image: "/slide-delivery.jpg",
